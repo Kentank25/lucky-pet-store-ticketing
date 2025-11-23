@@ -15,7 +15,7 @@ const COLLECTION_NAME = "petshop-app/v1/tickets";
 export const subscribeToTickets = (callback) => {
   const q = query(
     collection(db, COLLECTION_NAME),
-    where("status", "in", ["PENDING", "WAITING", "COMPLETED", "aktif"])
+    where("status", "in", ["PENDING", "WAITING", "COMPLETED", "aktif", "PAYMENT"])
   );
 
   return onSnapshot(q, (snapshot) => {

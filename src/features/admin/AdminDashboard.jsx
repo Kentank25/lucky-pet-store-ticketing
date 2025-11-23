@@ -11,6 +11,7 @@ export default function AdminDashboard() {
   if (loading) return <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div></div>;
 
   const pendingTickets = tickets.filter(t => t.status === 'PENDING');
+  const paymentTickets = tickets.filter(t => t.status === 'PAYMENT');
   const activeTickets = tickets.filter(t => t.status === 'WAITING' || t.status === 'aktif');
 
   return (
@@ -33,6 +34,19 @@ export default function AdminDashboard() {
 
       {/* Right Column: Ticket Lists (8 cols) */}
       <div className="lg:col-span-8 space-y-8">
+        {/* Payment Queue */}
+        {paymentTickets.length > 0 && (
+          <div className="bg-purple-50/50 p-8 rounded-[2.5rem] border border-purple-100 relative overflow-hidden">
+             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100 rounded-bl-[4rem] -z-10 opacity-50"></div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-purple-400 animate-pulse"></div>
+              Menunggu Pembayaran
+              <span className="bg-purple-200 text-purple-800 text-sm px-3 py-1 rounded-full">{paymentTickets.length}</span>
+            </h3>
+            <TicketList tickets={paymentTickets} />
+          </div>
+        )}
+
         {/* Validation Queue */}
         {pendingTickets.length > 0 && (
           <div className="bg-amber-50/50 p-8 rounded-[2.5rem] border border-amber-100 relative overflow-hidden">

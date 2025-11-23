@@ -10,6 +10,7 @@ export default function TicketForm({ ticketToEdit, onCancel }) {
     layanan: 'Grooming',
     tanggalRilis: new Date().toISOString().split('T')[0],
     jam: '',
+    catatan: '',
   });
   const [loading, setLoading] = useState(false);
 
@@ -20,6 +21,7 @@ export default function TicketForm({ ticketToEdit, onCancel }) {
         layanan: ticketToEdit.layanan,
         tanggalRilis: ticketToEdit.tanggalRilis,
         jam: ticketToEdit.jam || '',
+        catatan: ticketToEdit.catatan || '',
       });
     }
   }, [ticketToEdit]);
@@ -136,6 +138,17 @@ export default function TicketForm({ ticketToEdit, onCancel }) {
               </div>
             </div>
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-600 mb-2 ml-1">Catatan (Opsional)</label>
+          <textarea
+            value={formData.catatan}
+            onChange={(e) => setFormData({ ...formData, catatan: e.target.value })}
+            className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-medium resize-none"
+            placeholder={formData.layanan === 'Grooming' ? "Contoh: Mandi Kutu, Potong Kuku..." : "Contoh: Muntah, Diare, Lemas..."}
+            rows="3"
+          />
         </div>
 
         <div className="flex gap-3 pt-4">
