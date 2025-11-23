@@ -27,26 +27,37 @@ export default function TicketCard({ ticket, onEdit }) {
                     (isPicKlinik && ticket.layanan === 'Klinik');
 
   return (
-    <div className={`p-4 bg-white rounded-lg shadow-sm border ${isPending ? 'border-yellow-200' : 'border-gray-200'} animate-fade-in`}>
+    <div className={`p-6 bg-white rounded-3xl shadow-lg shadow-gray-100 border ${isPending ? 'border-yellow-200 bg-yellow-50/30' : 'border-transparent'} animate-fade-in hover:shadow-xl transition-shadow duration-300`}>
       <div className="flex justify-between items-start flex-wrap gap-4">
         <div>
-          <h3 className="font-bold text-gray-800 text-lg">{ticket.nama}</h3>
-          <div className="flex items-center gap-2 mt-1">
-            <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
-              ticket.layanan === 'Grooming' ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'
+          <div className="flex items-center gap-3 mb-2">
+             <h3 className="font-bold text-gray-800 text-xl">{ticket.nama}</h3>
+             <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+              ticket.layanan === 'Grooming' ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700'
             }`}>
               {ticket.layanan}
             </span>
-            <span className="text-sm text-gray-500">
-              {new Date(ticket.tanggalRilis).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} {ticket.jam && `• ${ticket.jam}`}
+          </div>
+          
+          <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 font-medium">
+            <span className="flex items-center gap-1">
+               📅 {new Date(ticket.tanggalRilis).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
             </span>
-            <span className={`text-xs px-2 py-0.5 rounded border ${
-              isPending ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-green-50 text-green-700 border-green-200'
+            {ticket.jam && (
+                <span className="flex items-center gap-1">
+                    ⏰ {ticket.jam}
+                </span>
+            )}
+          </div>
+          
+          <div className="mt-4 flex items-center gap-2">
+             <span className={`text-xs px-3 py-1 rounded-full font-bold border ${
+              isPending ? 'bg-yellow-100 text-yellow-700 border-yellow-200' : 'bg-emerald-100 text-emerald-700 border-emerald-200'
             }`}>
               {ticket.status}
             </span>
+             <p className="text-[10px] text-gray-300 font-mono uppercase tracking-wider">#{ticket.id.slice(-6)}</p>
           </div>
-          <p className="text-xs text-gray-400 mt-2 font-mono">ID: {ticket.id}</p>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -55,13 +66,13 @@ export default function TicketCard({ ticket, onEdit }) {
             <div className="flex gap-2">
               <button
                 onClick={() => handleStatusUpdate('WAITING', 'Validasi Admin: Diterima. Masuk Antrian.')}
-                className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md shadow-blue-200"
               >
                 Terima
               </button>
               <button
                 onClick={() => handleStatusUpdate('REJECTED', 'Validasi Admin: Ditolak.')}
-                className="px-3 py-1 bg-red-100 text-red-600 text-sm rounded hover:bg-red-200 transition-colors"
+                className="px-4 py-2 bg-white text-rose-600 border border-rose-100 text-sm font-bold rounded-xl hover:bg-rose-50 transition-all"
               >
                 Tolak
               </button>
@@ -73,13 +84,13 @@ export default function TicketCard({ ticket, onEdit }) {
             <div className="flex gap-2">
               <button
                 onClick={() => onEdit(ticket)}
-                className="px-3 py-1 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600 transition-colors"
+                className="px-4 py-2 bg-amber-100 text-amber-700 text-sm font-bold rounded-xl hover:bg-amber-200 transition-all"
               >
                 Edit
               </button>
               <button
                 onClick={() => handleStatusUpdate('dihapus', 'Tiket dihapus (diarsipkan) oleh Admin.')}
-                className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
+                className="px-4 py-2 bg-rose-100 text-rose-700 text-sm font-bold rounded-xl hover:bg-rose-200 transition-all"
               >
                 Hapus
               </button>
@@ -90,7 +101,7 @@ export default function TicketCard({ ticket, onEdit }) {
           {canPicAct && isWaiting && (
             <button
               onClick={() => handleStatusUpdate('COMPLETED', `Tugas diselesaikan oleh PIC ${ticket.layanan}.`)}
-              className="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition-colors"
+              className="px-6 py-2 bg-emerald-500 text-white text-sm font-bold rounded-xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-200"
             >
               Selesai
             </button>

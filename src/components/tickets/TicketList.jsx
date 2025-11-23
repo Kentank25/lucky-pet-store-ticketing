@@ -20,7 +20,7 @@ export default function TicketList({ tickets, onEdit, filterStatus, filterServic
   }
 
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 gap-6">
       {filteredTickets.map(ticket => (
         <TicketCard key={ticket.id} ticket={ticket} onEdit={onEdit} />
       ))}

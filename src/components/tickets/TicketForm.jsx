@@ -67,77 +67,90 @@ export default function TicketForm({ ticketToEdit, onCancel }) {
   const timeSlots = generateTimeSlots(formData.layanan);
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-      <h3 className="text-lg font-bold mb-4">
+    <form onSubmit={handleSubmit} className="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-2xl shadow-gray-200/50 border border-white/50 relative overflow-hidden">
+      {/* Decorative background blob */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-[4rem] -z-0 opacity-50"></div>
+
+      <h3 className="text-2xl font-bold mb-8 text-gray-800 relative z-10">
         {ticketToEdit ? 'Edit Tiket' : role === 'kiosk' ? 'Ambil Antrian' : 'Buat Tiket Baru'}
       </h3>
       
-      <div className="space-y-4">
+      <div className="space-y-6 relative z-10">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nama Pelanggan / Hewan</label>
+          <label className="block text-sm font-semibold text-gray-600 mb-2 ml-1">Nama Pelanggan / Hewan</label>
           <input
             type="text"
             required
             value={formData.nama}
             onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-medium"
             placeholder="Contoh: Budi / Mochi"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Layanan</label>
-          <select
-            value={formData.layanan}
-            onChange={(e) => setFormData({ ...formData, layanan: e.target.value })}
-            disabled={!!ticketToEdit} 
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-          >
-            <option value="Grooming">Grooming</option>
-            <option value="Klinik">Klinik</option>
-          </select>
+          <label className="block text-sm font-semibold text-gray-600 mb-2 ml-1">Layanan</label>
+          <div className="relative">
+            <select
+              value={formData.layanan}
+              onChange={(e) => setFormData({ ...formData, layanan: e.target.value })}
+              disabled={!!ticketToEdit} 
+              className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 appearance-none font-medium disabled:opacity-60"
+            >
+              <option value="Grooming">✂️ Grooming</option>
+              <option value="Klinik">🩺 Klinik</option>
+            </select>
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+              ▼
+            </div>
+          </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal & Jam</label>
-          <div className="flex gap-2">
+          <label className="block text-sm font-semibold text-gray-600 mb-2 ml-1">Tanggal & Jam</label>
+          <div className="flex gap-3">
             <input
               type="date"
               value={formData.tanggalRilis}
               onChange={(e) => setFormData({ ...formData, tanggalRilis: e.target.value })}
               disabled={!!ticketToEdit}
-              className="w-2/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+              className="w-2/3 px-6 py-4 bg-gray-50 border-none rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 font-medium disabled:opacity-60"
             />
-            <select
-              value={formData.jam}
-              onChange={(e) => setFormData({ ...formData, jam: e.target.value })}
-              disabled={!!ticketToEdit}
-              required
-              className="w-1/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-            >
-              <option value="">Pilih Jam</option>
-              {timeSlots.map((slot) => (
-                <option key={slot} value={slot}>
-                  {slot}
-                </option>
-              ))}
-            </select>
+            <div className="relative w-1/3">
+              <select
+                value={formData.jam}
+                onChange={(e) => setFormData({ ...formData, jam: e.target.value })}
+                disabled={!!ticketToEdit}
+                required
+                className="w-full px-4 py-4 bg-gray-50 border-none rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 appearance-none font-medium disabled:opacity-60"
+              >
+                <option value="">Jam</option>
+                {timeSlots.map((slot) => (
+                  <option key={slot} value={slot}>
+                    {slot}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs">
+                ▼
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="flex gap-2 pt-2">
+        <div className="flex gap-3 pt-4">
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+            className="flex-1 bg-gray-900 text-white py-4 px-6 rounded-2xl hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] transition-all font-bold text-lg shadow-lg shadow-gray-200 disabled:opacity-50 disabled:hover:scale-100"
           >
-            {loading ? 'Menyimpan...' : ticketToEdit ? 'Update' : role === 'kiosk' ? 'Ambil Antrian' : 'Simpan'}
+            {loading ? 'Menyimpan...' : ticketToEdit ? 'Update' : role === 'kiosk' ? 'Ambil Antrian ➔' : 'Simpan'}
           </button>
           {ticketToEdit && (
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+              className="px-6 py-4 bg-gray-100 text-gray-600 rounded-2xl hover:bg-gray-200 font-bold transition-colors"
             >
               Batal
             </button>
