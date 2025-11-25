@@ -1,6 +1,6 @@
 import TicketCard from './TicketCard';
 
-export default function TicketList({ tickets, onEdit, filterStatus, filterService }) {
+export default function TicketList({ tickets, onEdit, filterStatus, filterService, cardClassName }) {
   let filteredTickets = tickets;
 
   if (filterStatus) {
@@ -22,7 +22,7 @@ export default function TicketList({ tickets, onEdit, filterStatus, filterServic
   return (
     <div className="grid grid-cols-1 gap-6">
       {filteredTickets.map(ticket => (
-        <TicketCard key={ticket.id} ticket={ticket} onEdit={onEdit} />
+        <TicketCard key={ticket.id} ticket={ticket} onEdit={onEdit} className={cardClassName} />
       ))}
     </div>
   );

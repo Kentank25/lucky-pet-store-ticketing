@@ -37,7 +37,7 @@ export default function TicketForm({ ticketToEdit, onCancel }) {
       } else {
         await addTicket(formData, role);
         toast.success(role === 'kiosk' ? 'Antrian berhasil diambil!' : 'Tiket berhasil dibuat');
-        setFormData({ ...formData, nama: '', jam: '' }); 
+        setFormData({ ...formData, nama: '', jam: '', catatan: '' }); 
       }
     } catch (error) {
       toast.error('Gagal menyimpan tiket');
@@ -54,14 +54,16 @@ export default function TicketForm({ ticketToEdit, onCancel }) {
     if (service === 'Klinik') {
       startHour = 9;
       endHour = 18; // 09:00 - 18:00
+      for (let i = startHour; i < endHour; i++) {
+        slots.push(`${i.toString().padStart(2, '0')}:00`);
+      }
     } else {
       startHour = 9;
       endHour = 15; // 09:00 - 15:00 (Grooming)
-    }
-
-    for (let i = startHour; i < endHour; i++) {
-      const time = `${i.toString().padStart(2, '0')}:00`;
-      slots.push(time);
+      for (let i = startHour; i < endHour; i++) {
+        slots.push(`${i.toString().padStart(2, '0')}:00`);
+        slots.push(`${i.toString().padStart(2, '0')}:30`);
+      }
     }
     return slots;
   };

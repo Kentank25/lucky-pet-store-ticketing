@@ -2,7 +2,7 @@ import { useRole } from '../../context/RoleContext';
 import { updateTicketStatus } from '../../services/ticketService';
 import toast from 'react-hot-toast';
 
-export default function TicketCard({ ticket, onEdit }) {
+export default function TicketCard({ ticket, onEdit, className = '' }) {
   const { role } = useRole();
 
   const handleStatusUpdate = async (newStatus, message) => {
@@ -32,8 +32,8 @@ export default function TicketCard({ ticket, onEdit }) {
       isPending ? 'border-yellow-200 bg-yellow-50/30' : 
       isPayment ? 'border-purple-200 bg-purple-50/30' :
       'border-transparent'
-    } animate-fade-in hover:shadow-xl transition-shadow duration-300`}>
-      <div className="flex justify-between items-start flex-wrap gap-4">
+    } animate-fade-in hover:shadow-xl transition-shadow duration-300 ${className}`}>
+      <div className="flex justify-between items-start flex-wrap gap-4 w-full">
         <div>
           <div className="flex items-center gap-3 mb-2">
              <h3 className="font-bold text-gray-800 text-xl">{ticket.nama}</h3>
