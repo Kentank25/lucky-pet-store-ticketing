@@ -29,13 +29,20 @@ export default function TicketForm({ ticketToEdit, onCancel }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    // Clean up catatan to remove trailing newlines/spaces
+    const cleanedFormData = {
+      ...formData,
+      catatan: formData.catatan.trim()
+    };
+
     try {
       if (ticketToEdit) {
-        await updateTicketDetails(ticketToEdit.id, formData, ticketToEdit);
+        await updateTicketDetails(ticketToEdit.id, cleanedFormData, ticketToEdit);
         toast.success('Tiket berhasil diperbarui');
         if (onCancel) onCancel();
       } else {
-        await addTicket(formData, role);
+        await addTicket(cleanedFormData, role);
         toast.success(role === 'kiosk' ? 'Antrian berhasil diambil!' : 'Tiket berhasil dibuat');
         setFormData({ ...formData, nama: '', jam: '', catatan: '' }); 
       }
