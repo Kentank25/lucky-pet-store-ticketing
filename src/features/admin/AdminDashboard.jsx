@@ -5,6 +5,7 @@ import LogList from '../../components/history/LogList';
 import { useTickets } from '../../hooks/useTickets';
 import { updateTicketStatus } from '../../services/ticketService';
 import toast from 'react-hot-toast';
+import AdminAnalytics from './AdminAnalytics';
 
 const PaymentAccordion = ({ title, items, isOpen, onToggle, icon, selectedPaymentIds, onToggleSelect, onSelectAll }) => {
   if (items.length === 0) return null;
@@ -108,6 +109,7 @@ export default function AdminDashboard() {
   const [ticketToEdit, setTicketToEdit] = useState(null);
   const [selectedPaymentIds, setSelectedPaymentIds] = useState(new Set());
   const [expandedSections, setExpandedSections] = useState({ Grooming: true, Klinik: true });
+  const [activeTab, setActiveTab] = useState('dashboard');
 
   if (loading) return <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div></div>;
 
@@ -168,107 +170,137 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in">
-      {/* Left Column: Form & Logs (4 cols) */}
-      <div className="lg:col-span-4 space-y-8">
-        <TicketForm 
-          ticketToEdit={ticketToEdit} 
-          onCancel={() => setTicketToEdit(null)} 
-        />
-        
-        <div className="bg-white rounded-[2rem] p-6 shadow-xl shadow-gray-100 border border-gray-100">
-          <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-            <span className="bg-blue-100 p-2 rounded-lg text-blue-600">📜</span>
-            Riwayat Aktivitas
-          </h3>
-          <LogList />
-        </div>
+    <div className="space-y-6">
+      {/* Navigation Tabs */}
+      <div className="flex space-x-2 bg-white p-1 rounded-2xl w-fit shadow-sm border border-gray-100">
+        <button
+          onClick={() => setActiveTab('dashboard')}
+          className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${
+            activeTab === 'dashboard'
+              ? 'bg-blue-500 text-white shadow-md'
+              : 'text-gray-500 hover:bg-gray-50'
+          }`}
+        >
+          Dashboard
+        </button>
+        <button
+          onClick={() => setActiveTab('analytics')}
+          className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${
+            activeTab === 'analytics'
+              ? 'bg-blue-500 text-white shadow-md'
+              : 'text-gray-500 hover:bg-gray-50'
+          }`}
+        >
+          Analytics
+        </button>
       </div>
 
-      {/* Right Column: Ticket Lists (8 cols) */}
-      <div className="lg:col-span-8 space-y-8">
-        
-        {/* Validation Queue (Moved to Top) */}
-        {pendingTickets.length > 0 && (
-          <div className="bg-amber-50/50 p-8 rounded-[2.5rem] border border-amber-100 relative overflow-hidden">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-100 rounded-bl-[4rem] -z-10 opacity-50"></div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-amber-400 animate-pulse"></div>
-              Menunggu Validasi 
-              <span className="bg-amber-200 text-amber-800 text-sm px-3 py-1 rounded-full">{pendingTickets.length}</span>
-            </h3>
-            <TicketList tickets={pendingTickets} />
-          </div>
-        )}
-
-        {/* Payment Queue (Modified with Accordion & Bulk Actions) */}
-        {paymentTickets.length > 0 && (
-          <div className="bg-purple-50/50 p-8 rounded-[2.5rem] border border-purple-100 relative overflow-hidden">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100 rounded-bl-[4rem] -z-10 opacity-50"></div>
+      {activeTab === 'analytics' ? (
+        <AdminAnalytics />
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in">
+          {/* Left Column: Form & Logs (4 cols) */}
+          <div className="lg:col-span-4 space-y-8">
+            <TicketForm 
+              ticketToEdit={ticketToEdit} 
+              onCancel={() => setTicketToEdit(null)} 
+            />
             
-            <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
-              <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-purple-400 animate-pulse"></div>
-                Menunggu Pembayaran
-                <span className="bg-purple-200 text-purple-800 text-sm px-3 py-1 rounded-full">{paymentTickets.length}</span>
+            <div className="bg-white rounded-[2rem] p-6 shadow-xl shadow-gray-100 border border-gray-100">
+              <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <span className="bg-blue-100 p-2 rounded-lg text-blue-600">📜</span>
+                Riwayat Aktivitas
               </h3>
-              
-              <div className="flex gap-2">
-                {selectedPaymentIds.size > 0 && (
-                  <button 
-                    onClick={() => handleConfirmPayments(Array.from(selectedPaymentIds))}
-                    className="px-4 py-2 bg-purple-600 text-white text-sm font-bold rounded-xl hover:bg-purple-700 transition-all shadow-lg shadow-purple-200"
-                  >
-                    Konfirmasi ({selectedPaymentIds.size})
-                  </button>
-                )}
-                <button 
-                  onClick={() => handleConfirmPayments(paymentTickets.map(t => t.id))}
-                  className="px-4 py-2 bg-white text-purple-600 border border-purple-200 text-sm font-bold rounded-xl hover:bg-purple-50 transition-all"
-                >
-                  Konfirmasi Semua
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-               <PaymentAccordion 
-                  title="Grooming" 
-                  items={paymentGrooming} 
-                  isOpen={expandedSections.Grooming}
-                  onToggle={() => toggleSection('Grooming')}
-                  icon="✂️"
-                  selectedPaymentIds={selectedPaymentIds}
-                  onToggleSelect={toggleSelect}
-                  onSelectAll={selectAllGroup}
-               />
-               <PaymentAccordion 
-                  title="Klinik" 
-                  items={paymentKlinik} 
-                  isOpen={expandedSections.Klinik}
-                  onToggle={() => toggleSection('Klinik')}
-                  icon="🩺"
-                  selectedPaymentIds={selectedPaymentIds}
-                  onToggleSelect={toggleSelect}
-                  onSelectAll={selectAllGroup}
-               />
+              <LogList />
             </div>
           </div>
-        )}
 
-        {/* Active Queue */}
-        <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-gray-100 border border-gray-100">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-            Antrian Aktif
-            <span className="bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full">{activeTickets.length}</span>
-          </h3>
-          <TicketList 
-            tickets={activeTickets} 
-            onEdit={setTicketToEdit} 
-          />
+          {/* Right Column: Ticket Lists (8 cols) */}
+          <div className="lg:col-span-8 space-y-8">
+            
+            {/* Validation Queue (Moved to Top) */}
+            {pendingTickets.length > 0 && (
+              <div className="bg-amber-50/50 p-8 rounded-[2.5rem] border border-amber-100 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-100 rounded-bl-[4rem] -z-10 opacity-50"></div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-amber-400 animate-pulse"></div>
+                  Menunggu Validasi 
+                  <span className="bg-amber-200 text-amber-800 text-sm px-3 py-1 rounded-full">{pendingTickets.length}</span>
+                </h3>
+                <TicketList tickets={pendingTickets} />
+              </div>
+            )}
+
+            {/* Payment Queue (Modified with Accordion & Bulk Actions) */}
+            {paymentTickets.length > 0 && (
+              <div className="bg-purple-50/50 p-8 rounded-[2.5rem] border border-purple-100 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100 rounded-bl-[4rem] -z-10 opacity-50"></div>
+                
+                <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
+                  <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full bg-purple-400 animate-pulse"></div>
+                    Menunggu Pembayaran
+                    <span className="bg-purple-200 text-purple-800 text-sm px-3 py-1 rounded-full">{paymentTickets.length}</span>
+                  </h3>
+                  
+                  <div className="flex gap-2">
+                    {selectedPaymentIds.size > 0 && (
+                      <button 
+                        onClick={() => handleConfirmPayments(Array.from(selectedPaymentIds))}
+                        className="px-4 py-2 bg-purple-600 text-white text-sm font-bold rounded-xl hover:bg-purple-700 transition-all shadow-lg shadow-purple-200"
+                      >
+                        Konfirmasi ({selectedPaymentIds.size})
+                      </button>
+                    )}
+                    <button 
+                      onClick={() => handleConfirmPayments(paymentTickets.map(t => t.id))}
+                      className="px-4 py-2 bg-white text-purple-600 border border-purple-200 text-sm font-bold rounded-xl hover:bg-purple-50 transition-all"
+                    >
+                      Konfirmasi Semua
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <PaymentAccordion 
+                      title="Grooming" 
+                      items={paymentGrooming} 
+                      isOpen={expandedSections.Grooming}
+                      onToggle={() => toggleSection('Grooming')}
+                      icon="✂️"
+                      selectedPaymentIds={selectedPaymentIds}
+                      onToggleSelect={toggleSelect}
+                      onSelectAll={selectAllGroup}
+                  />
+                  <PaymentAccordion 
+                      title="Klinik" 
+                      items={paymentKlinik} 
+                      isOpen={expandedSections.Klinik}
+                      onToggle={() => toggleSection('Klinik')}
+                      icon="🩺"
+                      selectedPaymentIds={selectedPaymentIds}
+                      onToggleSelect={toggleSelect}
+                      onSelectAll={selectAllGroup}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Active Queue */}
+            <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-gray-100 border border-gray-100">
+              <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                Antrian Aktif
+                <span className="bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full">{activeTickets.length}</span>
+              </h3>
+              <TicketList 
+                tickets={activeTickets} 
+                onEdit={setTicketToEdit} 
+              />
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

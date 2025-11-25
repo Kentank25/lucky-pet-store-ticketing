@@ -85,7 +85,7 @@ export default function TicketCard({ ticket, onEdit, className = '' }) {
                 Terima
               </button>
               <button
-                onClick={() => handleStatusUpdate('REJECTED', 'Validasi Admin: Ditolak.')}
+                onClick={() => handleStatusUpdate('CANCELLED', 'Validasi Admin: Ditolak.')}
                 className="px-4 py-2 bg-white text-rose-600 border border-rose-100 text-sm font-bold rounded-xl hover:bg-rose-50 transition-all"
               >
                 Tolak
@@ -113,10 +113,10 @@ export default function TicketCard({ ticket, onEdit, className = '' }) {
                 Edit
               </button>
               <button
-                onClick={() => handleStatusUpdate('dihapus', 'Tiket dihapus (diarsipkan) oleh Admin.')}
+                onClick={() => handleStatusUpdate('CANCELLED', 'Tiket dibatalkan oleh Admin.')}
                 className="px-4 py-2 bg-rose-100 text-rose-700 text-sm font-bold rounded-xl hover:bg-rose-200 transition-all"
               >
-                Hapus
+                Batalkan
               </button>
             </div>
           )}
