@@ -1,85 +1,92 @@
-import React, { useMemo, useState } from 'react';
-import { useTickets } from '../../hooks/useTickets';
+import React, { useState, useEffect } from 'react';
+import { getAnalyticsStats, getChartData } from '../../services/ticketService';
 
 const AdminAnalytics = () => {
-  const { tickets, loading } = useTickets();
+  const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState('month'); // 'day', 'week', 'month'
+  const [stats, setStats] = useState({
+    completed: 0,
+    cancelled: 0,
+    groomingCount: 0,
+    klinikCount: 0,
+    totalServices: 0,
+    sortedChartData: []
+  });
 
-  const stats = useMemo(() => {
-    let completed = 0;
-    let cancelled = 0;
-    let groomingCount = 0;
-    let klinikCount = 0;
-    const chartData = {};
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // 1. Get Summary Counts (using aggregation queries)
+        const counts = await getAnalyticsStats();
+        
+        // 2. Get Chart Data (filtered by date)
+        const chartTickets = await getChartData(filterType);
+        
+        // Process chart data
+        const chartData = {};
+        
+        chartTickets.forEach((ticket) => {
+          if (!ticket.tanggalRilis) return;
+          
+          const date = new Date(ticket.tanggalRilis);
+          let key, label;
 
-    tickets.forEach((ticket) => {
-      const status = ticket.status?.toUpperCase();
-      const service = ticket.layanan;
-console.log(ticket);
+          if (filterType === 'day') {
+              key = date.toISOString().split('T')[0];
+              label = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+          } else if (filterType === 'week') {
+              const day = date.getDay();
+              const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+              const monday = new Date(date);
+              monday.setDate(diff);
+              key = monday.toISOString().split('T')[0];
+              label = `Minggu ${monday.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}`;
+          } else { // month
+              key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+              label = date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+          }
 
+          if (!chartData[key]) {
+            chartData[key] = {
+              key,
+              label,
+              completed: 0,
+              cancelled: 0,
+              total: 0
+            };
+          }
 
-      if (service === 'Grooming') groomingCount++;
-      if (service === 'Klinik') klinikCount++;
+          const status = ticket.status?.toUpperCase();
+          if (status === 'COMPLETED') {
+            chartData[key].completed++;
+            chartData[key].total++;
+          } else if (status === 'CANCELLED') {
+            chartData[key].cancelled++;
+            chartData[key].total++;
+          }
+        });
 
-      if (status === 'COMPLETED') {
-        completed++;
-      } 
-      
-      if (status === 'CANCELLED') {
-        cancelled++;
+        const sortedChartData = Object.values(chartData).sort((a, b) => a.key.localeCompare(b.key));
+
+        setStats({
+          completed: counts.completed,
+          cancelled: counts.cancelled,
+          groomingCount: counts.grooming,
+          klinikCount: counts.klinik,
+          totalServices: counts.grooming + counts.klinik,
+          sortedChartData
+        });
+
+      } catch (error) {
+        console.error("Error fetching analytics:", error);
+      } finally {
+        setLoading(false);
       }
-
-      if (ticket.tanggalRilis) {
-        const date = new Date(ticket.tanggalRilis);
-        let key, label;
-
-        if (filterType === 'day') {
-            key = date.toISOString().split('T')[0];
-            label = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-        } else if (filterType === 'week') {
-            // Get start of week (Monday)
-            const day = date.getDay();
-            const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
-            const monday = new Date(date);
-            monday.setDate(diff);
-            key = monday.toISOString().split('T')[0];
-            label = `Minggu ${monday.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}`;
-        } else { // month
-            key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-            label = date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
-        }
-
-        if (!chartData[key]) {
-          chartData[key] = {
-            key,
-            label,
-            completed: 0,
-            cancelled: 0,
-            total: 0
-          };
-        }
-
-        if (status === 'COMPLETED') {
-          chartData[key].completed++;
-          chartData[key].total++;
-        } else if (status === 'CANCELLED') {
-          chartData[key].cancelled++;
-          chartData[key].total++;
-        }
-      }
-    });
-
-    const sortedChartData = Object.values(chartData).sort((a, b) => a.key.localeCompare(b.key));
-
-    return {
-      completed,
-      cancelled,
-      groomingCount,
-      klinikCount,
-      sortedChartData,
-      totalServices: groomingCount + klinikCount
     };
-  }, [tickets, filterType]);
+
+    fetchData();
+  }, [filterType]);
 
   if (loading) {
     return (
@@ -97,9 +104,7 @@ console.log(ticket);
     <div className="space-y-6 animate-fade-in p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Dashboard Analytics</h1>
-        <div className="text-sm text-gray-500">
-          Total Data: {tickets.length} Tiket
-        </div>
+        {/* Removed Total Data count as we don't fetch all tickets anymore */}
       </div>
 
       {/* Top Cards */}
