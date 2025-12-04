@@ -38,10 +38,10 @@ export const subscribeToTickets = (callback) => {
 };
 
 export const addTicket = async (ticketData, role) => {
-  const initialStatus = role === "kiosk" ? "PENDING" : "WAITING";
+  const initialStatus = "PENDING";
   const logMsg = role === "kiosk" 
     ? `Tiket dibuat via Kiosk (${ticketData.layanan}). Menunggu validasi.`
-    : `Tiket dibuat oleh Admin (${ticketData.layanan}). Langsung antrian.`;
+    : `Tiket dibuat oleh Admin (${ticketData.layanan}). Menunggu validasi.`;
 
   const newTicket = {
     ...ticketData,

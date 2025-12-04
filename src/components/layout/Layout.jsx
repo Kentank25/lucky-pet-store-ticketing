@@ -17,7 +17,7 @@ export default function Layout({ children }) {
         <div className="max-w-7xl mx-auto bg-white/80 backdrop-blur-xl border border-white/40 shadow-lg shadow-blue-100/50 rounded-2xl px-4 sm:px-6 h-20 flex items-center justify-between transition-all duration-300">
           <div className="flex items-center gap-3 group cursor-pointer">
             <div className="w-10 h-10 bg-gradient-to-tr from-blue-400 to-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform duration-300">
-              🐾
+            <img className="" src='/src/assets/Lucky Pet Store Logo (Black).png' alt='Black Logo'></img>
             </div>
             <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-800 to-gray-600 hidden sm:block tracking-tight">
               PetShop<span className="text-blue-500">Manager</span>

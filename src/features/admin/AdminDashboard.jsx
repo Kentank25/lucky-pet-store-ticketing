@@ -104,24 +104,74 @@ const PaymentAccordion = ({ title, items, isOpen, onToggle, icon, selectedPaymen
   );
 };
 
+const ValidationAccordion = ({ title, items, isOpen, onToggle, icon }) => {
+  if (items.length === 0) return null;
+
+  return (
+    <div className="bg-white rounded-[2rem] border border-amber-100 overflow-hidden mb-6 shadow-lg shadow-amber-100/50 transition-all duration-300">
+      <div 
+          className="p-6 flex items-center justify-between bg-white cursor-pointer select-none hover:bg-gray-50 transition-colors" 
+          onClick={onToggle}
+      >
+         <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+                <span className="text-2xl bg-gray-100 w-10 h-10 flex items-center justify-center rounded-full">{icon}</span>
+                <div>
+                    <h4 className="font-bold text-gray-800 text-lg">{title}</h4>
+                    <p className="text-gray-400 text-xs font-medium">{items.length} Menunggu Validasi</p>
+                </div>
+            </div>
+         </div>
+         <div className={`w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+             <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+           </svg>
+         </div>
+      </div>
+      
+      {isOpen && (
+        <div className="p-6 pt-0 animate-fade-in">
+           <TicketList tickets={items} />
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function AdminDashboard() {
   const { tickets, loading } = useTickets();
   const [ticketToEdit, setTicketToEdit] = useState(null);
   const [selectedPaymentIds, setSelectedPaymentIds] = useState(new Set());
   const [expandedSections, setExpandedSections] = useState({ Grooming: true, Klinik: true });
+  const [expandedValidationSections, setExpandedValidationSections] = useState({ Grooming: true, Klinik: true });
   const [activeTab, setActiveTab] = useState('dashboard');
 
   if (loading) return <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div></div>;
 
-  const pendingTickets = tickets.filter(t => t.status === 'PENDING');
+  const pendingTickets = tickets
+    .filter(t => t.status === 'PENDING')
+    .sort((a, b) => {
+      const timeA = a.jam || '00:00';
+      const timeB = b.jam || '00:00';
+      const dateA = new Date(`${a.tanggalRilis}T${timeA}`);
+      const dateB = new Date(`${b.tanggalRilis}T${timeB}`);
+      return dateA - dateB;
+    });
   const paymentTickets = tickets.filter(t => t.status === 'PAYMENT');
   const activeTickets = tickets.filter(t => t.status === 'WAITING' || t.status === 'aktif');
+
+  const pendingGrooming = pendingTickets.filter(t => t.layanan === 'Grooming');
+  const pendingKlinik = pendingTickets.filter(t => t.layanan === 'Klinik');
 
   const paymentGrooming = paymentTickets.filter(t => t.layanan === 'Grooming');
   const paymentKlinik = paymentTickets.filter(t => t.layanan === 'Klinik');
 
   const toggleSection = (section) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  const toggleValidationSection = (section) => {
+    setExpandedValidationSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
   const toggleSelect = (id) => {
@@ -206,12 +256,16 @@ export default function AdminDashboard() {
               onCancel={() => setTicketToEdit(null)} 
             />
             
-            <div className="bg-white rounded-[2rem] p-6 shadow-xl shadow-gray-100 border border-gray-100">
-              <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <span className="bg-blue-100 p-2 rounded-lg text-blue-600">📜</span>
-                Riwayat Aktivitas
-              </h3>
-              <LogList />
+            <div className="bg-white rounded-[2rem] shadow-xl shadow-gray-100 border border-gray-100 h-[600px] flex flex-col overflow-hidden">
+              <div className="p-6 pb-4 bg-white z-10 border-b border-gray-50">
+                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                  <span className="bg-blue-100 p-2 rounded-lg text-blue-600">📜</span>
+                  Riwayat Aktivitas
+                </h3>
+              </div>
+              <div className="overflow-y-auto flex-1 p-6 pt-4">
+                <LogList />
+              </div>
             </div>
           </div>
 
@@ -227,7 +281,23 @@ export default function AdminDashboard() {
                   Menunggu Validasi 
                   <span className="bg-amber-200 text-amber-800 text-sm px-3 py-1 rounded-full">{pendingTickets.length}</span>
                 </h3>
-                <TicketList tickets={pendingTickets} />
+                
+                <div className="space-y-2">
+                  <ValidationAccordion 
+                      title="Grooming" 
+                      items={pendingGrooming} 
+                      isOpen={expandedValidationSections.Grooming}
+                      onToggle={() => toggleValidationSection('Grooming')}
+                      icon="✂️"
+                  />
+                  <ValidationAccordion 
+                      title="Klinik" 
+                      items={pendingKlinik} 
+                      isOpen={expandedValidationSections.Klinik}
+                      onToggle={() => toggleValidationSection('Klinik')}
+                      icon="🩺"
+                  />
+                </div>
               </div>
             )}
 

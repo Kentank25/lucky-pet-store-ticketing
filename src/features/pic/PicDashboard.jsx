@@ -1,4 +1,3 @@
-import TicketList from '../../components/tickets/TicketList';
 import { useTickets } from '../../hooks/useTickets';
 import { useRole } from '../../context/RoleContext';
 import { updateTicketStatus } from '../../services/ticketService';
@@ -11,7 +10,14 @@ export default function PicDashboard() {
   const service = role === 'pic_grooming' ? 'Grooming' : 'Klinik';
   const isGrooming = service === 'Grooming';
 
-  if (loading) return <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div></div>;
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-[60vh]">
+      <div className="relative">
+        <div className={`w-16 h-16 rounded-full border-4 border-t-transparent animate-spin ${isGrooming ? 'border-blue-500' : 'border-rose-500'}`}></div>
+        <div className={`absolute inset-0 w-16 h-16 rounded-full border-4 border-opacity-20 ${isGrooming ? 'border-blue-500' : 'border-rose-500'}`}></div>
+      </div>
+    </div>
+  );
 
   // Filter tickets
   const activeTickets = tickets.filter(t => t.status === 'aktif' && t.layanan === service);
@@ -59,148 +65,157 @@ export default function PicDashboard() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto animate-fade-in">
-      {/* Header Card */}
-      <div className={`mb-10 rounded-[2.5rem] p-8 md:p-10 text-white shadow-2xl relative overflow-hidden ${
+    <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-8 animate-fade-in pb-24">
+      {/* Hero Header Section */}
+      <div className={`relative rounded-[3rem] p-8 md:p-12 overflow-hidden shadow-2xl transition-all duration-500 ${
         isGrooming 
-          ? 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-blue-200' 
-          : 'bg-gradient-to-br from-rose-500 to-pink-600 shadow-rose-200'
+          ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 shadow-blue-200' 
+          : 'bg-gradient-to-br from-rose-500 via-pink-600 to-orange-500 shadow-rose-200'
       }`}>
-        {/* Decorative Circles */}
-        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
-        <div className="absolute bottom-0 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
-
-        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div>
-            <div className="flex items-center gap-3 mb-2 opacity-90">
-               <span className="text-2xl">{isGrooming ? '✂️' : '🩺'}</span>
-               <span className="font-medium tracking-wide uppercase text-sm">Dashboard PIC</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-2">Layanan {service}</h2>
-            <p className="text-white/80 text-lg">Kelola antrian aktif untuk pelanggan Anda.</p>
-          </div>
-          
-          <div className="bg-white/20 backdrop-blur-md border border-white/20 p-4 rounded-2xl flex flex-col items-center min-w-[100px]">
-            <span className="text-4xl font-bold">{completedCount}</span>
-            <span className="text-xs font-medium uppercase tracking-wider opacity-80 text-center">Selesai</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Queue Status Card */}
-      <div className="mb-8">
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl ${
-                   waitingTickets.length > 0 ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-400'
-                }`}>
-                   ⏳
-                </div>
-                <div>
-                   <p className="text-gray-400 text-xs font-bold uppercase tracking-wider">Sisa Antrian</p>
-                   <h3 className="text-2xl font-bold text-gray-800">{waitingTickets.length} Pelanggan</h3>
-                </div>
-            </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="space-y-6">
+        {/* Abstract Background Shapes */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-white opacity-10 rounded-full blur-3xl mix-blend-overlay animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-white opacity-10 rounded-full blur-3xl mix-blend-overlay"></div>
         
-        {/* Active Ticket Section */}
+        <div className="relative z-10 flex flex-col md:flex-row justify-between items-end gap-8">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-bold tracking-wider uppercase border border-white/10 shadow-lg">
+                Dashboard PIC
+              </span>
+              <span className="text-2xl animate-bounce">{isGrooming ? '✂️' : '🩺'}</span>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-3 drop-shadow-sm">
+              {service} Area
+            </h1>
+            <p className="text-white/90 text-lg font-medium max-w-md leading-relaxed">
+              Selamat bekerja! Kelola antrian pelanggan dengan senyuman.
+            </p>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="flex gap-4">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-3xl flex flex-col items-center min-w-[120px] shadow-xl hover:bg-white/20 transition-all cursor-default group">
+              <span className="text-4xl font-black text-white mb-1 group-hover:scale-110 transition-transform">{completedCount}</span>
+              <span className="text-xs font-bold text-white/70 uppercase tracking-widest">Selesai</span>
+            </div>
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-3xl flex flex-col items-center min-w-[120px] shadow-xl hover:bg-white/20 transition-all cursor-default group">
+              <span className="text-4xl font-black text-white mb-1 group-hover:scale-110 transition-transform">{waitingTickets.length}</span>
+              <span className="text-xs font-bold text-white/70 uppercase tracking-widest">Antrian</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="grid gap-8">
+        
+        {/* ACTIVE TICKET SECTION */}
         {activeTickets.length > 0 && (
-          <div className="mb-8">
-             <div className="flex items-center justify-between px-4 mb-4">
-                <h3 className="text-xl font-bold text-gray-700 flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
-                  Sedang Dikerjakan
-                </h3>
+          <div className="space-y-6">
+             <div className="flex items-center gap-3 px-2">
+                <div className="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></div>
+                <h3 className="text-xl font-bold text-gray-700">Sedang Dikerjakan</h3>
              </div>
              
-             {/* Custom Active Ticket Card */}
              {activeTickets.map(ticket => (
-               <div key={ticket.id} className="bg-white rounded-3xl shadow-lg shadow-gray-100 border border-gray-100 p-8 min-h-[300px] flex flex-col justify-between relative overflow-hidden animate-fade-in">
-                  {/* Decorative background */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gray-50 rounded-bl-full -mr-8 -mt-8 z-0"></div>
+               <div key={ticket.id} className="group bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 p-8 md:p-10 relative overflow-hidden transition-all hover:shadow-2xl">
+                  {/* Decorative Side Bar */}
+                  <div className={`absolute left-0 top-0 bottom-0 w-3 ${isGrooming ? 'bg-blue-500' : 'bg-rose-500'}`}></div>
                   
-                  <div className="relative z-10">
-                      <div className="flex justify-between items-start mb-6">
-                          <div>
-                              <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold mb-2 ${
-                                  isGrooming ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700'
+                  <div className="relative z-10 flex flex-col lg:flex-row gap-8 lg:gap-12">
+                      {/* Left: Info */}
+                      <div className="flex-1">
+                          <div className="flex items-start justify-between mb-6">
+                              <span className={`inline-block px-5 py-2 rounded-2xl text-sm font-bold mb-4 ${
+                                  isGrooming ? 'bg-blue-50 text-blue-600' : 'bg-rose-50 text-rose-600'
                               }`}>
                                   {ticket.layanan}
                               </span>
-                              <h2 className="text-4xl font-bold text-gray-800">{ticket.nama}</h2>
-                              <p className="text-gray-400 font-mono mt-1">#{ticket.id.slice(-6)}</p>
+                              <div className="text-right">
+                                  <div className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Waktu Masuk</div>
+                                  <div className="text-2xl font-black text-gray-800 font-mono">{ticket.jam || '-'}</div>
+                              </div>
                           </div>
-                          <div className="text-right">
-                               <div className="text-sm text-gray-500 font-medium mb-1">Waktu Masuk</div>
-                               <div className="text-xl font-bold text-gray-700">{ticket.jam || '-'}</div>
-                          </div>
+                          
+                          <h2 className="text-5xl font-black text-gray-800 mb-2 tracking-tight">{ticket.nama}</h2>
+                          <p className="text-gray-400 font-medium text-lg mb-8">ID: #{ticket.id.slice(-6)}</p>
+
+                          {ticket.catatan && (
+                              <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100 relative">
+                                  <span className="absolute -top-3 -left-2 text-4xl opacity-20">❝</span>
+                                  <p className="text-gray-600 text-lg italic relative z-10 pl-4">{ticket.catatan}</p>
+                              </div>
+                          )}
                       </div>
 
-                      {ticket.catatan && (
-                          <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 mb-6">
-                              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Catatan Pelanggan</h4>
-                              <p className="text-gray-700 text-lg italic whitespace-pre-wrap">"{ticket.catatan}"</p>
+                      {/* Right: Action */}
+                      <div className="lg:w-1/3 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-gray-100 pt-8 lg:pt-0 lg:pl-12">
+                          <div className="mb-6 text-center lg:text-left">
+                              <p className="text-gray-500 mb-2">Status Pengerjaan</p>
+                              <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                                  <div className="h-full bg-emerald-500 w-2/3 animate-pulse rounded-full"></div>
+                              </div>
                           </div>
-                      )}
-                  </div>
-
-                  <div className="relative z-10 mt-auto pt-6 border-t border-gray-100">
-                      <button 
-                          onClick={() => handleCompleteTicket(ticket)}
-                          className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-2"
-                      >
-                          <span>Selesaikan Layanan</span>
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                      </button>
+                          <button 
+                              onClick={() => handleCompleteTicket(ticket)}
+                              className="w-full py-5 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white rounded-2xl font-bold text-lg shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-3 group-hover:shadow-emerald-300"
+                          >
+                              <span>Selesaikan Layanan</span>
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                          </button>
+                      </div>
                   </div>
                </div>
              ))}
           </div>
         )}
 
-        {/* Action Section: Take Ticket */}
+        {/* TAKE TICKET SECTION */}
         {activeTickets.length === 0 && waitingTickets.length > 0 && (
-          <div className="mb-8">
-             <div className="flex items-center justify-between px-4 mb-4">
-                <h3 className="text-xl font-bold text-gray-700 flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-gray-300"></span>
-                  Menunggu Tindakan
-                </h3>
+          <div className="space-y-6">
+             <div className="flex items-center gap-3 px-2">
+                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                <h3 className="text-xl font-bold text-gray-700">Menunggu Tindakan</h3>
              </div>
-             
-             <div className="bg-white rounded-3xl shadow-lg shadow-gray-100 border border-gray-100 p-8 flex flex-col items-center justify-center text-center min-h-[300px] animate-fade-in hover:shadow-xl transition-shadow duration-300">
-                 <div className="text-6xl mb-6">🎫</div>
-                 <h3 className="text-2xl font-bold text-gray-800 mb-2">Antrian Tersedia</h3>
-                 <p className="text-gray-500 mb-8 text-center max-w-md">
-                   Ada pelanggan yang menunggu layanan Anda.
-                 </p>
-                 <button 
-                    onClick={handleTakeTicket}
-                    className={`px-8 py-4 rounded-2xl text-white font-bold text-lg shadow-xl hover:scale-105 transition-transform flex items-center gap-3 ${
-                      isGrooming ? 'bg-blue-600 shadow-blue-200' : 'bg-rose-600 shadow-rose-200'
-                    }`}
-                 >
-                    <span>Ambil Antrian Berikutnya</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                 </button>
+
+             <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 p-10 text-center relative overflow-hidden group">
+                 <div className={`absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-500 ${
+                    isGrooming ? 'bg-blue-600' : 'bg-rose-600'
+                 }`}></div>
+                 
+                 <div className="relative z-10 max-w-2xl mx-auto">
+                     <div className="text-7xl mb-6 animate-bounce">🎫</div>
+                     <h3 className="text-3xl font-black text-gray-800 mb-3">Antrian Tersedia</h3>
+                     <p className="text-gray-500 text-lg mb-10">
+                       Pelanggan <span className="font-bold text-gray-800">{waitingTickets[0].nama}</span> sedang menunggu layanan Anda.
+                     </p>
+                     
+                     <button 
+                        onClick={handleTakeTicket}
+                        className={`mx-auto px-10 py-5 rounded-2xl text-white font-bold text-xl shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-4 ${
+                          isGrooming ? 'bg-blue-600 shadow-blue-200 hover:bg-blue-700' : 'bg-rose-600 shadow-rose-200 hover:bg-rose-700'
+                        }`}
+                     >
+                        <span>Panggil & Ambil Antrian</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                     </button>
+                 </div>
              </div>
           </div>
         )}
 
-        {/* Empty State */}
+        {/* EMPTY STATE */}
         {activeTickets.length === 0 && waitingTickets.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 bg-white rounded-[2rem] border border-dashed border-gray-200 shadow-sm min-h-[300px]">
-             <div className="text-6xl mb-4 opacity-20">😴</div>
-             <p className="text-gray-500 font-medium">Tidak ada antrian saat ini.</p>
-             <p className="text-gray-400 text-sm">Nikmati waktu istirahat Anda!</p>
+          <div className="flex flex-col items-center justify-center py-20 bg-white/50 backdrop-blur-sm rounded-[3rem] border-2 border-dashed border-gray-200">
+             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center text-4xl mb-6 animate-pulse">
+                ☕
+             </div>
+             <h3 className="text-2xl font-bold text-gray-400 mb-2">Tidak ada antrian</h3>
+             <p className="text-gray-400">Silakan istirahat sejenak.</p>
           </div>
         )}
       </div>

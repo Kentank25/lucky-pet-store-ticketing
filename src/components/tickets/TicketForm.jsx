@@ -3,7 +3,7 @@ import { addTicket, updateTicketDetails } from '../../services/ticketService';
 import { useRole } from '../../context/RoleContext';
 import toast from 'react-hot-toast';
 
-export default function TicketForm({ ticketToEdit, onCancel }) {
+export default function TicketForm({ ticketToEdit, onCancel, className = '' }) {
   const { role } = useRole();
   const [formData, setFormData] = useState({
     nama: '',
@@ -78,35 +78,38 @@ export default function TicketForm({ ticketToEdit, onCancel }) {
   const timeSlots = generateTimeSlots(formData.layanan);
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-2xl shadow-gray-200/50 border border-white/50 relative overflow-hidden">
-      {/* Decorative background blob */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-[4rem] -z-0 opacity-50"></div>
-
-      <h3 className="text-2xl font-bold mb-8 text-gray-800 relative z-10">
-        {ticketToEdit ? 'Edit Tiket' : role === 'kiosk' ? 'Ambil Antrian' : 'Buat Tiket Baru'}
-      </h3>
+    <form onSubmit={handleSubmit} className={`relative ${className}`}>
+      {/* Header is handled by parent or hidden if not needed, but we keep the title if no parent title exists? 
+          Actually, both dashboards now have their own headers. 
+          Let's keep a simple title if it's not provided by parent, but for now the design shows parents have titles.
+          I'll remove the title from here to avoid duplication, or make it optional.
+          The previous design had a title inside.
+          AdminDashboard has "Buat Tiket Baru" in the parent.
+          KioskDashboard has "Ambil Antrian Baru" in the parent.
+          So I will REMOVE the title from here.
+      */}
       
-      <div className="space-y-6 relative z-10">
+      <div className="space-y-5">
         <div>
-          <label className="block text-sm font-semibold text-gray-600 mb-2 ml-1">Nama Pelanggan / Hewan</label>
+          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">Nama Pelanggan / Hewan</label>
           <input
             type="text"
             required
             value={formData.nama}
             onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
-            className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-medium"
+            className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-bold"
             placeholder="Contoh: Budi / Mochi"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-600 mb-2 ml-1">Layanan</label>
+          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">Layanan</label>
           <div className="relative">
             <select
               value={formData.layanan}
               onChange={(e) => setFormData({ ...formData, layanan: e.target.value })}
               disabled={!!ticketToEdit} 
-              className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 appearance-none font-medium disabled:opacity-60"
+              className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 appearance-none font-bold disabled:opacity-60 cursor-pointer"
             >
               <option value="Grooming">✂️ Grooming</option>
               <option value="Klinik">🩺 Klinik</option>
@@ -118,14 +121,14 @@ export default function TicketForm({ ticketToEdit, onCancel }) {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-600 mb-2 ml-1">Tanggal & Jam</label>
+          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">Tanggal & Jam</label>
           <div className="flex gap-3">
             <input
               type="date"
               value={formData.tanggalRilis}
               onChange={(e) => setFormData({ ...formData, tanggalRilis: e.target.value })}
               disabled={!!ticketToEdit}
-              className="w-2/3 px-6 py-4 bg-gray-50 border-none rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 font-medium disabled:opacity-60"
+              className="w-2/3 px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 font-bold disabled:opacity-60"
             />
             <div className="relative w-1/3">
               <select
@@ -133,7 +136,7 @@ export default function TicketForm({ ticketToEdit, onCancel }) {
                 onChange={(e) => setFormData({ ...formData, jam: e.target.value })}
                 disabled={!!ticketToEdit}
                 required
-                className="w-full px-4 py-4 bg-gray-50 border-none rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 appearance-none font-medium disabled:opacity-60"
+                className="w-full px-4 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 appearance-none font-bold disabled:opacity-60 cursor-pointer"
               >
                 <option value="">Jam</option>
                 {timeSlots.map((slot) => (
@@ -150,11 +153,11 @@ export default function TicketForm({ ticketToEdit, onCancel }) {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-600 mb-2 ml-1">Catatan (Opsional)</label>
+          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">Catatan (Opsional)</label>
           <textarea
             value={formData.catatan}
             onChange={(e) => setFormData({ ...formData, catatan: e.target.value })}
-            className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-medium resize-none"
+            className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-medium resize-none"
             placeholder={formData.layanan === 'Grooming' ? "Contoh: Mandi Kutu, Potong Kuku..." : "Contoh: Muntah, Diare, Lemas..."}
             rows="3"
           />
@@ -164,9 +167,16 @@ export default function TicketForm({ ticketToEdit, onCancel }) {
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 bg-gray-900 text-white py-4 px-6 rounded-2xl hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] transition-all font-bold text-lg shadow-lg shadow-gray-200 disabled:opacity-50 disabled:hover:scale-100"
+            className="flex-1 bg-gray-900 text-white py-4 px-6 rounded-2xl hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] transition-all font-bold text-lg shadow-xl shadow-gray-200 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2"
           >
-            {loading ? 'Menyimpan...' : ticketToEdit ? 'Update' : role === 'kiosk' ? 'Ambil Antrian ➔' : 'Simpan'}
+            {loading ? (
+              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            ) : (
+              <>
+                {ticketToEdit ? 'Update Tiket' : role === 'kiosk' ? 'Ambil Antrian' : 'Simpan Tiket'}
+                {!ticketToEdit && <span>➔</span>}
+              </>
+            )}
           </button>
           {ticketToEdit && (
             <button
