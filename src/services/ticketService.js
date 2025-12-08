@@ -60,7 +60,7 @@ export const addTicket = async (ticketData, role) => {
 export const updateTicketStatus = async (id, status, message, ticketData) => {
   const ticketRef = doc(db, COLLECTION_NAME, id);
   
-  await updateDoc(ticketRef, {
+  const updates = {
     status,
     log: [
       ...(ticketData.log || []),
@@ -69,7 +69,13 @@ export const updateTicketStatus = async (id, status, message, ticketData) => {
         message,
       },
     ],
-  });
+  };
+
+  if (status === TICKET_STATUS.COMPLETED) {
+    updates.tanggalSelesai = new Date().toISOString();
+  }
+
+  await updateDoc(ticketRef, updates);
 
   await createLog(id, ticketData.nama, ticketData.layanan, message);
 };
@@ -112,28 +118,65 @@ export const getAnalyticsStats = async () => {
   };
 };
 
-export const getChartData = async (filterType) => {
+export const getChartData = async (filterType, selectedDateString) => {
   const coll = collection(db, COLLECTION_NAME);
-  let startDate = new Date();
+  
+  // Calculate date range based on filterType and selectedDateString
+  const selectedDate = new Date(selectedDateString);
+  let startDate = new Date(selectedDate);
+  let endDate = new Date(selectedDate);
   
   if (filterType === 'day') {
-    startDate.setDate(startDate.getDate() - 30); // Last 30 days for daily view
+    // Exact day match: 00:00 to 23:59
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
   } else if (filterType === 'week') {
-    startDate.setMonth(startDate.getMonth() - 3); // Last 3 months
-  } else {
-    startDate.setFullYear(startDate.getFullYear() - 1); // Last 1 year
+    // Week surrounding the date (Mon-Sun or Sun-Sat depending on locale? Let's do Monday start)
+    const day = startDate.getDay();
+    const diff = startDate.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+    startDate.setDate(diff);
+    startDate.setHours(0,0,0,0);
+
+    endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6);
+    endDate.setHours(23, 59, 59, 999);
+  } else { // month
+    // Entire month
+    startDate.setDate(1);
+    startDate.setHours(0,0,0,0);
+    
+    endDate = new Date(startDate);
+    endDate.setMonth(startDate.getMonth() + 1);
+    endDate.setDate(0); // Last day of previous month (which is the month we want)
+    endDate.setHours(23, 59, 59, 999);
   }
   
-  const dateString = startDate.toISOString().split('T')[0];
+  // Convert to string for comparison if storing as YYYY-MM-DD
+  const startStr = startDate.toISOString().split('T')[0];
+  const endStr = endDate.toISOString().split('T')[0];
   
-  const q = query(
-    coll, 
-    where("tanggalRilis", ">=", dateString)
-  );
+  // Note: Since 'tanggalRilis' is YYYY-MM-DD string, we can compare strings directly for range.
+  // EXCEPT for 'day' filter where we want exact match. 
+  // But wait, the previous code filtered by `ticket.status`.
+  // Also existing data `tanggalRilis` is likely just "YYYY-MM-DD".
+  
+  let q;
+  if (filterType === 'day') {
+      q = query(
+        coll, 
+        where("tanggalRilis", "==", startStr)
+      );
+  } else {
+      q = query(
+        coll, 
+        where("tanggalRilis", ">=", startStr),
+        where("tanggalRilis", "<=", endStr)
+      );
+  }
 
   const snapshot = await getDocs(q);
   const tickets = snapshot.docs.map(doc => doc.data());
   
-  // Filter for COMPLETED/CANCELLED in memory
+  // Filter for COMPLETED/CANCELLED in memory as before
   return tickets.filter(t => t.status === TICKET_STATUS.COMPLETED || t.status === TICKET_STATUS.CANCELLED);
 };

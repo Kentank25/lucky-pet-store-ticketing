@@ -1,17 +1,18 @@
-import { useState, useEffect } from 'react';
-import { addTicket, updateTicketDetails } from '../../services/ticketService';
-import { useRole } from '../../context/RoleContext';
-import toast from 'react-hot-toast';
-import { SERVICE_TYPE } from '../../constants';
+import { useState, useEffect } from "react";
+import { addTicket, updateTicketDetails } from "../../services/ticketService";
+import { useRole } from "../../context/RoleContext";
+import toast from "react-hot-toast";
+import { SERVICE_TYPE } from "../../constants";
 
-export default function TicketForm({ ticketToEdit, onCancel, className = '' }) {
+export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
   const { role } = useRole();
   const [formData, setFormData] = useState({
-    nama: '',
+    nama: "",
+    telepon: "",
     layanan: SERVICE_TYPE.GROOMING,
-    tanggalRilis: new Date().toISOString().split('T')[0],
-    jam: '',
-    catatan: '',
+    tanggalRilis: new Date().toISOString().split("T")[0],
+    jam: "",
+    catatan: "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -19,10 +20,11 @@ export default function TicketForm({ ticketToEdit, onCancel, className = '' }) {
     if (ticketToEdit) {
       setFormData({
         nama: ticketToEdit.nama,
+        telepon: ticketToEdit.telepon || "",
         layanan: ticketToEdit.layanan,
         tanggalRilis: ticketToEdit.tanggalRilis,
-        jam: ticketToEdit.jam || '',
-        catatan: ticketToEdit.catatan || '',
+        jam: ticketToEdit.jam || "",
+        catatan: ticketToEdit.catatan || "",
       });
     }
   }, [ticketToEdit]);
@@ -34,21 +36,29 @@ export default function TicketForm({ ticketToEdit, onCancel, className = '' }) {
     // Clean up catatan to remove trailing newlines/spaces
     const cleanedFormData = {
       ...formData,
-      catatan: formData.catatan.trim()
+      catatan: formData.catatan.trim(),
     };
 
     try {
       if (ticketToEdit) {
-        await updateTicketDetails(ticketToEdit.id, cleanedFormData, ticketToEdit);
-        toast.success('Tiket berhasil diperbarui');
+        await updateTicketDetails(
+          ticketToEdit.id,
+          cleanedFormData,
+          ticketToEdit
+        );
+        toast.success("Tiket berhasil diperbarui");
         if (onCancel) onCancel();
       } else {
         await addTicket(cleanedFormData, role);
-        toast.success(role === 'kiosk' ? 'Antrian berhasil diambil!' : 'Tiket berhasil dibuat');
-        setFormData({ ...formData, nama: '', jam: '', catatan: '' }); 
+        toast.success(
+          role === "kiosk"
+            ? "Antrian berhasil diambil!"
+            : "Tiket berhasil dibuat"
+        );
+        setFormData({ ...formData, nama: "", jam: "", catatan: "" });
       }
     } catch (error) {
-      toast.error('Gagal menyimpan tiket');
+      toast.error("Gagal menyimpan tiket");
       console.error(error);
     } finally {
       setLoading(false);
@@ -63,14 +73,14 @@ export default function TicketForm({ ticketToEdit, onCancel, className = '' }) {
       startHour = 9;
       endHour = 18; // 09:00 - 18:00
       for (let i = startHour; i < endHour; i++) {
-        slots.push(`${i.toString().padStart(2, '0')}:00`);
+        slots.push(`${i.toString().padStart(2, "0")}:00`);
       }
     } else {
       startHour = 9;
       endHour = 15; // 09:00 - 15:00 (Grooming)
       for (let i = startHour; i < endHour; i++) {
-        slots.push(`${i.toString().padStart(2, '0')}:00`);
-        slots.push(`${i.toString().padStart(2, '0')}:30`);
+        slots.push(`${i.toString().padStart(2, "0")}:00`);
+        slots.push(`${i.toString().padStart(2, "0")}:30`);
       }
     }
     return slots;
@@ -81,10 +91,12 @@ export default function TicketForm({ ticketToEdit, onCancel, className = '' }) {
   return (
     <form onSubmit={handleSubmit} className={`relative ${className}`}>
       {/* Header is handled by parent or hidden if not needed */}
-      
+
       <div className="space-y-5">
         <div>
-          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">Nama Pelanggan / Hewan</label>
+          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">
+            Nama Pelanggan / Hewan
+          </label>
           <input
             type="text"
             required
@@ -96,12 +108,33 @@ export default function TicketForm({ ticketToEdit, onCancel, className = '' }) {
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">Layanan</label>
+          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">
+            Nomor Telepon
+          </label>
+          <input
+            type="tel"
+            required
+            value={formData.telepon || ""}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "");
+              setFormData({ ...formData, telepon: val });
+            }}
+            className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-bold tracking-wider"
+            placeholder="08xxxxxxxxxx"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">
+            Layanan
+          </label>
           <div className="relative">
             <select
               value={formData.layanan}
-              onChange={(e) => setFormData({ ...formData, layanan: e.target.value })}
-              disabled={!!ticketToEdit} 
+              onChange={(e) =>
+                setFormData({ ...formData, layanan: e.target.value })
+              }
+              disabled={!!ticketToEdit}
               className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 appearance-none font-bold disabled:opacity-60 cursor-pointer"
             >
               <option value={SERVICE_TYPE.GROOMING}>✂️ Grooming</option>
@@ -114,19 +147,25 @@ export default function TicketForm({ ticketToEdit, onCancel, className = '' }) {
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">Tanggal & Jam</label>
+          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">
+            Tanggal & Jam
+          </label>
           <div className="flex gap-3">
             <input
               type="date"
               value={formData.tanggalRilis}
-              onChange={(e) => setFormData({ ...formData, tanggalRilis: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, tanggalRilis: e.target.value })
+              }
               disabled={!!ticketToEdit}
               className="w-2/3 px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 font-bold disabled:opacity-60"
             />
             <div className="relative w-1/3">
               <select
                 value={formData.jam}
-                onChange={(e) => setFormData({ ...formData, jam: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, jam: e.target.value })
+                }
                 disabled={!!ticketToEdit}
                 required
                 className="w-full px-4 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 appearance-none font-bold disabled:opacity-60 cursor-pointer"
@@ -146,12 +185,20 @@ export default function TicketForm({ ticketToEdit, onCancel, className = '' }) {
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">Catatan (Opsional)</label>
+          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">
+            Catatan (Opsional)
+          </label>
           <textarea
             value={formData.catatan}
-            onChange={(e) => setFormData({ ...formData, catatan: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, catatan: e.target.value })
+            }
             className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-medium resize-none"
-            placeholder={formData.layanan === SERVICE_TYPE.GROOMING ? "Contoh: Mandi Kutu, Potong Kuku..." : "Contoh: Muntah, Diare, Lemas..."}
+            placeholder={
+              formData.layanan === SERVICE_TYPE.GROOMING
+                ? "Contoh: Mandi Kutu, Potong Kuku..."
+                : "Contoh: Muntah, Diare, Lemas..."
+            }
             rows="3"
           />
         </div>
@@ -166,7 +213,11 @@ export default function TicketForm({ ticketToEdit, onCancel, className = '' }) {
               <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
             ) : (
               <>
-                {ticketToEdit ? 'Update Tiket' : role === 'kiosk' ? 'Ambil Antrian' : 'Simpan Tiket'}
+                {ticketToEdit
+                  ? "Update Tiket"
+                  : role === "kiosk"
+                  ? "Ambil Antrian"
+                  : "Simpan Tiket"}
                 {!ticketToEdit && <span>➔</span>}
               </>
             )}

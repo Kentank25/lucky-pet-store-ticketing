@@ -5,9 +5,11 @@ import AdminDashboard from './features/admin/AdminDashboard';
 import KioskDashboard from './features/kiosk/KioskDashboard';
 import PicDashboard from './features/pic/PicDashboard';
 
+import LoginPage from './pages/LoginPage';
+
 function App() {
   const { role } = useRole();
-  const { user, loading } = useAuth();
+  const { loading } = useAuth(); // Keep auth loading for firebase init
 
   if (loading) {
     return (
@@ -15,6 +17,10 @@ function App() {
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
+  }
+
+  if (!role) {
+    return <LoginPage />;
   }
 
   return (
