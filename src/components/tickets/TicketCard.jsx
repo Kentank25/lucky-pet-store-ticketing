@@ -1,6 +1,7 @@
 import { useRole } from '../../context/RoleContext';
 import { updateTicketStatus } from '../../services/ticketService';
 import toast from 'react-hot-toast';
+import { TICKET_STATUS, SERVICE_TYPE } from '../../constants';
 
 export default function TicketCard({ ticket, onEdit, className = '' }) {
   const { role } = useRole();
@@ -16,16 +17,16 @@ export default function TicketCard({ ticket, onEdit, className = '' }) {
     }
   };
 
-  const isPending = ticket.status === 'PENDING';
-  const isWaiting = ticket.status === 'WAITING' || ticket.status === 'aktif';
-  const isPayment = ticket.status === 'PAYMENT';
+  const isPending = ticket.status === TICKET_STATUS.PENDING;
+  const isWaiting = ticket.status === TICKET_STATUS.WAITING || ticket.status === TICKET_STATUS.ACTIVE;
+  const isPayment = ticket.status === TICKET_STATUS.PAYMENT;
   
   const isAdmin = role === 'admin';
   const isPicGrooming = role === 'pic_grooming';
   const isPicKlinik = role === 'pic_klinik';
 
-  const canPicAct = (isPicGrooming && ticket.layanan === 'Grooming') || 
-                    (isPicKlinik && ticket.layanan === 'Klinik');
+  const canPicAct = (isPicGrooming && ticket.layanan === SERVICE_TYPE.GROOMING) || 
+                    (isPicKlinik && ticket.layanan === SERVICE_TYPE.KLINIK);
 
   return (
     <div className={`p-6 bg-white rounded-3xl shadow-lg shadow-gray-100 border ${
@@ -38,7 +39,7 @@ export default function TicketCard({ ticket, onEdit, className = '' }) {
           <div className="flex items-center gap-3 mb-2">
              <h3 className="font-bold text-gray-800 text-xl">{ticket.nama}</h3>
              <span className={`text-xs font-bold px-3 py-1 rounded-full ${
-              ticket.layanan === 'Grooming' ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700'
+              ticket.layanan === SERVICE_TYPE.GROOMING ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700'
             }`}>
               {ticket.layanan}
             </span>
@@ -79,13 +80,13 @@ export default function TicketCard({ ticket, onEdit, className = '' }) {
           {isAdmin && isPending && (
             <div className="flex gap-2">
               <button
-                onClick={() => handleStatusUpdate('WAITING', 'Validasi Admin: Diterima. Masuk Antrian.')}
+                onClick={() => handleStatusUpdate(TICKET_STATUS.WAITING, 'Validasi Admin: Diterima. Masuk Antrian.')}
                 className="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md shadow-blue-200"
               >
                 Terima
               </button>
               <button
-                onClick={() => handleStatusUpdate('CANCELLED', 'Validasi Admin: Ditolak.')}
+                onClick={() => handleStatusUpdate(TICKET_STATUS.CANCELLED, 'Validasi Admin: Ditolak.')}
                 className="px-4 py-2 bg-white text-rose-600 border border-rose-100 text-sm font-bold rounded-xl hover:bg-rose-50 transition-all"
               >
                 Tolak
@@ -96,7 +97,7 @@ export default function TicketCard({ ticket, onEdit, className = '' }) {
           {/* Admin Payment Actions */}
           {isAdmin && isPayment && (
             <button
-              onClick={() => handleStatusUpdate('COMPLETED', 'Pembayaran diterima. Tiket selesai.')}
+              onClick={() => handleStatusUpdate(TICKET_STATUS.COMPLETED, 'Pembayaran diterima. Tiket selesai.')}
               className="px-6 py-2 bg-purple-600 text-white text-sm font-bold rounded-xl hover:bg-purple-700 transition-all shadow-lg shadow-purple-200"
             >
               Konfirmasi Bayar
@@ -104,7 +105,7 @@ export default function TicketCard({ ticket, onEdit, className = '' }) {
           )}
 
           {/* Admin Edit/Delete Actions */}
-          {isAdmin && isWaiting && (
+          {isAdmin && (ticket.status === TICKET_STATUS.WAITING || ticket.status === TICKET_STATUS.ACTIVE) && (
             <div className="flex gap-2">
               <button
                 onClick={() => onEdit(ticket)}
@@ -113,7 +114,7 @@ export default function TicketCard({ ticket, onEdit, className = '' }) {
                 Edit
               </button>
               <button
-                onClick={() => handleStatusUpdate('CANCELLED', 'Tiket dibatalkan oleh Admin.')}
+                onClick={() => handleStatusUpdate(TICKET_STATUS.CANCELLED, 'Tiket dibatalkan oleh Admin.')}
                 className="px-4 py-2 bg-rose-100 text-rose-700 text-sm font-bold rounded-xl hover:bg-rose-200 transition-all"
               >
                 Batalkan
@@ -122,9 +123,9 @@ export default function TicketCard({ ticket, onEdit, className = '' }) {
           )}
 
           {/* PIC Actions */}
-          {canPicAct && isWaiting && (
+          {canPicAct && (ticket.status === TICKET_STATUS.WAITING || ticket.status === TICKET_STATUS.ACTIVE) && (
             <button
-              onClick={() => handleStatusUpdate('PAYMENT', `Layanan selesai. Menunggu pembayaran.`)}
+              onClick={() => handleStatusUpdate(TICKET_STATUS.PAYMENT, `Layanan selesai. Menunggu pembayaran.`)}
               className="px-6 py-2 bg-emerald-500 text-white text-sm font-bold rounded-xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-200"
             >
               Selesai

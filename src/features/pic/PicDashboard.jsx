@@ -2,13 +2,14 @@ import { useTickets } from '../../hooks/useTickets';
 import { useRole } from '../../context/RoleContext';
 import { updateTicketStatus } from '../../services/ticketService';
 import toast from 'react-hot-toast';
+import { TICKET_STATUS, SERVICE_TYPE } from '../../constants';
 
 export default function PicDashboard() {
   const { tickets, loading } = useTickets();
   const { role } = useRole();
   
-  const service = role === 'pic_grooming' ? 'Grooming' : 'Klinik';
-  const isGrooming = service === 'Grooming';
+  const service = role === 'pic_grooming' ? SERVICE_TYPE.GROOMING : SERVICE_TYPE.KLINIK;
+  const isGrooming = service === SERVICE_TYPE.GROOMING;
 
   if (loading) return (
     <div className="flex justify-center items-center min-h-[60vh]">
@@ -20,21 +21,30 @@ export default function PicDashboard() {
   );
 
   // Filter tickets
-  const activeTickets = tickets.filter(t => t.status === 'aktif' && t.layanan === service);
+  const activeTickets = tickets.filter(t => t.status === TICKET_STATUS.ACTIVE && t.layanan === service);
   
-  // Get waiting tickets and sort by date ascending (Oldest first) - FIFO
+  // Get waiting tickets, sorted by date/time inside ticketService logic or here?
+  // ticketService now uses orderBy, so tickets are already sorted by date desc.
+  // But wait, ticketService sorts by date desc (newest first).
+  // PIC Dashboard wants FIFO (Oldest first).
+  // So we need to reverse or sort again.
+  // Original code:
+  // .sort((a, b) => { ... return dateA - dateB }) -> Ascending (Oldest first)
+  // ticketService returns Descending (Newest first).
+  // So we can just reverse() or explicit sort. Explicit sort is safer.
+
   const waitingTickets = tickets
-    .filter(t => t.status === 'WAITING' && t.layanan === service)
+    .filter(t => t.status === TICKET_STATUS.WAITING && t.layanan === service)
     .sort((a, b) => {
       const timeA = a.jam || '00:00';
       const timeB = b.jam || '00:00';
       const dateA = new Date(`${a.tanggalRilis}T${timeA}`);
       const dateB = new Date(`${b.tanggalRilis}T${timeB}`);
-      return dateA - dateB;
+      return dateA - dateB; // Ascending
     });
 
   const completedCount = tickets.filter(t => 
-    (t.status === 'COMPLETED' || t.status === 'PAYMENT') && 
+    (t.status === TICKET_STATUS.COMPLETED || t.status === TICKET_STATUS.PAYMENT) && 
     t.layanan === service
   ).length;
 
@@ -45,7 +55,7 @@ export default function PicDashboard() {
     if (!confirm(`Ambil antrian untuk ${nextTicket.nama}?`)) return;
 
     try {
-      await updateTicketStatus(nextTicket.id, 'aktif', 'Tiket diambil oleh PIC.', nextTicket);
+      await updateTicketStatus(nextTicket.id, TICKET_STATUS.ACTIVE, 'Tiket diambil oleh PIC.', nextTicket);
       toast.success(`Berhasil mengambil antrian: ${nextTicket.nama}`);
     } catch (error) {
       console.error(error);
@@ -56,7 +66,7 @@ export default function PicDashboard() {
   const handleCompleteTicket = async (ticket) => {
     if (!confirm('Apakah layanan sudah selesai? Lanjut ke pembayaran?')) return;
     try {
-      await updateTicketStatus(ticket.id, 'PAYMENT', 'Layanan selesai. Menunggu pembayaran.', ticket);
+      await updateTicketStatus(ticket.id, TICKET_STATUS.PAYMENT, 'Layanan selesai. Menunggu pembayaran.', ticket);
       toast.success('Layanan selesai!');
     } catch (error) {
       console.error(error);

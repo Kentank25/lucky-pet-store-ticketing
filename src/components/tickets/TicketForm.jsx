@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { addTicket, updateTicketDetails } from '../../services/ticketService';
 import { useRole } from '../../context/RoleContext';
 import toast from 'react-hot-toast';
+import { SERVICE_TYPE } from '../../constants';
 
 export default function TicketForm({ ticketToEdit, onCancel, className = '' }) {
   const { role } = useRole();
   const [formData, setFormData] = useState({
     nama: '',
-    layanan: 'Grooming',
+    layanan: SERVICE_TYPE.GROOMING,
     tanggalRilis: new Date().toISOString().split('T')[0],
     jam: '',
     catatan: '',
@@ -58,7 +59,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = '' }) {
     const slots = [];
     let startHour, endHour;
 
-    if (service === 'Klinik') {
+    if (service === SERVICE_TYPE.KLINIK) {
       startHour = 9;
       endHour = 18; // 09:00 - 18:00
       for (let i = startHour; i < endHour; i++) {
@@ -79,15 +80,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = '' }) {
 
   return (
     <form onSubmit={handleSubmit} className={`relative ${className}`}>
-      {/* Header is handled by parent or hidden if not needed, but we keep the title if no parent title exists? 
-          Actually, both dashboards now have their own headers. 
-          Let's keep a simple title if it's not provided by parent, but for now the design shows parents have titles.
-          I'll remove the title from here to avoid duplication, or make it optional.
-          The previous design had a title inside.
-          AdminDashboard has "Buat Tiket Baru" in the parent.
-          KioskDashboard has "Ambil Antrian Baru" in the parent.
-          So I will REMOVE the title from here.
-      */}
+      {/* Header is handled by parent or hidden if not needed */}
       
       <div className="space-y-5">
         <div>
@@ -111,8 +104,8 @@ export default function TicketForm({ ticketToEdit, onCancel, className = '' }) {
               disabled={!!ticketToEdit} 
               className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 appearance-none font-bold disabled:opacity-60 cursor-pointer"
             >
-              <option value="Grooming">✂️ Grooming</option>
-              <option value="Klinik">🩺 Klinik</option>
+              <option value={SERVICE_TYPE.GROOMING}>✂️ Grooming</option>
+              <option value={SERVICE_TYPE.KLINIK}>🩺 Klinik</option>
             </select>
             <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
               ▼
@@ -158,7 +151,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = '' }) {
             value={formData.catatan}
             onChange={(e) => setFormData({ ...formData, catatan: e.target.value })}
             className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-medium resize-none"
-            placeholder={formData.layanan === 'Grooming' ? "Contoh: Mandi Kutu, Potong Kuku..." : "Contoh: Muntah, Diare, Lemas..."}
+            placeholder={formData.layanan === SERVICE_TYPE.GROOMING ? "Contoh: Mandi Kutu, Potong Kuku..." : "Contoh: Muntah, Diare, Lemas..."}
             rows="3"
           />
         </div>

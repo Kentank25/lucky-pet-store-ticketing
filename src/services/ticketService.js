@@ -7,17 +7,21 @@ import {
   updateDoc, 
   doc,
   getCountFromServer,
-  getDocs
+  getDocs,
+  orderBy
 } from "firebase/firestore";
 import { db } from "./firebase";
 import { createLog } from "./logService";
+import { TICKET_STATUS, SERVICE_TYPE } from "../constants";
 
 const COLLECTION_NAME = "petshop-app/v1/tickets";
 
 export const subscribeToTickets = (callback) => {
   const q = query(
     collection(db, COLLECTION_NAME),
-    where("status", "in", ["PENDING", "WAITING", "COMPLETED", "aktif", "PAYMENT", "CANCELLED"])
+    where("status", "in", Object.values(TICKET_STATUS)),
+    orderBy("tanggalRilis", "desc"),
+    orderBy("jam", "desc")
   );
 
   return onSnapshot(q, (snapshot) => {
@@ -25,20 +29,13 @@ export const subscribeToTickets = (callback) => {
       id: doc.id,
       ...doc.data(),
     }));
-    // Sort by release date and time descending
-    tickets.sort((a, b) => {
-      const timeA = a.jam || '00:00';
-      const timeB = b.jam || '00:00';
-      const dateA = new Date(`${a.tanggalRilis}T${timeA}`);
-      const dateB = new Date(`${b.tanggalRilis}T${timeB}`);
-      return dateB - dateA;
-    });
+    // Client-side sorting removed as we now use Firestore orderBy
     callback(tickets);
   });
 };
 
 export const addTicket = async (ticketData, role) => {
-  const initialStatus = "PENDING";
+  const initialStatus = TICKET_STATUS.PENDING;
   const logMsg = role === "kiosk" 
     ? `Tiket dibuat via Kiosk (${ticketData.layanan}). Menunggu validasi.`
     : `Tiket dibuat oleh Admin (${ticketData.layanan}). Menunggu validasi.`;
@@ -95,10 +92,10 @@ export const updateTicketDetails = async (id, updates, ticketData) => {
 export const getAnalyticsStats = async () => {
   const coll = collection(db, COLLECTION_NAME);
   
-  const completedQuery = query(coll, where("status", "==", "COMPLETED"));
-  const cancelledQuery = query(coll, where("status", "==", "CANCELLED"));
-  const groomingQuery = query(coll, where("layanan", "==", "Grooming"));
-  const klinikQuery = query(coll, where("layanan", "==", "Klinik"));
+  const completedQuery = query(coll, where("status", "==", TICKET_STATUS.COMPLETED));
+  const cancelledQuery = query(coll, where("status", "==", TICKET_STATUS.CANCELLED));
+  const groomingQuery = query(coll, where("layanan", "==", SERVICE_TYPE.GROOMING));
+  const klinikQuery = query(coll, where("layanan", "==", SERVICE_TYPE.KLINIK));
 
   const [completedSnap, cancelledSnap, groomingSnap, klinikSnap] = await Promise.all([
     getCountFromServer(completedQuery),
@@ -120,12 +117,7 @@ export const getChartData = async (filterType) => {
   let startDate = new Date();
   
   if (filterType === 'day') {
-    startDate.setDate(startDate.getDate() - 1); // Last 24h or just today? Usually means "Today" or "Recent days". Let's grab last 7 days for daily view?
-    // The UI has "Harian", "Mingguan", "Bulanan".
-    // Usually "Harian" means show data per day (e.g. for the last 7 days).
-    // "Mingguan" means show data per week (e.g. last 4 weeks).
-    // "Bulanan" means show data per month (e.g. last 12 months).
-    startDate.setDate(startDate.getDate() - 30); // Let's fetch last 30 days for daily view
+    startDate.setDate(startDate.getDate() - 30); // Last 30 days for daily view
   } else if (filterType === 'week') {
     startDate.setMonth(startDate.getMonth() - 3); // Last 3 months
   } else {
@@ -133,11 +125,6 @@ export const getChartData = async (filterType) => {
   }
   
   const dateString = startDate.toISOString().split('T')[0];
-
-  // We need an index for this composite query: status IN [...] AND tanggalRilis >= date
-  // If index is missing, this will fail.
-  // Safer approach without guaranteed index: Query by status only (if dataset small) or Query by date only.
-  // Given "Pet Shop", date query is probably safer to limit data size.
   
   const q = query(
     coll, 
@@ -148,5 +135,5 @@ export const getChartData = async (filterType) => {
   const tickets = snapshot.docs.map(doc => doc.data());
   
   // Filter for COMPLETED/CANCELLED in memory
-  return tickets.filter(t => t.status === 'COMPLETED' || t.status === 'CANCELLED');
+  return tickets.filter(t => t.status === TICKET_STATUS.COMPLETED || t.status === TICKET_STATUS.CANCELLED);
 };

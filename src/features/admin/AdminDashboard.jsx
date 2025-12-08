@@ -6,6 +6,7 @@ import { useTickets } from '../../hooks/useTickets';
 import { updateTicketStatus } from '../../services/ticketService';
 import toast from 'react-hot-toast';
 import AdminAnalytics from './AdminAnalytics';
+import { TICKET_STATUS, SERVICE_TYPE } from '../../constants';
 
 const PaymentAccordion = ({ title, items, isOpen, onToggle, icon, selectedPaymentIds, onToggleSelect, onSelectAll }) => {
   if (items.length === 0) return null;
@@ -70,7 +71,7 @@ const PaymentAccordion = ({ title, items, isOpen, onToggle, icon, selectedPaymen
                <div className="pr-8">
                   <div className="flex items-center gap-2 mb-2">
                       <span className={`text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider ${
-                          ticket.layanan === 'Grooming' ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700'
+                          ticket.layanan === SERVICE_TYPE.GROOMING ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700'
                       }`}>
                           {ticket.layanan}
                       </span>
@@ -149,7 +150,7 @@ export default function AdminDashboard() {
   if (loading) return <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div></div>;
 
   const pendingTickets = tickets
-    .filter(t => t.status === 'PENDING')
+    .filter(t => t.status === TICKET_STATUS.PENDING)
     .sort((a, b) => {
       const timeA = a.jam || '00:00';
       const timeB = b.jam || '00:00';
@@ -157,14 +158,14 @@ export default function AdminDashboard() {
       const dateB = new Date(`${b.tanggalRilis}T${timeB}`);
       return dateA - dateB;
     });
-  const paymentTickets = tickets.filter(t => t.status === 'PAYMENT');
-  const activeTickets = tickets.filter(t => t.status === 'WAITING' || t.status === 'aktif');
+  const paymentTickets = tickets.filter(t => t.status === TICKET_STATUS.PAYMENT);
+  const activeTickets = tickets.filter(t => t.status === TICKET_STATUS.WAITING || t.status === TICKET_STATUS.ACTIVE);
 
-  const pendingGrooming = pendingTickets.filter(t => t.layanan === 'Grooming');
-  const pendingKlinik = pendingTickets.filter(t => t.layanan === 'Klinik');
+  const pendingGrooming = pendingTickets.filter(t => t.layanan === SERVICE_TYPE.GROOMING);
+  const pendingKlinik = pendingTickets.filter(t => t.layanan === SERVICE_TYPE.KLINIK);
 
-  const paymentGrooming = paymentTickets.filter(t => t.layanan === 'Grooming');
-  const paymentKlinik = paymentTickets.filter(t => t.layanan === 'Klinik');
+  const paymentGrooming = paymentTickets.filter(t => t.layanan === SERVICE_TYPE.GROOMING);
+  const paymentKlinik = paymentTickets.filter(t => t.layanan === SERVICE_TYPE.KLINIK);
 
   const toggleSection = (section) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
@@ -204,7 +205,7 @@ export default function AdminDashboard() {
     try {
       await Promise.all(idsToConfirm.map(id => {
         const ticket = tickets.find(t => t.id === id);
-        return updateTicketStatus(id, 'COMPLETED', 'Pembayaran diterima (Bulk Action). Tiket selesai.', ticket);
+        return updateTicketStatus(id, TICKET_STATUS.COMPLETED, 'Pembayaran diterima (Bulk Action). Tiket selesai.', ticket);
       }));
       toast.success('Pembayaran berhasil dikonfirmasi!', { id: toastId });
       
