@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../services/firebase';
+import { createContext, useContext, useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth"; // Removed signInAnonymously
+import { auth } from "../services/firebase";
 
 const AuthContext = createContext();
 
@@ -9,17 +9,22 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Safety timeout: jika Firebase lambat merespon (misal 2 detik),
+    // kita paksa loading berhenti agar user tidak stuck.
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
+      clearTimeout(timer); // Cancel timeout jika Firebase merespon lebih cepat
     });
 
-    signInAnonymously(auth).catch((error) => {
-      console.error("Auth error:", error);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      clearTimeout(timer);
+    };
   }, []);
 
   return (

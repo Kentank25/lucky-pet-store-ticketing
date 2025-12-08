@@ -1,61 +1,92 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import {
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../services/firebase";
 
 const RoleContext = createContext();
 
-const CREDENTIALS = {
-  admin: { password: "adminPass123", role: "admin", name: "Administrator" },
-  pic_grooming: {
-    password: "picGroomingPass123",
-    role: "pic_grooming",
-    name: "PIC Grooming",
-  },
-  pic_klinik: {
-    password: "picKlinikPass123",
-    role: "pic_klinik",
-    name: "PIC Klinik",
-  },
-  kiosk: { password: "kioskPass123", role: "kiosk", name: "Kiosk Machine" },
-};
-
 export const RoleProvider = ({ children }) => {
-  // Initialize role from localStorage if available to persist login
-  const [role, setRole] = useState(
-    () => localStorage.getItem("user_role") || null
-  );
-  const [user, setUser] = useState(() => {
-    const savedRole = localStorage.getItem("user_role");
-    return savedRole
-      ? CREDENTIALS[
-          Object.keys(CREDENTIALS).find(
-            (k) => CREDENTIALS[k].role === savedRole
-          )
-        ]
-      : null;
-  });
+  const [role, setRole] = useState(null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = (username, password) => {
-    const userCred = CREDENTIALS[username];
-    if (userCred && userCred.password === password) {
-      setRole(userCred.role);
-      setUser(userCred);
-      localStorage.setItem("user_role", userCred.role);
-      toast.success(`Selamat datang, ${userCred.name}!`);
+  // Initialize Auth Listener
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        try {
+          // Fetch user role from Firestore
+          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setRole(userData.role);
+            setUser({ ...currentUser, ...userData });
+          } else {
+            console.warn(
+              "User login berhasil tapi data role tidak ditemukan di Firestore."
+            );
+            setRole(null);
+            setUser(currentUser);
+          }
+        } catch (error) {
+          console.error("Gagal mengambil data user:", error);
+          toast.error("Gagal memuat data profil.");
+        }
+      } else {
+        setRole(null);
+        setUser(null);
+      }
+      setLoading(false);
+      clearTimeout(timer);
+    });
+
+    return () => {
+      unsubscribe();
+      clearTimeout(timer);
+    };
+  }, []);
+
+  const login = async (email, password) => {
+    const toastId = toast.loading("Sedang masuk...");
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // State 'role' & 'user' will be updated by onAuthStateChanged listener
+      toast.success("Berhasil login!", { id: toastId });
       return true;
+    } catch (error) {
+      console.error("Login Error:", error);
+      let msg = "Gagal login.";
+      if (error.code === "auth/invalid-credential")
+        msg = "Email atau password salah.";
+      if (error.code === "auth/user-not-found") msg = "Akun tidak ditemukan.";
+      toast.error(msg, { id: toastId });
+      return false;
     }
-    toast.error("Username atau password salah!");
-    return false;
   };
 
-  const logout = () => {
-    setRole(null);
-    setUser(null);
-    localStorage.removeItem("user_role");
-    toast.success("Berhasil logout");
+  const logout = async () => {
+    const toastId = toast.loading("Keluar...");
+    try {
+      await signOut(auth);
+      // State cleared by listener
+      toast.success("Berhasil logout", { id: toastId });
+    } catch (error) {
+      console.error("Logout Error:", error);
+      toast.error("Gagal logout", { id: toastId });
+    }
   };
 
   return (
-    <RoleContext.Provider value={{ role, user, login, logout }}>
+    <RoleContext.Provider value={{ role, user, loading, login, logout }}>
       {children}
     </RoleContext.Provider>
   );

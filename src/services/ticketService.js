@@ -34,9 +34,11 @@ export const subscribeToTickets = (callback) => {
   });
 };
 
-export const addTicket = async (ticketData, role) => {
-  const initialStatus = TICKET_STATUS.PENDING;
-  const logMsg = role === "kiosk" 
+export const addTicket = async (ticketData, role, customStatus = null) => {
+  const initialStatus = customStatus || TICKET_STATUS.PENDING;
+  const logMsg = customStatus 
+    ? `Tiket dibuat via Emergency (Admin). Status langsung: ${customStatus}.`
+    : role === "kiosk" 
     ? `Tiket dibuat via Kiosk (${ticketData.layanan}). Menunggu validasi.`
     : `Tiket dibuat oleh Admin (${ticketData.layanan}). Menunggu validasi.`;
 

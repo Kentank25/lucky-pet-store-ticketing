@@ -7,6 +7,7 @@ import { useTickets } from "../../hooks/useTickets";
 import { updateTicketStatus } from "../../services/ticketService";
 import toast from "react-hot-toast";
 import AdminAnalytics from "./AdminAnalytics";
+import UserManagement from "./UserManagement";
 import { TICKET_STATUS, SERVICE_TYPE } from "../../constants";
 
 const PaymentAccordion = ({
@@ -346,30 +347,33 @@ export default function AdminDashboard() {
             >
               Analytics
             </button>
+            <button
+              onClick={() => setActiveTab("users")}
+              className={`px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all duration-300 ${
+                activeTab === "users"
+                  ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
+                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+              }`}
+            >
+              Users
+            </button>
           </div>,
           document.getElementById("header-actions")
         )}
       {activeTab === "analytics" ? (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-8 space-y-6">
-            <AdminAnalytics />
-          </div>
-          <div className="lg:col-span-4">
-            <div className="bg-white rounded-[2rem] shadow-xl shadow-gray-100 border border-gray-100 h-[800px] flex flex-col overflow-hidden sticky top-24">
-              <div className="p-6 pb-4 bg-white z-10 border-b border-gray-50">
-                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                  <span className="bg-blue-100 p-2 rounded-lg text-blue-600">
-                    📜
-                  </span>
-                  Riwayat Aktivitas
-                </h3>
-              </div>
-              <div className="overflow-y-auto flex-1 p-6 pt-4">
-                <LogList />
-              </div>
+        <div className="space-y-8">
+          <AdminAnalytics />
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">
+              Riwayat Aktivitas
+            </h3>
+            <div className="max-h-[600px] overflow-y-auto">
+              <LogList />
             </div>
           </div>
         </div>
+      ) : activeTab === "users" ? (
+        <UserManagement />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in">
           {/* Left Column: Form (4 cols) */}

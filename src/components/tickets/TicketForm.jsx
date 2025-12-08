@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { addTicket, updateTicketDetails } from "../../services/ticketService";
 import { useRole } from "../../context/RoleContext";
 import toast from "react-hot-toast";
-import { SERVICE_TYPE } from "../../constants";
+import { SERVICE_TYPE, TICKET_STATUS } from "../../constants";
 
 export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
   const { role } = useRole();
@@ -15,6 +15,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
     catatan: "",
   });
   const [loading, setLoading] = useState(false);
+  const [isExpress, setIsExpress] = useState(false);
 
   useEffect(() => {
     if (ticketToEdit) {
@@ -49,13 +50,24 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
         toast.success("Tiket berhasil diperbarui");
         if (onCancel) onCancel();
       } else {
-        await addTicket(cleanedFormData, role);
+        await addTicket(
+          cleanedFormData,
+          role,
+          isExpress ? TICKET_STATUS.ACTIVE : null
+        );
         toast.success(
           role === "kiosk"
             ? "Antrian berhasil diambil!"
             : "Tiket berhasil dibuat"
         );
-        setFormData({ ...formData, nama: "", jam: "", catatan: "" });
+        setFormData({
+          ...formData,
+          nama: "",
+          telepon: "",
+          jam: "",
+          catatan: "",
+        });
+        setIsExpress(false);
       }
     } catch (error) {
       toast.error("Gagal menyimpan tiket");
@@ -88,69 +100,115 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
 
   const timeSlots = generateTimeSlots(formData.layanan);
 
+  // Kiosk Accessibility Tweaks
+  const isKiosk = role === "kiosk";
+  const inputClass = isKiosk
+    ? "w-full px-5 py-4 md:px-8 md:py-5 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl md:rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-bold text-lg md:text-xl"
+    : "w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-bold";
+
+  const labelClass = isKiosk
+    ? "block text-base md:text-lg font-bold text-gray-600 mb-2 md:mb-3 ml-2"
+    : "block text-sm font-bold text-gray-600 mb-2 ml-1";
+
+  const buttonClass = isKiosk
+    ? "flex-1 bg-gray-900 text-white py-4 md:py-6 px-6 md:px-8 rounded-2xl md:rounded-3xl hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] transition-all font-bold text-xl md:text-2xl shadow-xl shadow-gray-200 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-3"
+    : "flex-1 bg-gray-900 text-white py-4 px-6 rounded-2xl hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] transition-all font-bold text-lg shadow-xl shadow-gray-200 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2";
+
   return (
     <form onSubmit={handleSubmit} className={`relative ${className}`}>
       {/* Header is handled by parent or hidden if not needed */}
 
-      <div className="space-y-5">
+      <div className={isKiosk ? "space-y-6 md:space-y-8" : "space-y-5"}>
         <div>
-          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">
-            Nama Pelanggan / Hewan
-          </label>
+          <label className={labelClass}>Nama Pelanggan / Hewan</label>
           <input
             type="text"
             required
             value={formData.nama}
             onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
-            className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-bold"
+            className={inputClass}
             placeholder="Contoh: Budi / Mochi"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">
-            Nomor Telepon
-          </label>
+          <label className={labelClass}>Nomor Telepon</label>
           <input
             type="tel"
+            inputMode="numeric"
             required
             value={formData.telepon || ""}
             onChange={(e) => {
               const val = e.target.value.replace(/\D/g, "");
               setFormData({ ...formData, telepon: val });
             }}
-            className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-bold tracking-wider"
+            className={`${inputClass} tracking-wider`}
             placeholder="08xxxxxxxxxx"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">
-            Layanan
-          </label>
-          <div className="relative">
-            <select
-              value={formData.layanan}
-              onChange={(e) =>
-                setFormData({ ...formData, layanan: e.target.value })
-              }
-              disabled={!!ticketToEdit}
-              className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 appearance-none font-bold disabled:opacity-60 cursor-pointer"
-            >
-              <option value={SERVICE_TYPE.GROOMING}>✂️ Grooming</option>
-              <option value={SERVICE_TYPE.KLINIK}>🩺 Klinik</option>
-            </select>
-            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-              ▼
+          <label className={labelClass}>Layanan</label>
+          {isKiosk ? (
+            <div className="flex flex-col sm:flex-row gap-4">
+              {[
+                {
+                  value: SERVICE_TYPE.GROOMING,
+                  label: "✂️ Grooming",
+                  color: "blue",
+                },
+                {
+                  value: SERVICE_TYPE.KLINIK,
+                  label: "🩺 Klinik",
+                  color: "rose",
+                },
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() =>
+                    setFormData({ ...formData, layanan: option.value })
+                  }
+                  className={`flex-1 p-4 md:p-6 rounded-2xl md:rounded-3xl border-2 transition-all font-bold text-lg md:text-xl flex flex-row sm:flex-col items-center justify-center sm:justify-start gap-3 md:gap-2 ${
+                    formData.layanan === option.value
+                      ? `bg-${option.color}-50 border-${option.color}-500 text-${option.color}-700 shadow-lg ring-4 ring-${option.color}-100`
+                      : "bg-white border-gray-200 text-gray-400 hover:border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  <span className="text-3xl md:text-4xl block mb-0 md:mb-2">
+                    {option.label.split(" ")[0]}
+                  </span>
+                  <span>{option.label.split(" ")[1]}</span>
+                </button>
+              ))}
             </div>
-          </div>
+          ) : (
+            <div className="relative">
+              <select
+                value={formData.layanan}
+                onChange={(e) =>
+                  setFormData({ ...formData, layanan: e.target.value })
+                }
+                disabled={!!ticketToEdit}
+                className={`${inputClass} appearance-none cursor-pointer disabled:opacity-60`}
+              >
+                <option value={SERVICE_TYPE.GROOMING}>✂️ Grooming</option>
+                <option value={SERVICE_TYPE.KLINIK}>🩺 Klinik</option>
+              </select>
+              <div
+                className={`absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 ${
+                  isKiosk ? "text-xl" : ""
+                }`}
+              >
+                ▼
+              </div>
+            </div>
+          )}
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">
-            Tanggal & Jam
-          </label>
-          <div className="flex gap-3">
+          <label className={labelClass}>Tanggal & Jam</label>
+          <div className={isKiosk ? "flex flex-col gap-4" : "flex gap-4"}>
             <input
               type="date"
               value={formData.tanggalRilis}
@@ -158,57 +216,103 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
                 setFormData({ ...formData, tanggalRilis: e.target.value })
               }
               disabled={!!ticketToEdit}
-              className="w-2/3 px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 font-bold disabled:opacity-60"
+              className={`${inputClass} ${
+                isKiosk ? "w-full" : "w-2/3"
+              } disabled:opacity-60`}
             />
-            <div className="relative w-1/3">
-              <select
-                value={formData.jam}
-                onChange={(e) =>
-                  setFormData({ ...formData, jam: e.target.value })
-                }
-                disabled={!!ticketToEdit}
-                required
-                className="w-full px-4 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 appearance-none font-bold disabled:opacity-60 cursor-pointer"
-              >
-                <option value="">Jam</option>
+
+            {isKiosk ? (
+              <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-2 md:gap-3 bg-gray-50 p-3 md:p-4 rounded-3xl border border-gray-100">
                 {timeSlots.map((slot) => (
-                  <option key={slot} value={slot}>
+                  <button
+                    key={slot}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, jam: slot })}
+                    className={`py-2 md:py-3 rounded-xl md:rounded-2xl font-bold text-base md:text-lg transition-all ${
+                      formData.jam === slot
+                        ? "bg-gray-900 text-white shadow-lg scale-105"
+                        : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-100"
+                    }`}
+                  >
                     {slot}
-                  </option>
+                  </button>
                 ))}
-              </select>
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs">
-                ▼
+                {timeSlots.length === 0 && (
+                  <p className="col-span-4 text-center text-gray-400 py-4">
+                    Pilih layanan terlebih dahulu
+                  </p>
+                )}
               </div>
-            </div>
+            ) : (
+              <div className="relative w-1/3">
+                <select
+                  value={formData.jam}
+                  onChange={(e) =>
+                    setFormData({ ...formData, jam: e.target.value })
+                  }
+                  disabled={!!ticketToEdit}
+                  required
+                  className={`${inputClass} appearance-none cursor-pointer disabled:opacity-60`}
+                >
+                  <option value="">Jam</option>
+                  {timeSlots.map((slot) => (
+                    <option key={slot} value={slot}>
+                      {slot}
+                    </option>
+                  ))}
+                </select>
+                <div
+                  className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs ${
+                    isKiosk ? "text-base right-6" : ""
+                  }`}
+                >
+                  ▼
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-gray-600 mb-2 ml-1">
-            Catatan (Opsional)
-          </label>
+          <label className={labelClass}>Catatan (Opsional)</label>
           <textarea
             value={formData.catatan}
             onChange={(e) =>
               setFormData({ ...formData, catatan: e.target.value })
             }
-            className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-medium resize-none"
+            className={`${inputClass} resize-none font-medium`}
             placeholder={
               formData.layanan === SERVICE_TYPE.GROOMING
                 ? "Contoh: Mandi Kutu, Potong Kuku..."
                 : "Contoh: Muntah, Diare, Lemas..."
             }
-            rows="3"
+            rows={isKiosk ? "4" : "3"}
           />
         </div>
 
+        {/* Express Ticket Option (Admin Only) */}
+        {role === "admin" && !ticketToEdit && (
+          <div className="flex items-center gap-3 bg-red-50 p-4 rounded-xl border border-red-100">
+            <input
+              type="checkbox"
+              id="express"
+              checked={isExpress}
+              onChange={(e) => setIsExpress(e.target.checked)}
+              className="w-5 h-5 text-red-600 rounded focus:ring-red-500 border-gray-300 cursor-pointer"
+            />
+            <label htmlFor="express" className="cursor-pointer select-none">
+              <span className="block font-bold text-gray-800 text-sm">
+                🚨 Emergency Ticket (Langsung Aktif)
+              </span>
+              <span className="block text-xs text-gray-500">
+                Lewati proses validasi (untuk kondisi darurat).
+              </span>
+            </label>
+          </div>
+        )}
+
         <div className="flex gap-3 pt-4">
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex-1 bg-gray-900 text-white py-4 px-6 rounded-2xl hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] transition-all font-bold text-lg shadow-xl shadow-gray-200 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2"
-          >
+          <button type="submit" disabled={loading} className={buttonClass}>
             {loading ? (
               <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
             ) : (
