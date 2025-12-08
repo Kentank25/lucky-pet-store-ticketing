@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { registerUser, getUsers, deleteUser } from "../../services/userService";
 import toast from "react-hot-toast";
+import { userSchema } from "../../utils/validationSchemas"; // Zod imports
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -15,6 +16,7 @@ export default function UserManagement() {
     role: "kiosk", // default
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({}); // Zod errors state
 
   useEffect(() => {
     fetchUsers();
@@ -33,6 +35,24 @@ export default function UserManagement() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    // Zod Validation
+    const validationResult = userSchema.safeParse(formData);
+
+    if (!validationResult.success) {
+      const formatted = validationResult.error.flatten();
+      const fieldErrors = {};
+      Object.keys(formatted.fieldErrors).forEach((key) => {
+        if (formatted.fieldErrors[key]?.length > 0) {
+          fieldErrors[key] = formatted.fieldErrors[key][0];
+        }
+      });
+      setErrors(fieldErrors);
+      toast.error("Mohon lengkapi data dengan benar");
+      return;
+    }
+
+    setErrors({}); // Clear errors
     setIsSubmitting(true);
     try {
       await registerUser(
@@ -223,14 +243,22 @@ export default function UserManagement() {
                 </label>
                 <input
                   type="text"
-                  required
                   value={formData.name}
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white transition-all font-bold outline-none"
+                  className={`w-full px-4 py-3 rounded-xl bg-gray-50 border-2 transition-all font-bold outline-none ${
+                    errors.name
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-transparent focus:border-blue-500 focus:bg-white"
+                  }`}
                   placeholder="Contoh: Admin Utama"
                 />
+                {errors.name && (
+                  <p className="text-red-500 text-xs mt-1 font-bold">
+                    {errors.name}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -239,14 +267,22 @@ export default function UserManagement() {
                 </label>
                 <input
                   type="email"
-                  required
                   value={formData.email}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
-                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white transition-all font-bold outline-none"
+                  className={`w-full px-4 py-3 rounded-xl bg-gray-50 border-2 transition-all font-bold outline-none ${
+                    errors.email
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-transparent focus:border-blue-500 focus:bg-white"
+                  }`}
                   placeholder="admin@petshop.com"
                 />
+                {errors.email && (
+                  <p className="text-red-500 text-xs mt-1 font-bold">
+                    {errors.email}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -255,15 +291,23 @@ export default function UserManagement() {
                 </label>
                 <input
                   type="password"
-                  required
                   minLength={6}
                   value={formData.password}
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
                   }
-                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border-2 border-transparent focus:border-blue-500 focus:bg-white transition-all font-bold outline-none"
+                  className={`w-full px-4 py-3 rounded-xl bg-gray-50 border-2 transition-all font-bold outline-none ${
+                    errors.password
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-transparent focus:border-blue-500 focus:bg-white"
+                  }`}
                   placeholder="Minimal 6 karakter"
                 />
+                {errors.password && (
+                  <p className="text-red-500 text-xs mt-1 font-bold">
+                    {errors.password}
+                  </p>
+                )}
               </div>
 
               <div>

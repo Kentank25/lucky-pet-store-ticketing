@@ -1,14 +1,39 @@
 import { useState } from "react";
 import { useRole } from "../context/RoleContext";
+import { loginSchema } from "../utils/validationSchemas"; // Zod imports
 
 export default function LoginPage() {
   const { login } = useRole();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({}); // Zod errors state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Zod Validation
+    const validationResult = loginSchema.safeParse({
+      email: username,
+      password,
+    });
+
+    if (!validationResult.success) {
+      const formatted = validationResult.error.flatten();
+      const fieldErrors = {};
+
+      // Map array of errors to single string per field
+      Object.keys(formatted.fieldErrors).forEach((key) => {
+        if (formatted.fieldErrors[key]?.length > 0) {
+          fieldErrors[key] = formatted.fieldErrors[key][0];
+        }
+      });
+
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({}); // Clear errors
     setLoading(true);
     // Removed arbitrary timeout to make UI responsive
     try {
@@ -55,10 +80,18 @@ export default function LoginPage() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-6 py-4 bg-gray-50 rounded-2xl border border-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-gray-700"
+                className={`w-full px-6 py-4 bg-gray-50 rounded-2xl border transition-all font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${
+                  errors.email
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-gray-100"
+                }`}
                 placeholder="Masukkan username..."
-                required
               />
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1 font-bold ml-2">
+                  {errors.email}
+                </p>
+              )}
             </div>
 
             <div>
@@ -69,10 +102,18 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-6 py-4 bg-gray-50 rounded-2xl border border-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-gray-700"
+                className={`w-full px-6 py-4 bg-gray-50 rounded-2xl border transition-all font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${
+                  errors.password
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-gray-100"
+                }`}
                 placeholder="••••••••"
-                required
               />
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1 font-bold ml-2">
+                  {errors.password}
+                </p>
+              )}
             </div>
 
             <div className="pt-4">

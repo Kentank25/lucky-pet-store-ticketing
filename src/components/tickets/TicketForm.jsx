@@ -3,6 +3,7 @@ import { addTicket, updateTicketDetails } from "../../services/ticketService";
 import { useRole } from "../../context/RoleContext";
 import toast from "react-hot-toast";
 import { SERVICE_TYPE, TICKET_STATUS } from "../../constants";
+import { ticketSchema } from "../../utils/validationSchemas"; // Zod imports
 
 export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
   const { role } = useRole();
@@ -16,6 +17,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
   });
   const [loading, setLoading] = useState(false);
   const [isExpress, setIsExpress] = useState(false);
+  const [errors, setErrors] = useState({}); // Zod errors state
 
   useEffect(() => {
     if (ticketToEdit) {
@@ -34,11 +36,35 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
     e.preventDefault();
     setLoading(true);
 
-    // Clean up catatan to remove trailing newlines/spaces
+    // Clean up data
     const cleanedFormData = {
       ...formData,
       catatan: formData.catatan.trim(),
+      // Ensure kontak is mapped correctly if your schema expects 'kontak' but state is 'telepon'
+      // Based on previous file content, state is 'telepon', schema has 'kontak'
+      // Let's align them.
+      kontak: formData.telepon,
+      nama: formData.nama.trim(),
     };
+
+    // Zod Validation
+    const validationResult = ticketSchema.safeParse(cleanedFormData);
+
+    if (!validationResult.success) {
+      const formatted = validationResult.error.flatten();
+      const fieldErrors = {};
+      Object.keys(formatted.fieldErrors).forEach((key) => {
+        if (formatted.fieldErrors[key]?.length > 0) {
+          fieldErrors[key] = formatted.fieldErrors[key][0];
+        }
+      });
+      setErrors(fieldErrors);
+      setLoading(false);
+      toast.error("Mohon lengkapi data dengan benar");
+      return;
+    }
+
+    setErrors({}); // Clear errors
 
     try {
       if (ticketToEdit) {
@@ -126,9 +152,16 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
             required
             value={formData.nama}
             onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
-            className={inputClass}
+            className={`${inputClass} ${
+              errors.nama ? "border-red-500 ring-2 ring-red-200" : ""
+            }`}
             placeholder="Contoh: Budi / Mochi"
           />
+          {errors.nama && (
+            <p className="text-red-500 text-sm mt-1 font-bold ml-2">
+              {errors.nama}
+            </p>
+          )}
         </div>
 
         <div>
@@ -142,9 +175,16 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
               const val = e.target.value.replace(/\D/g, "");
               setFormData({ ...formData, telepon: val });
             }}
-            className={`${inputClass} tracking-wider`}
+            className={`${inputClass} tracking-wider ${
+              errors.kontak ? "border-red-500 ring-2 ring-red-200" : ""
+            }`}
             placeholder="08xxxxxxxxxx"
           />
+          {errors.kontak && (
+            <p className="text-red-500 text-sm mt-1 font-bold ml-2">
+              {errors.kontak}
+            </p>
+          )}
         </div>
 
         <div>
