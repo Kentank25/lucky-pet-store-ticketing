@@ -14,7 +14,7 @@ import { db } from "./firebase";
 import { createLog } from "./logService";
 import { TICKET_STATUS, SERVICE_TYPE } from "../constants";
 
-const COLLECTION_NAME = "petshop-app/v1/tickets";
+export const COLLECTION_NAME = "petshop-app/v1/tickets";
 
 export const subscribeToTickets = (callback) => {
   const q = query(

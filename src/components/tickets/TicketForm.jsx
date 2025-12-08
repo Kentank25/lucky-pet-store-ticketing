@@ -4,8 +4,9 @@ import { useRole } from "../../context/RoleContext";
 import toast from "react-hot-toast";
 import { SERVICE_TYPE, TICKET_STATUS } from "../../constants";
 import { ticketSchema } from "../../utils/validationSchemas"; // Zod imports
+import QRCode from "react-qr-code"; // Import QRCode
 import { FaCut, FaStethoscope } from "react-icons/fa";
-import { FiArrowRight, FiChevronDown, FiAlertTriangle } from "react-icons/fi";
+import { FiArrowRight, FiAlertTriangle } from "react-icons/fi";
 
 export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
   const { role } = useRole();
@@ -20,6 +21,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
   const [loading, setLoading] = useState(false);
   const [isExpress, setIsExpress] = useState(false);
   const [errors, setErrors] = useState({}); // Zod errors state
+  const [successData, setSuccessData] = useState(null); // State for success modal
 
   useEffect(() => {
     if (ticketToEdit) {
@@ -39,6 +41,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
     setLoading(true);
 
     const isGuest = !role; // If no role context, assume guest/public kiosk
+    const isKioskMode = role === "kiosk" || isGuest;
 
     // Clean up data
     const cleanedFormData = {
@@ -77,24 +80,26 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
         toast.success("Tiket berhasil diperbarui");
         if (onCancel) onCancel();
       } else {
-        // Create Logic
-        const newStatus = isGuest
+        const newStatus = isKioskMode
           ? TICKET_STATUS.PENDING
           : isExpress
           ? TICKET_STATUS.ACTIVE
           : null;
 
-        await addTicket(
+        const newTicketId = await addTicket(
           cleanedFormData,
           role || "guest", // Pass 'guest' if role is null
           newStatus
         );
 
-        toast.success(
-          isGuest
-            ? "Antrian berhasil dibuat! Mohon tunggu konfirmasi admin."
-            : "Tiket berhasil dibuat"
-        );
+        if (isKioskMode) {
+          setSuccessData({
+            id: newTicketId,
+            nama: cleanedFormData.nama,
+          });
+        } else {
+          toast.success("Tiket berhasil dibuat");
+        }
 
         // Reset Form
         setFormData({
@@ -137,25 +142,21 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
 
   const timeSlots = generateTimeSlots(formData.layanan);
 
-  // Kiosk/Guest Accessibility Tweaks
-  const isKiosk = role === "kiosk" || !role; // Treat guest as kiosk UI
-  const inputClass = isKiosk
-    ? "w-full px-5 py-4 md:px-8 md:py-5 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl md:rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-bold text-lg md:text-xl"
-    : "w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-bold";
+  // Unified UI Styles (Kiosk Style for Everyone)
+  const inputClass =
+    "w-full px-5 py-4 md:px-8 md:py-5 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl md:rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-bold text-lg md:text-xl";
 
-  const labelClass = isKiosk
-    ? "block text-base md:text-lg font-bold text-gray-600 mb-2 md:mb-3 ml-2"
-    : "block text-sm font-bold text-gray-600 mb-2 ml-1";
+  const labelClass =
+    "block text-base md:text-lg font-bold text-gray-600 mb-2 md:mb-3 ml-2";
 
-  const buttonClass = isKiosk
-    ? "flex-1 bg-gray-900 text-white py-4 md:py-6 px-6 md:px-8 rounded-2xl md:rounded-3xl hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] transition-all font-bold text-xl md:text-2xl shadow-xl shadow-gray-200 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-3"
-    : "flex-1 bg-gray-900 text-white py-4 px-6 rounded-2xl hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] transition-all font-bold text-lg shadow-xl shadow-gray-200 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2";
+  const buttonClass =
+    "flex-1 bg-gray-900 text-white py-4 md:py-6 px-6 md:px-8 rounded-2xl md:rounded-3xl hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] transition-all font-bold text-xl md:text-2xl shadow-xl shadow-gray-200 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-3";
 
   return (
     <form onSubmit={handleSubmit} className={`relative ${className}`}>
       {/* Header is handled by parent or hidden if not needed */}
 
-      <div className={isKiosk ? "space-y-6 md:space-y-8" : "space-y-5"}>
+      <div className="space-y-6 md:space-y-8">
         <div>
           <label className={labelClass}>Nama Pelanggan / Hewan</label>
           <input
@@ -200,68 +201,46 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
 
         <div>
           <label className={labelClass}>Layanan</label>
-          {isKiosk ? (
-            <div className="flex flex-col sm:flex-row gap-4">
-              {[
-                {
-                  value: SERVICE_TYPE.GROOMING,
-                  label: "Grooming",
-                  icon: <FaCut />,
-                  color: "blue",
-                },
-                {
-                  value: SERVICE_TYPE.KLINIK,
-                  label: "Klinik",
-                  icon: <FaStethoscope />,
-                  color: "rose",
-                },
-              ].map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() =>
-                    setFormData({ ...formData, layanan: option.value })
-                  }
-                  className={`flex-1 p-4 md:p-6 rounded-2xl md:rounded-3xl border-2 transition-all font-bold text-lg md:text-xl flex flex-row sm:flex-col items-center justify-center sm:justify-start gap-3 md:gap-2 ${
-                    formData.layanan === option.value
-                      ? `bg-${option.color}-50 border-${option.color}-500 text-${option.color}-700 shadow-lg ring-4 ring-${option.color}-100`
-                      : "bg-white border-gray-200 text-gray-400 hover:border-gray-300 hover:bg-gray-50"
-                  }`}
-                >
-                  <span className="text-3xl md:text-4xl block mb-0 md:mb-2">
-                    {option.icon}
-                  </span>
-                  <span>{option.label}</span>
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div className="relative">
-              <select
-                value={formData.layanan}
-                onChange={(e) =>
-                  setFormData({ ...formData, layanan: e.target.value })
+          {/* Unified Service Selection (Card Style) */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            {[
+              {
+                value: SERVICE_TYPE.GROOMING,
+                label: "Grooming",
+                icon: <FaCut />,
+                color: "blue",
+              },
+              {
+                value: SERVICE_TYPE.KLINIK,
+                label: "Klinik",
+                icon: <FaStethoscope />,
+                color: "rose",
+              },
+            ].map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() =>
+                  setFormData({ ...formData, layanan: option.value })
                 }
-                disabled={!!ticketToEdit}
-                className={`${inputClass} appearance-none cursor-pointer disabled:opacity-60`}
-              >
-                <option value={SERVICE_TYPE.GROOMING}>Grooming</option>
-                <option value={SERVICE_TYPE.KLINIK}>Klinik</option>
-              </select>
-              <div
-                className={`absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 ${
-                  isKiosk ? "text-xl" : ""
+                className={`flex-1 p-4 md:p-6 rounded-2xl md:rounded-3xl border-2 transition-all font-bold text-lg md:text-xl flex flex-row sm:flex-col items-center justify-center sm:justify-start gap-3 md:gap-2 ${
+                  formData.layanan === option.value
+                    ? `bg-${option.color}-50 border-${option.color}-500 text-${option.color}-700 shadow-lg ring-4 ring-${option.color}-100`
+                    : "bg-white border-gray-200 text-gray-400 hover:border-gray-300 hover:bg-gray-50"
                 }`}
               >
-                <FiChevronDown />
-              </div>
-            </div>
-          )}
+                <span className="text-3xl md:text-4xl block mb-0 md:mb-2">
+                  {option.icon}
+                </span>
+                <span>{option.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         <div>
           <label className={labelClass}>Tanggal & Jam</label>
-          <div className={isKiosk ? "flex flex-col gap-4" : "flex gap-4"}>
+          <div className="flex flex-col gap-4">
             <input
               type="date"
               value={formData.tanggalRilis}
@@ -269,60 +248,30 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
                 setFormData({ ...formData, tanggalRilis: e.target.value })
               }
               disabled={!!ticketToEdit}
-              className={`${inputClass} ${
-                isKiosk ? "w-full" : "w-2/3"
-              } disabled:opacity-60`}
+              className={`${inputClass} w-full disabled:opacity-60`}
             />
 
-            {isKiosk ? (
-              <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-2 md:gap-3 bg-gray-50 p-3 md:p-4 rounded-3xl border border-gray-100">
-                {timeSlots.map((slot) => (
-                  <button
-                    key={slot}
-                    type="button"
-                    onClick={() => setFormData({ ...formData, jam: slot })}
-                    className={`py-2 md:py-3 rounded-xl md:rounded-2xl font-bold text-base md:text-lg transition-all ${
-                      formData.jam === slot
-                        ? "bg-gray-900 text-white shadow-lg scale-105"
-                        : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-100"
-                    }`}
-                  >
-                    {slot}
-                  </button>
-                ))}
-                {timeSlots.length === 0 && (
-                  <p className="col-span-4 text-center text-gray-400 py-4">
-                    Pilih layanan terlebih dahulu
-                  </p>
-                )}
-              </div>
-            ) : (
-              <div className="relative w-1/3">
-                <select
-                  value={formData.jam}
-                  onChange={(e) =>
-                    setFormData({ ...formData, jam: e.target.value })
-                  }
-                  disabled={!!ticketToEdit}
-                  required
-                  className={`${inputClass} appearance-none cursor-pointer disabled:opacity-60`}
-                >
-                  <option value="">Jam</option>
-                  {timeSlots.map((slot) => (
-                    <option key={slot} value={slot}>
-                      {slot}
-                    </option>
-                  ))}
-                </select>
-                <div
-                  className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs ${
-                    isKiosk ? "text-base right-6" : ""
+            <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-2 md:gap-3 bg-gray-50 p-3 md:p-4 rounded-3xl border border-gray-100">
+              {timeSlots.map((slot) => (
+                <button
+                  key={slot}
+                  type="button"
+                  onClick={() => setFormData({ ...formData, jam: slot })}
+                  className={`py-2 md:py-3 rounded-xl md:rounded-2xl font-bold text-base md:text-lg transition-all ${
+                    formData.jam === slot
+                      ? "bg-gray-900 text-white shadow-lg scale-105"
+                      : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-100"
                   }`}
                 >
-                  <FiChevronDown />
-                </div>
-              </div>
-            )}
+                  {slot}
+                </button>
+              ))}
+              {timeSlots.length === 0 && (
+                <p className="col-span-4 text-center text-gray-400 py-4">
+                  Pilih layanan terlebih dahulu
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
@@ -339,7 +288,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
                 ? "Contoh: Mandi Kutu, Potong Kuku..."
                 : "Contoh: Muntah, Diare, Lemas..."
             }
-            rows={isKiosk ? "4" : "3"}
+            rows="4"
           />
         </div>
 
@@ -368,7 +317,10 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
         <div className="flex gap-3 pt-4">
           <button type="submit" disabled={loading} className={buttonClass}>
             {loading ? (
-              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <>
+                <div className="w-5 h-5 md:w-6 md:h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <span>Memproses...</span>
+              </>
             ) : (
               <>
                 {ticketToEdit
@@ -376,10 +328,13 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
                   : role === "kiosk"
                   ? "Ambil Antrian"
                   : "Simpan Tiket"}
-                {!ticketToEdit && <FiArrowRight />}
+                {!ticketToEdit && (
+                  <FiArrowRight className="text-xl md:text-2xl" />
+                )}
               </>
             )}
           </button>
+
           {ticketToEdit && (
             <button
               type="button"
@@ -391,6 +346,60 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
           )}
         </div>
       </div>
+
+      {/* Success Modal for Kiosk/Guest */}
+      {successData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-scale-in relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-2 bg-linear-to-r from-blue-500 to-purple-500"></div>
+
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600 animate-bounce">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-10 w-10"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+
+            <h3 className="text-2xl font-black text-gray-800 mb-2">
+              Berhasil!
+            </h3>
+            <p className="text-gray-500 mb-6 font-medium">
+              Tiket untuk{" "}
+              <strong className="text-gray-800">{successData.nama}</strong>{" "}
+              telah dibuat.
+            </p>
+
+            <div className="bg-white p-4 rounded-2xl border-2 border-dashed border-gray-200 inline-block mb-6">
+              <QRCode
+                value={`${window.location.origin}/monitor/${successData.id}`}
+                size={180}
+              />
+            </div>
+
+            <p className="text-xs text-gray-400 mb-8 max-w-[200px] mx-auto">
+              Scan QR Code ini untuk memantau status antrian Anda secara
+              real-time.
+            </p>
+
+            <button
+              onClick={() => setSuccessData(null)}
+              className="w-full py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-black transition-all shadow-lg active:scale-95"
+            >
+              Selesai & Tutup
+            </button>
+          </div>
+        </div>
+      )}
     </form>
   );
 }

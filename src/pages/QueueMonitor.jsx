@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase";
+import { COLLECTION_NAME } from "../services/ticketService";
 import { TICKET_STATUS, SERVICE_TYPE } from "../constants";
 import {
   FiClock,
@@ -22,7 +23,7 @@ export default function QueueMonitor() {
   useEffect(() => {
     if (!id) return;
 
-    const unsub = onSnapshot(doc(db, "tickets", id), (doc) => {
+    const unsub = onSnapshot(doc(db, COLLECTION_NAME, id), (doc) => {
       setLoading(false);
       if (doc.exists()) {
         setTicket({ id: doc.id, ...doc.data() });
