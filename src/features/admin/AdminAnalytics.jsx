@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getAnalyticsStats, getChartData } from "../../services/ticketService";
+import { FiCheckCircle, FiXCircle } from "react-icons/fi";
 
 const AdminAnalytics = () => {
   const [loading, setLoading] = useState(true);
@@ -113,9 +114,9 @@ const AdminAnalytics = () => {
             onChange={(e) => setFilterType(e.target.value)}
             className="px-4 py-2.5 bg-gray-50 border-transparent focus:border-blue-500 focus:bg-white rounded-xl text-sm font-bold text-gray-700 outline-none transition-all cursor-pointer hover:bg-gray-100"
           >
-            <option value="day">📅 Harian</option>
-            <option value="week">📅 Mingguan</option>
-            <option value="month">📅 Bulanan</option>
+            <option value="day">Harian</option>
+            <option value="week">Mingguan</option>
+            <option value="month">Bulanan</option>
           </select>
           <input
             type="date"
@@ -129,20 +130,7 @@ const AdminAnalytics = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center space-x-4">
           <div className="p-4 bg-green-50 rounded-2xl text-green-600">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            <FiCheckCircle className="h-8 w-8" />
           </div>
           <div>
             <p className="text-sm text-gray-500 font-medium">Tiket Selesai</p>
@@ -154,20 +142,7 @@ const AdminAnalytics = () => {
 
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center space-x-4">
           <div className="p-4 bg-red-50 rounded-2xl text-red-600">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            <FiXCircle className="h-8 w-8" />
           </div>
           <div>
             <p className="text-sm text-gray-500 font-medium">

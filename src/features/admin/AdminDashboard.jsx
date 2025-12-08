@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { FiChevronDown } from "react-icons/fi";
+import { FaCut, FaStethoscope } from "react-icons/fa";
 import { createPortal } from "react-dom";
 import TicketForm from "../../components/tickets/TicketForm";
 import TicketList from "../../components/tickets/TicketList";
@@ -63,18 +65,7 @@ const PaymentAccordion = ({
             isOpen ? "rotate-180" : ""
           }`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <FiChevronDown className="h-5 w-5" />
         </div>
       </div>
 
@@ -176,18 +167,7 @@ const ValidationAccordion = ({ title, items, isOpen, onToggle, icon }) => {
             isOpen ? "rotate-180" : ""
           }`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <FiChevronDown className="h-5 w-5" />
         </div>
       </div>
 
@@ -404,14 +384,14 @@ export default function AdminDashboard() {
                     items={pendingGrooming}
                     isOpen={expandedValidationSections.Grooming}
                     onToggle={() => toggleValidationSection("Grooming")}
-                    icon="✂️"
+                    icon={<FaCut className="text-xl" />}
                   />
                   <ValidationAccordion
                     title="Klinik"
                     items={pendingKlinik}
                     isOpen={expandedValidationSections.Klinik}
                     onToggle={() => toggleValidationSection("Klinik")}
-                    icon="🩺"
+                    icon={<FaStethoscope className="text-xl" />}
                   />
                 </div>
               </div>
@@ -459,7 +439,7 @@ export default function AdminDashboard() {
                     items={paymentGrooming}
                     isOpen={expandedSections.Grooming}
                     onToggle={() => toggleSection("Grooming")}
-                    icon="✂️"
+                    icon={<FaCut className="text-xl" />}
                     selectedPaymentIds={selectedPaymentIds}
                     onToggleSelect={toggleSelect}
                     onSelectAll={selectAllGroup}
@@ -469,7 +449,7 @@ export default function AdminDashboard() {
                     items={paymentKlinik}
                     isOpen={expandedSections.Klinik}
                     onToggle={() => toggleSection("Klinik")}
-                    icon="🩺"
+                    icon={<FaStethoscope className="text-xl" />}
                     selectedPaymentIds={selectedPaymentIds}
                     onToggleSelect={toggleSelect}
                     onSelectAll={selectAllGroup}

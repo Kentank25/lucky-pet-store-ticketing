@@ -4,6 +4,8 @@ import { useRole } from "../../context/RoleContext";
 import toast from "react-hot-toast";
 import { SERVICE_TYPE, TICKET_STATUS } from "../../constants";
 import { ticketSchema } from "../../utils/validationSchemas"; // Zod imports
+import { FaCut, FaStethoscope } from "react-icons/fa";
+import { FiArrowRight, FiChevronDown, FiAlertTriangle } from "react-icons/fi";
 
 export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
   const { role } = useRole();
@@ -203,12 +205,14 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
               {[
                 {
                   value: SERVICE_TYPE.GROOMING,
-                  label: "✂️ Grooming",
+                  label: "Grooming",
+                  icon: <FaCut />,
                   color: "blue",
                 },
                 {
                   value: SERVICE_TYPE.KLINIK,
-                  label: "🩺 Klinik",
+                  label: "Klinik",
+                  icon: <FaStethoscope />,
                   color: "rose",
                 },
               ].map((option) => (
@@ -225,9 +229,9 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
                   }`}
                 >
                   <span className="text-3xl md:text-4xl block mb-0 md:mb-2">
-                    {option.label.split(" ")[0]}
+                    {option.icon}
                   </span>
-                  <span>{option.label.split(" ")[1]}</span>
+                  <span>{option.label}</span>
                 </button>
               ))}
             </div>
@@ -241,15 +245,15 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
                 disabled={!!ticketToEdit}
                 className={`${inputClass} appearance-none cursor-pointer disabled:opacity-60`}
               >
-                <option value={SERVICE_TYPE.GROOMING}>✂️ Grooming</option>
-                <option value={SERVICE_TYPE.KLINIK}>🩺 Klinik</option>
+                <option value={SERVICE_TYPE.GROOMING}>Grooming</option>
+                <option value={SERVICE_TYPE.KLINIK}>Klinik</option>
               </select>
               <div
                 className={`absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 ${
                   isKiosk ? "text-xl" : ""
                 }`}
               >
-                ▼
+                <FiChevronDown />
               </div>
             </div>
           )}
@@ -315,7 +319,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
                     isKiosk ? "text-base right-6" : ""
                   }`}
                 >
-                  ▼
+                  <FiChevronDown />
                 </div>
               </div>
             )}
@@ -350,8 +354,9 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
               className="w-5 h-5 text-red-600 rounded focus:ring-red-500 border-gray-300 cursor-pointer"
             />
             <label htmlFor="express" className="cursor-pointer select-none">
-              <span className="block font-bold text-gray-800 text-sm">
-                🚨 Emergency Ticket (Langsung Aktif)
+              <span className="font-bold text-gray-800 text-sm flex items-center gap-2">
+                <FiAlertTriangle className="text-red-500" /> Emergency Ticket
+                (Langsung Aktif)
               </span>
               <span className="block text-xs text-gray-500">
                 Lewati proses validasi (untuk kondisi darurat).
@@ -371,7 +376,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
                   : role === "kiosk"
                   ? "Ambil Antrian"
                   : "Simpan Tiket"}
-                {!ticketToEdit && <span>➔</span>}
+                {!ticketToEdit && <FiArrowRight />}
               </>
             )}
           </button>

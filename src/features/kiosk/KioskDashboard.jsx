@@ -1,4 +1,5 @@
 import TicketForm from "../../components/tickets/TicketForm";
+import { FaCut, FaStethoscope } from "react-icons/fa";
 
 export default function KioskDashboard() {
   return (
@@ -37,7 +38,7 @@ export default function KioskDashboard() {
               {/* Service Indicators */}
               <div className="flex flex-wrap gap-4">
                 <div className="bg-white/10 backdrop-blur-sm border border-white/10 p-3 md:p-4 rounded-2xl flex items-center gap-3 flex-1 min-w-[140px]">
-                  <span className="text-2xl">✂️</span>
+                  <FaCut className="text-2xl" />
                   <div>
                     <p className="text-[10px] md:text-xs font-bold uppercase tracking-wider opacity-70">
                       Layanan
@@ -46,7 +47,7 @@ export default function KioskDashboard() {
                   </div>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm border border-white/10 p-3 md:p-4 rounded-2xl flex items-center gap-3 flex-1 min-w-[140px]">
-                  <span className="text-2xl">🩺</span>
+                  <FaStethoscope className="text-2xl" />
                   <div>
                     <p className="text-[10px] md:text-xs font-bold uppercase tracking-wider opacity-70">
                       Layanan

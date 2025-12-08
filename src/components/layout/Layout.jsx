@@ -1,4 +1,5 @@
 import { useRole } from "../../context/RoleContext";
+import { FiLogOut } from "react-icons/fi";
 
 export default function Layout({ children }) {
   const { role, user, logout } = useRole();
@@ -35,20 +36,7 @@ export default function Layout({ children }) {
             title="Keluar Aplikasi"
           >
             <span className="font-bold text-sm hidden sm:inline">Keluar</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 group-hover:translate-x-1 transition-transform"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-              />
-            </svg>
+            <FiLogOut className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
       </header>

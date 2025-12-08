@@ -3,6 +3,16 @@ import { useParams, Link } from "react-router-dom";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { TICKET_STATUS, SERVICE_TYPE } from "../constants";
+import {
+  FiClock,
+  FiUsers,
+  FiDollarSign,
+  FiCheckCircle,
+  FiXCircle,
+  FiClipboard,
+  FiHelpCircle,
+} from "react-icons/fi";
+import { FaCut } from "react-icons/fa";
 
 export default function QueueMonitor() {
   const { id } = useParams();
@@ -35,7 +45,9 @@ export default function QueueMonitor() {
   if (!ticket) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 text-center">
-        <div className="text-6xl mb-4">❓</div>
+        <div className="text-6xl mb-4 text-gray-300">
+          <FiHelpCircle />
+        </div>
         <h1 className="text-2xl font-bold text-gray-800 mb-2">
           Tiket Tidak Ditemukan
         </h1>
@@ -61,19 +73,19 @@ export default function QueueMonitor() {
   const getStatusIcon = (status) => {
     switch (status) {
       case TICKET_STATUS.PENDING:
-        return "⏳";
+        return <FiClock />;
       case TICKET_STATUS.WAITING:
-        return "🛋️";
+        return <FiUsers />;
       case TICKET_STATUS.ACTIVE:
-        return "✂️";
+        return <FaCut />;
       case TICKET_STATUS.PAYMENT:
-        return "💰";
+        return <FiDollarSign />;
       case TICKET_STATUS.COMPLETED:
-        return "✅";
+        return <FiCheckCircle />;
       case TICKET_STATUS.CANCELLED:
-        return "🚫";
+        return <FiXCircle />;
       default:
-        return "📋";
+        return <FiClipboard />;
     }
   };
 

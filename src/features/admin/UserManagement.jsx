@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { registerUser, getUsers, deleteUser } from "../../services/userService";
 import toast from "react-hot-toast";
 import { userSchema } from "../../utils/validationSchemas"; // Zod imports
+import { FiPlus, FiX } from "react-icons/fi";
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -142,7 +143,7 @@ export default function UserManagement() {
           onClick={() => setIsModalOpen(true)}
           className="bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-gray-200 transition-all hover:scale-105"
         >
-          <span>+</span> Tambah User
+          <FiPlus className="text-xl" /> Tambah User
         </button>
       </div>
 
@@ -229,7 +230,7 @@ export default function UserManagement() {
               onClick={() => setIsModalOpen(false)}
               className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 font-bold text-xl"
             >
-              x
+              <FiX />
             </button>
 
             <h2 className="text-2xl font-bold text-gray-800 mb-6">
