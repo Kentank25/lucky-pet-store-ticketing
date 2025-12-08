@@ -315,7 +315,7 @@ export default function UserManagement() {
                   Role (Akses)
                 </label>
                 <div className="grid grid-cols-2 gap-3">
-                  {["admin", "kiosk", "pic_grooming", "pic_klinik"].map((r) => (
+                  {["admin", "pic_grooming", "pic_klinik"].map((r) => (
                     <button
                       key={r}
                       type="button"

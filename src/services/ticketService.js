@@ -40,6 +40,8 @@ export const addTicket = async (ticketData, role, customStatus = null) => {
     ? `Tiket dibuat via Emergency (Admin). Status langsung: ${customStatus}.`
     : role === "kiosk" 
     ? `Tiket dibuat via Kiosk (${ticketData.layanan}). Menunggu validasi.`
+    : role === "guest"
+    ? `Tiket dibuat oleh Tamu/Public (${ticketData.layanan}). Menunggu validasi Admin.`
     : `Tiket dibuat oleh Admin (${ticketData.layanan}). Menunggu validasi.`;
 
   const newTicket = {

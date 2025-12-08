@@ -11,12 +11,13 @@ export const ticketSchema = z.object({
   catatan: z.string().max(200, "Catatan maksimal 200 karakter").optional(),
 });
 
+
 // User Registration Schema (Admin)
 export const userSchema = z.object({
   name: z.string().min(3, "Nama lengkap minimal 3 karakter"),
   email: z.string().email("Format email tidak valid"),
   password: z.string().min(6, "Password minimal 6 karakter"),
-  role: z.enum(["admin", "kiosk", "pic_grooming", "pic_klinik"], {
+  role: z.enum(["admin", "pic_grooming", "pic_klinik"], {
     errorMap: () => ({ message: "Role tidak valid" }),
   }),
 });

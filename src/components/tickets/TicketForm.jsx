@@ -36,13 +36,12 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
     e.preventDefault();
     setLoading(true);
 
+    const isGuest = !role; // If no role context, assume guest/public kiosk
+
     // Clean up data
     const cleanedFormData = {
       ...formData,
       catatan: formData.catatan.trim(),
-      // Ensure kontak is mapped correctly if your schema expects 'kontak' but state is 'telepon'
-      // Based on previous file content, state is 'telepon', schema has 'kontak'
-      // Let's align them.
       kontak: formData.telepon,
       nama: formData.nama.trim(),
     };
@@ -76,16 +75,26 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
         toast.success("Tiket berhasil diperbarui");
         if (onCancel) onCancel();
       } else {
+        // Create Logic
+        const newStatus = isGuest
+          ? TICKET_STATUS.PENDING
+          : isExpress
+          ? TICKET_STATUS.ACTIVE
+          : null;
+
         await addTicket(
           cleanedFormData,
-          role,
-          isExpress ? TICKET_STATUS.ACTIVE : null
+          role || "guest", // Pass 'guest' if role is null
+          newStatus
         );
+
         toast.success(
-          role === "kiosk"
-            ? "Antrian berhasil diambil!"
+          isGuest
+            ? "Antrian berhasil dibuat! Mohon tunggu konfirmasi admin."
             : "Tiket berhasil dibuat"
         );
+
+        // Reset Form
         setFormData({
           ...formData,
           nama: "",
@@ -126,8 +135,8 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
 
   const timeSlots = generateTimeSlots(formData.layanan);
 
-  // Kiosk Accessibility Tweaks
-  const isKiosk = role === "kiosk";
+  // Kiosk/Guest Accessibility Tweaks
+  const isKiosk = role === "kiosk" || !role; // Treat guest as kiosk UI
   const inputClass = isKiosk
     ? "w-full px-5 py-4 md:px-8 md:py-5 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl md:rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-bold text-lg md:text-xl"
     : "w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-bold";
