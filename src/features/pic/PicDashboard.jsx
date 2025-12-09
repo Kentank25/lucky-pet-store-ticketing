@@ -1,7 +1,13 @@
 import { useTickets } from "../../hooks/useTickets";
-import { FaCut, FaStethoscope, FaQuoteLeft } from "react-icons/fa";
-import { HiTicket } from "react-icons/hi";
-import { FiCheck, FiArrowRight, FiCoffee } from "react-icons/fi";
+import {
+  ScissorsIcon,
+  HeartIcon,
+  ChatBubbleLeftRightIcon,
+  TicketIcon,
+  CheckIcon,
+  ArrowRightIcon,
+  SparklesIcon,
+} from "@heroicons/react/24/outline";
 import { useRole } from "../../context/RoleContext";
 import { updateTicketStatus } from "../../services/ticketService";
 import toast from "react-hot-toast";
@@ -113,7 +119,11 @@ export default function PicDashboard() {
                 Dashboard PIC
               </span>
               <span className="text-2xl animate-bounce">
-                {isGrooming ? <FaCut /> : <FaStethoscope />}
+                {isGrooming ? (
+                  <ScissorsIcon className="w-8 h-8" />
+                ) : (
+                  <HeartIcon className="w-8 h-8" />
+                )}
               </span>
             </div>
             <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-3 drop-shadow-sm">
@@ -202,7 +212,7 @@ export default function PicDashboard() {
 
                     {ticket.catatan && (
                       <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100 relative">
-                        <FaQuoteLeft className="absolute -top-3 -left-2 text-4xl opacity-20" />
+                        <ChatBubbleLeftRightIcon className="absolute -top-3 -left-2 text-4xl opacity-20 w-8 h-8" />
                         <p className="text-gray-600 text-lg italic relative z-10 pl-4">
                           {ticket.catatan}
                         </p>
@@ -223,7 +233,7 @@ export default function PicDashboard() {
                       className="w-full py-5 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white rounded-2xl font-bold text-lg shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-3 group-hover:shadow-emerald-300"
                     >
                       <span>Selesaikan Layanan</span>
-                      <FiCheck className="h-6 w-6" />
+                      <CheckIcon className="h-6 w-6" />
                     </button>
                   </div>
                 </div>
@@ -251,7 +261,7 @@ export default function PicDashboard() {
 
               <div className="relative z-10 max-w-2xl mx-auto">
                 <div className="flex justify-center mb-6">
-                  <HiTicket className="text-7xl animate-bounce text-gray-800" />
+                  <TicketIcon className="text-7xl animate-bounce text-gray-800 w-20 h-20" />
                 </div>
                 <h3 className="text-3xl font-black text-gray-800 mb-3">
                   Antrian Tersedia
@@ -273,7 +283,7 @@ export default function PicDashboard() {
                   }`}
                 >
                   <span>Panggil & Ambil Antrian</span>
-                  <FiArrowRight className="h-6 w-6" />
+                  <ArrowRightIcon className="h-6 w-6" />
                 </button>
               </div>
             </div>
@@ -284,7 +294,7 @@ export default function PicDashboard() {
         {activeTickets.length === 0 && waitingTickets.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 bg-white/50 backdrop-blur-sm rounded-[3rem] border-2 border-dashed border-gray-200">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center text-4xl mb-6 animate-pulse">
-              <FiCoffee className="text-gray-600" />
+              <SparklesIcon className="text-gray-600 w-12 h-12" />
             </div>
             <h3 className="text-2xl font-bold text-gray-400 mb-2">
               Tidak ada antrian

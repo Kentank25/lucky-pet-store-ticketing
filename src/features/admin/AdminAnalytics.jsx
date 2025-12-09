@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getAnalyticsStats, getChartData } from "../../services/ticketService";
-import { FiCheckCircle, FiXCircle } from "react-icons/fi";
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 
 const AdminAnalytics = () => {
   const [loading, setLoading] = useState(true);
@@ -130,7 +130,7 @@ const AdminAnalytics = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center space-x-4">
           <div className="p-4 bg-green-50 rounded-2xl text-green-600">
-            <FiCheckCircle className="h-8 w-8" />
+            <CheckCircleIcon className="h-8 w-8" />
           </div>
           <div>
             <p className="text-sm text-gray-500 font-medium">Tiket Selesai</p>
@@ -142,7 +142,7 @@ const AdminAnalytics = () => {
 
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex items-center space-x-4">
           <div className="p-4 bg-red-50 rounded-2xl text-red-600">
-            <FiXCircle className="h-8 w-8" />
+            <XCircleIcon className="h-8 w-8" />
           </div>
           <div>
             <p className="text-sm text-gray-500 font-medium">

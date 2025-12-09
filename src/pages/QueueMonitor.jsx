@@ -5,15 +5,18 @@ import { db } from "../services/firebase";
 import { COLLECTION_NAME } from "../services/ticketService";
 import { TICKET_STATUS, SERVICE_TYPE } from "../constants";
 import {
-  FiClock,
-  FiUsers,
-  FiDollarSign,
-  FiCheckCircle,
-  FiXCircle,
-  FiClipboard,
-  FiHelpCircle,
-} from "react-icons/fi";
-import { FaCut } from "react-icons/fa";
+  ClockIcon,
+  UserGroupIcon,
+  CurrencyDollarIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  ClipboardDocumentListIcon,
+  QuestionMarkCircleIcon,
+  CalendarIcon,
+  ArrowLeftIcon,
+  ScissorsIcon,
+  HeartIcon,
+} from "@heroicons/react/24/outline";
 
 export default function QueueMonitor() {
   const { id } = useParams();
@@ -37,27 +40,27 @@ export default function QueueMonitor() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (!ticket) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 text-center">
-        <div className="text-6xl mb-4 text-gray-300">
-          <FiHelpCircle />
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 text-center">
+        <div className="text-6xl mb-4 text-slate-300">
+          <QuestionMarkCircleIcon className="w-16 h-16 mx-auto" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+        <h1 className="text-3xl font-bold text-slate-800 mb-2">
           Tiket Tidak Ditemukan
         </h1>
-        <p className="text-gray-500 mb-8">
+        <p className="text-slate-500 mb-8 font-medium">
           Mohon periksa kembali link atau scan ulang QR code Anda.
         </p>
         <Link
           to="/"
-          className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200"
+          className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 hover:-translate-y-1 transition-all"
         >
           Kembali ke Beranda
         </Link>
@@ -66,27 +69,23 @@ export default function QueueMonitor() {
   }
 
   const isGrooming = ticket.layanan === SERVICE_TYPE.GROOMING;
-  const themeColor = isGrooming ? "blue" : "rose";
-  const gradient = isGrooming
-    ? "from-blue-500 to-indigo-600"
-    : "from-rose-500 to-orange-500";
 
   const getStatusIcon = (status) => {
     switch (status) {
       case TICKET_STATUS.PENDING:
-        return <FiClock />;
+        return <ClockIcon className="w-6 h-6" />;
       case TICKET_STATUS.WAITING:
-        return <FiUsers />;
+        return <UserGroupIcon className="w-6 h-6" />;
       case TICKET_STATUS.ACTIVE:
-        return <FaCut />;
+        return <ScissorsIcon className="w-6 h-6" />;
       case TICKET_STATUS.PAYMENT:
-        return <FiDollarSign />;
+        return <CurrencyDollarIcon className="w-6 h-6" />;
       case TICKET_STATUS.COMPLETED:
-        return <FiCheckCircle />;
+        return <CheckCircleIcon className="w-6 h-6" />;
       case TICKET_STATUS.CANCELLED:
-        return <FiXCircle />;
+        return <XCircleIcon className="w-6 h-6" />;
       default:
-        return <FiClipboard />;
+        return <ClipboardDocumentListIcon className="w-6 h-6" />;
     }
   };
 
@@ -109,84 +108,95 @@ export default function QueueMonitor() {
     }
   };
 
-  const getProgressWidth = (status) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case TICKET_STATUS.PENDING:
-        return "20%";
+        return "text-amber-500 bg-amber-50 border-amber-100";
       case TICKET_STATUS.WAITING:
-        return "40%";
+        return "text-blue-500 bg-blue-50 border-blue-100";
       case TICKET_STATUS.ACTIVE:
-        return "60%";
+        return "text-indigo-500 bg-indigo-50 border-indigo-100";
       case TICKET_STATUS.PAYMENT:
-        return "80%";
+        return "text-purple-500 bg-purple-50 border-purple-100";
       case TICKET_STATUS.COMPLETED:
-        return "100%";
+        return "text-green-500 bg-green-50 border-green-100";
+      case TICKET_STATUS.CANCELLED:
+        return "text-red-500 bg-red-50 border-red-100";
       default:
-        return "0%";
+        return "text-slate-500 bg-slate-50 border-slate-100";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100 relative">
-        {/* Header Background */}
-        <div
-          className={`absolute top-0 left-0 right-0 h-32 bg-linear-to-br ${gradient}`}
-        ></div>
+    <div className="min-h-screen p-4 md:p-8 flex items-center justify-center">
+      <div className="max-w-md w-full animate-scale-in">
+        <Link
+          to="/"
+          className="inline-flex items-center text-slate-400 hover:text-slate-600 font-bold mb-6 transition-colors"
+        >
+          <ArrowLeftIcon className="mr-2 w-5 h-5" />
+          Kembali
+        </Link>
 
-        <div className="relative z-10 px-6 pt-12 pb-8 text-center">
-          {/* Status Icon Bubble */}
-          <div className="w-24 h-24 mx-auto bg-white rounded-full shadow-xl flex items-center justify-center text-5xl mb-4 border-4 border-white/50 backdrop-blur-sm animate-bounce">
-            {getStatusIcon(ticket.status)}
-          </div>
-
-          <h2 className="text-3xl font-black text-gray-800 mb-1">
-            {ticket.nama}
-          </h2>
-          <p className="text-gray-500 font-bold uppercase tracking-wider text-xs mb-6">
-            ID: #{ticket.id.slice(-6)}
-          </p>
-
-          {/* Status Card */}
+        <div className="glass-panel rounded-3xl p-8 text-center relative overflow-hidden">
+          {/* Service Indicator Decoration */}
           <div
-            className={`bg-${themeColor}-50 border border-${themeColor}-100 rounded-2xl p-6 mb-6`}
-          >
-            <p
-              className={`text-${themeColor}-600 font-bold text-sm uppercase tracking-widest mb-2`}
+            className={`absolute top-0 left-0 right-0 h-2 bg-linear-to-r ${
+              isGrooming
+                ? "from-blue-400 to-indigo-500"
+                : "from-rose-400 to-orange-500"
+            }`}
+          ></div>
+
+          <div className="mb-6">
+            <span
+              className={`inline-block p-4 rounded-full text-4xl mb-4 shadow-sm ${getStatusColor(
+                ticket.status
+              )}`}
             >
-              Status Saat Ini
-            </p>
-            <h3 className={`text-2xl font-black text-${themeColor}-700`}>
+              {getStatusIcon(ticket.status)}
+            </span>
+            <h2 className="text-3xl font-black text-slate-800 mb-1">
               {getStatusLabel(ticket.status)}
-            </h3>
+            </h2>
+            <p className="text-slate-500 font-medium">
+              Status Terkini Antrian Anda
+            </p>
           </div>
 
-          {/* Info Grid */}
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-              <p className="text-xs text-gray-400 font-bold uppercase">
-                Layanan
+          <div className="bg-slate-50/50 rounded-2xl p-6 border border-slate-100 mb-6 space-y-4 text-left">
+            <div>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                Nama Pelanggan / Hewan
               </p>
-              <p className="text-gray-700 font-bold">{ticket.layanan}</p>
+              <p className="text-xl font-bold text-slate-700">{ticket.nama}</p>
             </div>
-            <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-              <p className="text-xs text-gray-400 font-bold uppercase">Waktu</p>
-              <p className="text-gray-700 font-bold">{ticket.jam || "-"}</p>
+
+            <div className="flex justify-between items-center border-t border-slate-100 pt-4">
+              <div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  Layanan
+                </p>
+                <div className="flex items-center gap-2 text-slate-700 font-bold">
+                  {isGrooming ? <FaCut /> : <FaStethoscope />}
+                  {ticket.layanan}
+                </div>
+              </div>
+
+              <div className="text-right">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  Waktu
+                </p>
+                <div className="flex items-center justify-end gap-2 text-slate-700 font-bold">
+                  <FiCalendar />
+                  {ticket.jam || "-"}
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Progress Bar (Visual only) */}
-          <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden mb-8">
-            <div
-              className={`h-full bg-${themeColor}-500 transition-all duration-1000 ease-out`}
-              style={{
-                width: getProgressWidth(ticket.status),
-              }}
-            ></div>
-          </div>
-
-          <p className="text-xs text-center text-gray-400">
-            Halaman ini akan refresh otomatis saat status berubah.
+          <p className="text-xs text-slate-400 font-medium">
+            Ticket ID: {ticket.id}
           </p>
         </div>
       </div>

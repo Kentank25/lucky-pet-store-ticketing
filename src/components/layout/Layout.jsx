@@ -1,5 +1,5 @@
 import { useRole } from "../../context/RoleContext";
-import { FiLogOut } from "react-icons/fi";
+import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 
 export default function Layout({ children }) {
   const { role, user, logout } = useRole();
@@ -36,7 +36,7 @@ export default function Layout({ children }) {
             title="Keluar Aplikasi"
           >
             <span className="font-bold text-sm hidden sm:inline">Keluar</span>
-            <FiLogOut className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            <ArrowRightOnRectangleIcon className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
       </header>

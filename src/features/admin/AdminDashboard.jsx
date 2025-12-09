@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
-import { FiChevronDown } from "react-icons/fi";
-import { FaCut, FaStethoscope } from "react-icons/fa";
+import {
+  ChevronDownIcon,
+  ScissorsIcon,
+  HeartIcon,
+} from "@heroicons/react/24/outline";
 import { createPortal } from "react-dom";
 import TicketForm from "../../components/tickets/TicketForm";
 import TicketList from "../../components/tickets/TicketList";
@@ -11,6 +14,62 @@ import toast from "react-hot-toast";
 import AdminAnalytics from "./AdminAnalytics";
 import UserManagement from "./UserManagement";
 import { TICKET_STATUS, SERVICE_TYPE } from "../../constants";
+
+// Reusable Minimalist Accordion Component
+const AccordionItem = ({
+  title,
+  count,
+  icon,
+  isOpen,
+  onToggle,
+  colorClass = "indigo",
+  children,
+  headerExtras,
+}) => {
+  return (
+    <div
+      className={`bg-white rounded-2xl border border-slate-100 overflow-hidden mb-4 transition-all duration-300 ${
+        isOpen
+          ? "shadow-lg shadow-slate-100 ring-1 ring-slate-100"
+          : "hover:border-slate-200"
+      }`}
+    >
+      <div
+        className="p-5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50/50 transition-colors"
+        onClick={onToggle}
+      >
+        <div className="flex items-center gap-4">
+          <div
+            className={`text-2xl w-10 h-10 flex items-center justify-center rounded-full bg-${colorClass}-50 text-${colorClass}-600`}
+          >
+            {icon}
+          </div>
+          <div>
+            <h4 className="font-bold text-slate-800 text-base">{title}</h4>
+            <p className="text-slate-400 text-xs font-medium">{count} Tiket</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          {headerExtras}
+          <div
+            className={`w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 transform transition-transform duration-300 ${
+              isOpen ? "rotate-180" : ""
+            }`}
+          >
+            <ChevronDownIcon className="h-5 w-5" />
+          </div>
+        </div>
+      </div>
+
+      {isOpen && (
+        <div className="p-5 pt-0 animate-fade-in border-t border-slate-50">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const PaymentAccordion = ({
   title,
@@ -27,116 +86,82 @@ const PaymentAccordion = ({
   const allSelected = items.every((t) => selectedPaymentIds.has(t.id));
   const someSelected = items.some((t) => selectedPaymentIds.has(t.id));
 
-  return (
-    <div className="bg-white rounded-4xl border border-purple-100 overflow-hidden mb-6 shadow-lg shadow-purple-100/50 transition-all duration-300">
-      <div
-        className="p-6 flex items-center justify-between bg-white cursor-pointer select-none hover:bg-gray-50 transition-colors"
-        onClick={onToggle}
-      >
-        <div className="flex items-center gap-4">
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="flex items-center"
-          >
-            <input
-              type="checkbox"
-              className="w-6 h-6 rounded-lg border-gray-300 text-purple-600 focus:ring-purple-500 transition-all cursor-pointer"
-              checked={allSelected}
-              ref={(input) => {
-                if (input) input.indeterminate = someSelected && !allSelected;
-              }}
-              onChange={(e) => onSelectAll(items, e.target.checked)}
-            />
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-2xl bg-gray-100 w-10 h-10 flex items-center justify-center rounded-full">
-              {icon}
-            </span>
-            <div>
-              <h4 className="font-bold text-gray-800 text-lg">{title}</h4>
-              <p className="text-gray-400 text-xs font-medium">
-                {items.length} Menunggu Pembayaran
-              </p>
-            </div>
-          </div>
-        </div>
-        <div
-          className={`w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 transform transition-transform duration-300 ${
-            isOpen ? "rotate-180" : ""
-          }`}
-        >
-          <FiChevronDown className="h-5 w-5" />
-        </div>
-      </div>
-
-      {isOpen && (
-        <div className="p-6 pt-0 grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
-          {items.map((ticket) => (
-            <div
-              key={ticket.id}
-              onClick={() => onToggleSelect(ticket.id)}
-              className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 relative group ${
-                selectedPaymentIds.has(ticket.id)
-                  ? "bg-purple-50 border-purple-400 shadow-md"
-                  : "bg-white border-gray-100 hover:border-purple-200 hover:shadow-md"
-              }`}
-            >
-              <div className="absolute top-5 right-5">
-                <input
-                  type="checkbox"
-                  className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                  checked={selectedPaymentIds.has(ticket.id)}
-                  onChange={() => onToggleSelect(ticket.id)}
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </div>
-
-              <div className="pr-8">
-                <div className="flex items-center gap-2 mb-2">
-                  <span
-                    className={`text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider ${
-                      ticket.layanan === SERVICE_TYPE.GROOMING
-                        ? "bg-blue-100 text-blue-700"
-                        : "bg-rose-100 text-rose-700"
-                    }`}
-                  >
-                    {ticket.layanan}
-                  </span>
-                  <span className="text-xs text-gray-400 font-mono">
-                    #{ticket.id.slice(-6)}
-                  </span>
-                </div>
-
-                <h5 className="font-bold text-gray-800 text-lg mb-1">
-                  {ticket.nama}
-                </h5>
-
-                <div className="flex items-center gap-3 text-sm text-gray-500">
-                  <span className="flex items-center gap-1">
-                    📅{" "}
-                    {new Date(ticket.tanggalRilis).toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "short",
-                    })}
-                  </span>
-                  {ticket.jam && (
-                    <span className="flex items-center gap-1">
-                      ⏰ {ticket.jam}
-                    </span>
-                  )}
-                </div>
-
-                {ticket.catatan && (
-                  <p className="mt-3 text-xs text-gray-500 bg-gray-50 p-2 rounded-lg italic line-clamp-2">
-                    "{ticket.catatan}"
-                  </p>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+  // Custom Header Extra for Checkbox
+  const headerCheckbox = (
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="flex items-center bg-slate-100 px-3 py-1.5 rounded-lg"
+    >
+      <input
+        type="checkbox"
+        className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer mr-2"
+        checked={allSelected}
+        ref={(input) => {
+          if (input) input.indeterminate = someSelected && !allSelected;
+        }}
+        onChange={(e) => onSelectAll(items, e.target.checked)}
+      />
+      <span className="text-xs font-bold text-slate-600">All</span>
     </div>
+  );
+
+  return (
+    <AccordionItem
+      title={title}
+      count={items.length}
+      icon={icon}
+      isOpen={isOpen}
+      onToggle={onToggle}
+      colorClass="indigo"
+      headerExtras={headerCheckbox}
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+        {items.map((ticket) => (
+          <div
+            key={ticket.id}
+            onClick={() => onToggleSelect(ticket.id)}
+            className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 relative group ${
+              selectedPaymentIds.has(ticket.id)
+                ? "bg-indigo-50 border-indigo-200 shadow-sm"
+                : "bg-slate-50 border-transparent hover:bg-white hover:border-slate-200"
+            }`}
+          >
+            <div className="flex justify-between items-start mb-2">
+              <span
+                className={`text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider ${
+                  ticket.layanan === SERVICE_TYPE.GROOMING
+                    ? "bg-blue-100 text-blue-700"
+                    : "bg-rose-100 text-rose-700"
+                }`}
+              >
+                {ticket.layanan}
+              </span>
+              <input
+                type="checkbox"
+                className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                checked={selectedPaymentIds.has(ticket.id)}
+                onChange={() => onToggleSelect(ticket.id)}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+
+            <h5 className="font-bold text-slate-800 text-sm mb-1 line-clamp-1">
+              {ticket.nama}
+            </h5>
+
+            <div className="flex items-center gap-3 text-xs text-slate-500">
+              <span>
+                {new Date(ticket.tanggalRilis).toLocaleDateString("id-ID", {
+                  day: "numeric",
+                  month: "short",
+                })}
+              </span>
+              {ticket.jam && <span>• {ticket.jam}</span>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </AccordionItem>
   );
 };
 
@@ -144,39 +169,18 @@ const ValidationAccordion = ({ title, items, isOpen, onToggle, icon }) => {
   if (items.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-[2rem] border border-amber-100 overflow-hidden mb-6 shadow-lg shadow-amber-100/50 transition-all duration-300">
-      <div
-        className="p-6 flex items-center justify-between bg-white cursor-pointer select-none hover:bg-gray-50 transition-colors"
-        onClick={onToggle}
-      >
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl bg-gray-100 w-10 h-10 flex items-center justify-center rounded-full">
-              {icon}
-            </span>
-            <div>
-              <h4 className="font-bold text-gray-800 text-lg">{title}</h4>
-              <p className="text-gray-400 text-xs font-medium">
-                {items.length} Konfirmasi Kehadiran
-              </p>
-            </div>
-          </div>
-        </div>
-        <div
-          className={`w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 transform transition-transform duration-300 ${
-            isOpen ? "rotate-180" : ""
-          }`}
-        >
-          <FiChevronDown className="h-5 w-5" />
-        </div>
+    <AccordionItem
+      title={title}
+      count={items.length}
+      icon={icon}
+      isOpen={isOpen}
+      onToggle={onToggle}
+      colorClass="amber"
+    >
+      <div className="mt-4">
+        <TicketList tickets={items} />
       </div>
-
-      {isOpen && (
-        <div className="p-6 pt-0 animate-fade-in">
-          <TicketList tickets={items} />
-        </div>
-      )}
-    </div>
+    </AccordionItem>
   );
 };
 
@@ -202,7 +206,7 @@ export default function AdminDashboard() {
   if (loading)
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-slate-600"></div>
       </div>
     );
 
@@ -300,113 +304,106 @@ export default function AdminDashboard() {
     }
   };
 
+  // Modern Minimalist Tabs
+  const headerActions = (
+    <div className="flex p-1 bg-slate-100/50 rounded-xl">
+      {["dashboard", "analytics", "users"].map((tab) => (
+        <button
+          key={tab}
+          onClick={() => setActiveTab(tab)}
+          className={`px-4 py-2 rounded-lg text-sm font-bold capitalize transition-all duration-300 ${
+            activeTab === tab
+              ? "bg-white text-indigo-600 shadow-sm"
+              : "text-slate-500 hover:text-slate-700"
+          }`}
+        >
+          {tab}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
-    <div className="space-y-6">
-      {/* Header with Tabs - Portaled to Layout Header */}
+    <div className="space-y-8 pb-12">
+      {/* Header Tabs Portal */}
       {mounted &&
         document.getElementById("header-actions") &&
-        createPortal(
-          <div className="flex space-x-1 bg-white p-1 rounded-xl shadow-sm border border-gray-100 animate-fade-in">
-            <button
-              onClick={() => setActiveTab("dashboard")}
-              className={`px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all duration-300 ${
-                activeTab === "dashboard"
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-              }`}
-            >
-              Dashboard
-            </button>
-            <button
-              onClick={() => setActiveTab("analytics")}
-              className={`px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all duration-300 ${
-                activeTab === "analytics"
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-              }`}
-            >
-              Analytics
-            </button>
-            <button
-              onClick={() => setActiveTab("users")}
-              className={`px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all duration-300 ${
-                activeTab === "users"
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-              }`}
-            >
-              Users
-            </button>
-          </div>,
-          document.getElementById("header-actions")
-        )}
+        createPortal(headerActions, document.getElementById("header-actions"))}
+
+      {/* Main Content */}
       {activeTab === "analytics" ? (
-        <div className="space-y-8">
+        <div className="space-y-8 animate-fade-in">
           <AdminAnalytics />
-          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">
+          <div className="glass-panel p-6 rounded-3xl">
+            <h3 className="text-xl font-bold text-slate-800 mb-4">
               Riwayat Aktivitas
             </h3>
-            <div className="max-h-[600px] overflow-y-auto">
+            <div className="max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
               <LogList />
             </div>
           </div>
         </div>
       ) : activeTab === "users" ? (
-        <UserManagement />
+        <div className="animate-fade-in">
+          <UserManagement />
+        </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in">
-          {/* Left Column: Form (4 cols) */}
-          <div className="lg:col-span-4 space-y-8">
-            <TicketForm
-              ticketToEdit={ticketToEdit}
-              onCancel={() => setTicketToEdit(null)}
-            />
+          {/* Left Column: Form */}
+          <div className="lg:col-span-4 space-y-6">
+            <div className="glass-panel p-6 sm:p-8 rounded-4xl sticky top-24">
+              <h3 className="text-xl font-black text-slate-800 mb-6 flex items-center gap-2">
+                <span className="bg-indigo-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-lg">
+                  +
+                </span>
+                Buat Tiket Baru
+              </h3>
+              <TicketForm
+                ticketToEdit={ticketToEdit}
+                onCancel={() => setTicketToEdit(null)}
+                className="w-full"
+              />
+            </div>
           </div>
 
-          {/* Right Column: Ticket Lists (8 cols) */}
+          {/* Right Column: Queues */}
           <div className="lg:col-span-8 space-y-8">
-            {/* Validation Queue (Moved to Top) */}
+            {/* 1. Validation Queue */}
             {pendingTickets.length > 0 && (
-              <div className="bg-amber-50/50 p-8 rounded-[2.5rem] border border-amber-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-100 rounded-bl-[4rem] -z-10 opacity-50"></div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-amber-400 animate-pulse"></div>
+              <div className="glass-panel p-6 sm:p-8 rounded-4xl border-l-4 border-amber-400 bg-amber-50/10">
+                <h3 className="text-2xl font-black text-slate-800 mb-6 flex items-center gap-3">
+                  <span className="w-3 h-3 rounded-full bg-amber-400 animate-pulse"></span>
                   Konfirmasi Kehadiran
-                  <span className="bg-amber-200 text-amber-800 text-sm px-3 py-1 rounded-full">
+                  <span className="bg-amber-100 text-amber-700 text-sm px-3 py-1 rounded-full">
                     {pendingTickets.length}
                   </span>
                 </h3>
 
-                <div className="space-y-2">
-                  <ValidationAccordion
-                    title="Grooming"
-                    items={pendingGrooming}
-                    isOpen={expandedValidationSections.Grooming}
-                    onToggle={() => toggleValidationSection("Grooming")}
-                    icon={<FaCut className="text-xl" />}
-                  />
-                  <ValidationAccordion
-                    title="Klinik"
-                    items={pendingKlinik}
-                    isOpen={expandedValidationSections.Klinik}
-                    onToggle={() => toggleValidationSection("Klinik")}
-                    icon={<FaStethoscope className="text-xl" />}
-                  />
-                </div>
+                <ValidationAccordion
+                  title="Grooming"
+                  items={pendingGrooming}
+                  isOpen={expandedValidationSections.Grooming}
+                  onToggle={() => toggleValidationSection("Grooming")}
+                  icon={<ScissorsIcon className="w-5 h-5" />}
+                />
+                <ValidationAccordion
+                  title="Klinik"
+                  items={pendingKlinik}
+                  isOpen={expandedValidationSections.Klinik}
+                  onToggle={() => toggleValidationSection("Klinik")}
+                  icon={<HeartIcon className="w-5 h-5" />}
+                />
               </div>
             )}
 
-            {/* Payment Queue (Modified with Accordion & Bulk Actions) */}
+            {/* 2. Payment Queue */}
             {paymentTickets.length > 0 && (
-              <div className="bg-purple-50/50 p-8 rounded-[2.5rem] border border-purple-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100 rounded-bl-[4rem] -z-10 opacity-50"></div>
-
+              <div className="glass-panel p-6 sm:p-8 rounded-4xl border-l-4 border-indigo-400 bg-indigo-50/10">
                 <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
-                  <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full bg-purple-400 animate-pulse"></div>
+                  <h3 className="text-2xl font-black text-slate-800 flex items-center gap-3">
+                    <span className="w-3 h-3 rounded-full bg-indigo-400 animate-pulse"></span>
                     Menunggu Pembayaran
-                    <span className="bg-purple-200 text-purple-800 text-sm px-3 py-1 rounded-full">
+                    <span className="bg-indigo-100 text-indigo-700 text-sm px-3 py-1 rounded-full">
                       {paymentTickets.length}
                     </span>
                   </h3>
@@ -417,7 +414,7 @@ export default function AdminDashboard() {
                         onClick={() =>
                           handleConfirmPayments(Array.from(selectedPaymentIds))
                         }
-                        className="px-4 py-2 bg-purple-600 text-white text-sm font-bold rounded-xl hover:bg-purple-700 transition-all shadow-lg shadow-purple-200"
+                        className="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
                       >
                         Konfirmasi ({selectedPaymentIds.size})
                       </button>
@@ -426,44 +423,42 @@ export default function AdminDashboard() {
                       onClick={() =>
                         handleConfirmPayments(paymentTickets.map((t) => t.id))
                       }
-                      className="px-4 py-2 bg-white text-purple-600 border border-purple-200 text-sm font-bold rounded-xl hover:bg-purple-50 transition-all"
+                      className="px-4 py-2 bg-white text-indigo-600 border border-indigo-100 text-sm font-bold rounded-xl hover:bg-indigo-50 transition-all"
                     >
-                      Konfirmasi Semua
+                      Semua
                     </button>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <PaymentAccordion
-                    title="Grooming"
-                    items={paymentGrooming}
-                    isOpen={expandedSections.Grooming}
-                    onToggle={() => toggleSection("Grooming")}
-                    icon={<FaCut className="text-xl" />}
-                    selectedPaymentIds={selectedPaymentIds}
-                    onToggleSelect={toggleSelect}
-                    onSelectAll={selectAllGroup}
-                  />
-                  <PaymentAccordion
-                    title="Klinik"
-                    items={paymentKlinik}
-                    isOpen={expandedSections.Klinik}
-                    onToggle={() => toggleSection("Klinik")}
-                    icon={<FaStethoscope className="text-xl" />}
-                    selectedPaymentIds={selectedPaymentIds}
-                    onToggleSelect={toggleSelect}
-                    onSelectAll={selectAllGroup}
-                  />
-                </div>
+                <PaymentAccordion
+                  title="Grooming"
+                  items={paymentGrooming}
+                  isOpen={expandedSections.Grooming}
+                  onToggle={() => toggleSection("Grooming")}
+                  icon={<ScissorsIcon className="w-5 h-5" />}
+                  selectedPaymentIds={selectedPaymentIds}
+                  onToggleSelect={toggleSelect}
+                  onSelectAll={selectAllGroup}
+                />
+                <PaymentAccordion
+                  title="Klinik"
+                  items={paymentKlinik}
+                  isOpen={expandedSections.Klinik}
+                  onToggle={() => toggleSection("Klinik")}
+                  icon={<HeartIcon className="w-5 h-5" />}
+                  selectedPaymentIds={selectedPaymentIds}
+                  onToggleSelect={toggleSelect}
+                  onSelectAll={selectAllGroup}
+                />
               </div>
             )}
 
-            {/* Active Queue */}
-            <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-gray-100 border border-gray-100">
-              <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+            {/* 3. Active Queue */}
+            <div className="glass-panel p-6 sm:p-8 rounded-4xl border-l-4 border-emerald-400">
+              <h3 className="text-2xl font-black text-slate-800 mb-6 flex items-center gap-3">
+                <span className="w-3 h-3 rounded-full bg-emerald-400"></span>
                 Antrian Aktif
-                <span className="bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full">
+                <span className="bg-slate-100 text-slate-600 text-sm px-3 py-1 rounded-full">
                   {activeTickets.length}
                 </span>
               </h3>

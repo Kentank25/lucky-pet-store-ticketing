@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiAlertTriangle } from "react-icons/fi";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 const CANCELLATION_REASONS = [
   "Pelanggan Tidak Hadir (No Show)",
@@ -33,7 +33,7 @@ export default function CancellationModal({
       <div className="bg-white rounded-4xl w-full max-w-sm shadow-2xl overflow-hidden scale-100 animate-scale-in">
         <div className="p-6 bg-rose-50 border-b border-rose-100">
           <h3 className="text-xl font-bold text-rose-800 flex items-center gap-2">
-            <FiAlertTriangle /> Batalkan Tiket
+            <ExclamationTriangleIcon className="w-6 h-6" /> Batalkan Tiket
           </h3>
           <p className="text-rose-600/80 text-sm mt-1">
             Anda akan membatalkan tiket untuk <strong>{ticketName}</strong>.

@@ -4,9 +4,13 @@ import { useRole } from "../../context/RoleContext";
 import toast from "react-hot-toast";
 import { SERVICE_TYPE, TICKET_STATUS } from "../../constants";
 import { ticketSchema } from "../../utils/validationSchemas"; // Zod imports
-import QRCode from "react-qr-code"; // Import QRCode
-import { FaCut, FaStethoscope } from "react-icons/fa";
-import { FiArrowRight, FiAlertTriangle } from "react-icons/fi";
+import { QRCode } from "react-qr-code"; // Import QRCode
+import {
+  ScissorsIcon,
+  HeartIcon,
+  ArrowRightIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
 
 export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
   const { role } = useRole();
@@ -142,21 +146,20 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
 
   const timeSlots = generateTimeSlots(formData.layanan);
 
-  // Unified UI Styles (Kiosk Style for Everyone)
+  // Modern Minimalist Styles
   const inputClass =
-    "w-full px-5 py-4 md:px-8 md:py-5 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-2xl md:rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-100 text-gray-800 placeholder-gray-400 transition-all font-bold text-lg md:text-xl";
+    "w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-slate-700 placeholder-slate-400"; // Using new minimalist input style manually or via @apply
 
-  const labelClass =
-    "block text-base md:text-lg font-bold text-gray-600 mb-2 md:mb-3 ml-2";
+  const labelClass = "block text-sm font-semibold text-slate-600 mb-2 ml-1";
 
   const buttonClass =
-    "flex-1 bg-gray-900 text-white py-4 md:py-6 px-6 md:px-8 rounded-2xl md:rounded-3xl hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] transition-all font-bold text-xl md:text-2xl shadow-xl shadow-gray-200 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-3";
+    "flex-1 bg-indigo-600 text-white py-3 px-6 rounded-xl hover:bg-indigo-700 hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg shadow-lg shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2";
 
   return (
     <form onSubmit={handleSubmit} className={`relative ${className}`}>
       {/* Header is handled by parent or hidden if not needed */}
 
-      <div className="space-y-6 md:space-y-8">
+      <div className="space-y-5 max-w-md mx-auto">
         <div>
           <label className={labelClass}>Nama Pelanggan / Hewan</label>
           <input
@@ -202,19 +205,21 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
         <div>
           <label className={labelClass}>Layanan</label>
           {/* Unified Service Selection (Card Style) */}
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex gap-4">
             {[
               {
                 value: SERVICE_TYPE.GROOMING,
                 label: "Grooming",
-                icon: <FaCut />,
-                color: "blue",
+                icon: <ScissorsIcon className="w-8 h-8" />,
+                activeClass:
+                  "bg-blue-50 border-blue-200 text-blue-600 ring-2 ring-blue-100",
               },
               {
                 value: SERVICE_TYPE.KLINIK,
                 label: "Klinik",
-                icon: <FaStethoscope />,
-                color: "rose",
+                icon: <HeartIcon className="w-8 h-8" />,
+                activeClass:
+                  "bg-rose-50 border-rose-200 text-rose-600 ring-2 ring-rose-100",
               },
             ].map((option) => (
               <button
@@ -223,15 +228,13 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
                 onClick={() =>
                   setFormData({ ...formData, layanan: option.value })
                 }
-                className={`flex-1 p-4 md:p-6 rounded-2xl md:rounded-3xl border-2 transition-all font-bold text-lg md:text-xl flex flex-row sm:flex-col items-center justify-center sm:justify-start gap-3 md:gap-2 ${
+                className={`flex-1 p-4 rounded-2xl border transition-all font-bold text-lg flex flex-col items-center justify-center gap-2 ${
                   formData.layanan === option.value
-                    ? `bg-${option.color}-50 border-${option.color}-500 text-${option.color}-700 shadow-lg ring-4 ring-${option.color}-100`
-                    : "bg-white border-gray-200 text-gray-400 hover:border-gray-300 hover:bg-gray-50"
+                    ? option.activeClass
+                    : "bg-white border-slate-100 text-slate-400 hover:bg-slate-50 hover:border-slate-200"
                 }`}
               >
-                <span className="text-3xl md:text-4xl block mb-0 md:mb-2">
-                  {option.icon}
-                </span>
+                <span className="text-3xl mb-1">{option.icon}</span>
                 <span>{option.label}</span>
               </button>
             ))}
@@ -251,23 +254,23 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
               className={`${inputClass} w-full disabled:opacity-60`}
             />
 
-            <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-2 md:gap-3 bg-gray-50 p-3 md:p-4 rounded-3xl border border-gray-100">
+            <div className="grid grid-cols-4 gap-2">
               {timeSlots.map((slot) => (
                 <button
                   key={slot}
                   type="button"
                   onClick={() => setFormData({ ...formData, jam: slot })}
-                  className={`py-2 md:py-3 rounded-xl md:rounded-2xl font-bold text-base md:text-lg transition-all ${
+                  className={`py-2 rounded-lg font-semibold text-sm transition-all ${
                     formData.jam === slot
-                      ? "bg-gray-900 text-white shadow-lg scale-105"
-                      : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-100"
+                      ? "bg-slate-800 text-white shadow-md transform scale-105"
+                      : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 hover:border-slate-300"
                   }`}
                 >
                   {slot}
                 </button>
               ))}
               {timeSlots.length === 0 && (
-                <p className="col-span-4 text-center text-gray-400 py-4">
+                <p className="col-span-4 text-center text-slate-400 py-4 text-sm">
                   Pilih layanan terlebih dahulu
                 </p>
               )}
@@ -304,8 +307,8 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
             />
             <label htmlFor="express" className="cursor-pointer select-none">
               <span className="font-bold text-gray-800 text-sm flex items-center gap-2">
-                <FiAlertTriangle className="text-red-500" /> Emergency Ticket
-                (Langsung Aktif)
+                <ExclamationTriangleIcon className="w-5 h-5 text-red-500" />{" "}
+                Emergency Ticket (Langsung Aktif)
               </span>
               <span className="block text-xs text-gray-500">
                 Lewati proses validasi (untuk kondisi darurat).
@@ -328,9 +331,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
                   : role === "kiosk"
                   ? "Ambil Antrian"
                   : "Simpan Tiket"}
-                {!ticketToEdit && (
-                  <FiArrowRight className="text-xl md:text-2xl" />
-                )}
+                {!ticketToEdit && <ArrowRightIcon className="w-6 h-6" />}
               </>
             )}
           </button>

@@ -5,8 +5,12 @@ import { TICKET_STATUS, SERVICE_TYPE } from "../../constants";
 import { useState } from "react";
 import CancellationModal from "../modals/CancellationModal";
 import QRCode from "react-qr-code";
-import { FiPhone, FiCalendar, FiClock } from "react-icons/fi";
-import { FaQrcode } from "react-icons/fa";
+import {
+  PhoneIcon,
+  CalendarIcon,
+  ClockIcon,
+  QrCodeIcon,
+} from "@heroicons/react/24/outline";
 
 export default function TicketCard({ ticket, onEdit, className = "" }) {
   const { role } = useRole();
@@ -84,14 +88,14 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
 
             {ticket.telepon && (
               <div className="flex items-center gap-2 mb-2 text-sm text-gray-500 font-bold">
-                <FiPhone className="text-gray-400" />
+                <PhoneIcon className="w-4 h-4 text-gray-400" />
                 <span>{ticket.telepon}</span>
               </div>
             )}
 
             <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 font-medium">
               <span className="flex items-center gap-1">
-                <FiCalendar className="text-gray-400" />
+                <CalendarIcon className="w-4 h-4 text-gray-400" />
                 {new Date(ticket.tanggalRilis).toLocaleDateString("id-ID", {
                   day: "numeric",
                   month: "short",
@@ -99,7 +103,7 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
               </span>
               {ticket.jam && (
                 <span className="flex items-center gap-1">
-                  <FiClock className="text-gray-400" /> {ticket.jam}
+                  <ClockIcon className="w-4 h-4 text-gray-400" /> {ticket.jam}
                 </span>
               )}
             </div>
@@ -238,7 +242,7 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
             onClick={() => setIsQrModalOpen(true)}
             className="flex items-center gap-2 text-gray-500 hover:text-gray-800 transition-colors font-bold text-sm bg-gray-50 hover:bg-gray-100 px-4 py-2 rounded-xl"
           >
-            <FaQrcode className="text-lg" /> Show QR
+            <QrCodeIcon className="w-5 h-5" /> Show QR
           </button>
         </div>
       </div>
