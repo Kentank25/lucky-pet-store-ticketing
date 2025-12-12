@@ -2,7 +2,7 @@ import { useRole } from "../../context/RoleContext";
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 
 export default function Layout({ children }) {
-  const { role, user, logout } = useRole();
+  const { user, logout } = useRole();
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 selection:bg-blue-100 selection:text-blue-900">

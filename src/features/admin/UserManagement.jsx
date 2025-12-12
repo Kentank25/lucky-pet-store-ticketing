@@ -27,7 +27,7 @@ export default function UserManagement() {
     try {
       const data = await getUsers();
       setUsers(data);
-    } catch (error) {
+    } catch {
       toast.error("Gagal mengambil data user");
     } finally {
       setLoading(false);
@@ -88,7 +88,7 @@ export default function UserManagement() {
       await deleteUser(uid);
       setUsers(users.filter((u) => u.id !== uid));
       toast.success("Data user dihapus.");
-    } catch (error) {
+    } catch {
       toast.error("Gagal menghapus user");
     }
   };

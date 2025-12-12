@@ -29,8 +29,8 @@ export default function TicketForm({
   });
   const [loading, setLoading] = useState(false);
   const [isExpress, setIsExpress] = useState(false);
-  const [errors, setErrors] = useState({}); // Zod errors state
-  const [successData, setSuccessData] = useState(null); // State for success modal
+  const [errors, setErrors] = useState({});
+  const [successData, setSuccessData] = useState(null);
 
   const isGuest = !role;
   const isKioskMode = isPublicKiosk || role === "kiosk" || isGuest;
@@ -297,7 +297,6 @@ export default function TicketForm({
           />
         </div>
 
-        {/* Express Ticket Option (Admin Only) */}
         {role === "admin" && !isPublicKiosk && !ticketToEdit && (
           <div className="flex items-center gap-3 bg-red-50 p-4 rounded-xl border border-red-100">
             <input

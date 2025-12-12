@@ -1,4 +1,4 @@
-import { initializeApp, getApp, getApps, deleteApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, setDoc, getDocs, collection, deleteDoc } from "firebase/firestore";
 import { db } from "./firebase";
@@ -38,10 +38,7 @@ export const registerUser = async (email, password, name, role) => {
   } catch (error) {
     console.error("Error creating user:", error);
     throw error;
-  } finally {
-    if (secondaryApp) {
 
-    }
   }
 };
 

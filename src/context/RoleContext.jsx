@@ -24,7 +24,6 @@ export const RoleProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         try {
-          // Fetch user role from Firestore
           const userDoc = await getDoc(doc(db, "users", currentUser.uid));
           if (userDoc.exists()) {
             const userData = userDoc.data();
@@ -59,7 +58,7 @@ export const RoleProvider = ({ children }) => {
     const toastId = toast.loading("Sedang masuk...");
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // State 'role' & 'user' will be updated by onAuthStateChanged listener
+
       toast.success("Berhasil login!", { id: toastId });
       return true;
     } catch (error) {
@@ -77,7 +76,7 @@ export const RoleProvider = ({ children }) => {
     const toastId = toast.loading("Keluar...");
     try {
       await signOut(auth);
-      // State cleared by listener
+
       toast.success("Berhasil logout", { id: toastId });
     } catch (error) {
       console.error("Logout Error:", error);

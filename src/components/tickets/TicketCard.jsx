@@ -17,7 +17,7 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
 
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
-  const [cancelData, setCancelData] = useState(null); // { status, defaultMessage }
+  const [cancelData, setCancelData] = useState(null);
 
   const handleStatusUpdate = async (newStatus, message) => {
     if (!confirm("Apakah Anda yakin?")) return;
@@ -47,9 +47,6 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
   };
 
   const isPending = ticket.status === TICKET_STATUS.PENDING;
-  const isWaiting =
-    ticket.status === TICKET_STATUS.WAITING ||
-    ticket.status === TICKET_STATUS.ACTIVE;
   const isPayment = ticket.status === TICKET_STATUS.PAYMENT;
 
   const isAdmin = role === "admin";
