@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "luckypetstore",
     "public": "dist",
     "ignore": [
       "firebase.json",
@@ -9,7 +10,7 @@
     "rewrites": [
       {
         "source": "**",
-        "destination": "/kiosk"
+        "destination": "/index.html"
       }
     ]
   }
