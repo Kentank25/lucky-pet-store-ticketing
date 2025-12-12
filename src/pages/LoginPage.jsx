@@ -1,18 +1,16 @@
 import { useState } from "react";
 import { useRole } from "../context/RoleContext";
-import { loginSchema } from "../utils/validationSchemas"; // Zod imports
+import { loginSchema } from "../utils/validationSchemas";
 
 export default function LoginPage() {
   const { login } = useRole();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({}); // Zod errors state
+  const [errors, setErrors] = useState({});
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Zod Validation
     const validationResult = loginSchema.safeParse({
       email: username,
       password,
@@ -22,7 +20,6 @@ export default function LoginPage() {
       const formatted = validationResult.error.flatten();
       const fieldErrors = {};
 
-      // Map array of errors to single string per field
       Object.keys(formatted.fieldErrors).forEach((key) => {
         if (formatted.fieldErrors[key]?.length > 0) {
           fieldErrors[key] = formatted.fieldErrors[key][0];
@@ -33,17 +30,13 @@ export default function LoginPage() {
       return;
     }
 
-    setErrors({}); // Clear errors
+    setErrors({});
     setLoading(true);
-    // Removed arbitrary timeout to make UI responsive
     try {
       const success = await login(username, password);
       if (!success) {
         setLoading(false);
       }
-      // If success, we wait for redirect.
-      // Optionally we could start a safety timer here too if redirect is slow,
-      // but usually the App.jsx router handles it.
     } catch (error) {
       console.error(error);
       setLoading(false);
@@ -134,7 +127,15 @@ export default function LoginPage() {
 
               <div className="mt-6 text-center">
                 <p className="text-xs text-gray-400">
-                  Lupa password? Hubungi Administrator.
+                  Lupa password?{" "}
+                  <a
+                    href="https://wa.me/6281286422525?text=Saya%20kesulitan%20masuk%20dan%20ingin%20meminta%20bantuan%20administrator."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-700 font-bold transition-colors cursor-pointer"
+                  >
+                    Hubungi Administrator.
+                  </a>
                 </p>
               </div>
             </div>

@@ -8,7 +8,9 @@ import {
   doc,
   getCountFromServer,
   getDocs,
-  orderBy
+
+  orderBy,
+  arrayUnion
 } from "firebase/firestore";
 import { db } from "./firebase";
 import { createLog } from "./logService";
@@ -64,15 +66,17 @@ export const addTicket = async (ticketData, role, customStatus = null) => {
 export const updateTicketStatus = async (id, status, message, ticketData) => {
   const ticketRef = doc(db, COLLECTION_NAME, id);
   
+  // Create the new log entry object
+  const newLogEntry = {
+    timestamp: new Date().toISOString(),
+    message,
+  };
+
   const updates = {
     status,
-    log: [
-      ...(ticketData.log || []),
-      {
-        timestamp: new Date().toISOString(),
-        message,
-      },
-    ],
+    // Use arrayUnion to append to the list atomically.
+    // This avoids race conditions and overwrite issues.
+    log: arrayUnion(newLogEntry),
   };
 
   if (status === TICKET_STATUS.COMPLETED) {
@@ -81,7 +85,10 @@ export const updateTicketStatus = async (id, status, message, ticketData) => {
 
   await updateDoc(ticketRef, updates);
 
-  await createLog(id, ticketData.nama, ticketData.layanan, message);
+  // We still create the separate system log, but failure here won't rollback the ticket status
+  // because they are separate operations.
+  // Note: createLog usually doesn't throw, but just consoles error.
+  await createLog(id, ticketData?.nama || "Unknown", ticketData?.layanan || "Unknown", message);
 };
 
 export const updateTicketDetails = async (id, updates, ticketData) => {
@@ -125,44 +132,45 @@ export const getAnalyticsStats = async () => {
 export const getChartData = async (filterType, selectedDateString) => {
   const coll = collection(db, COLLECTION_NAME);
   
-  // Calculate date range based on filterType and selectedDateString
-  const selectedDate = new Date(selectedDateString);
-  let startDate = new Date(selectedDate);
-  let endDate = new Date(selectedDate);
+  // Helper to format date as YYYY-MM-DD in LOCAL time
+  const formatDateLocal = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Create date object from the input string (which is YYYY-MM-DD)
+  // We treat this as a local date by parsing parts
+  const [y, m, d] = selectedDateString.split('-').map(Number);
+  const selectedDate = new Date(y, m - 1, d); // Local midnight
+
+  let startStr, endStr;
   
   if (filterType === 'day') {
-    // Exact day match: 00:00 to 23:59
-    startDate.setHours(0, 0, 0, 0);
-    endDate.setHours(23, 59, 59, 999);
+    // For 'day', we want exact match on the stored string
+    startStr = selectedDateString;
+    // We don't need endStr or range query for exact match
   } else if (filterType === 'week') {
-    // Week surrounding the date (Mon-Sun or Sun-Sat depending on locale? Let's do Monday start)
-    const day = startDate.getDay();
-    const diff = startDate.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
-    startDate.setDate(diff);
-    startDate.setHours(0,0,0,0);
-
-    endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 6);
-    endDate.setHours(23, 59, 59, 999);
-  } else { // month
-    // Entire month
-    startDate.setDate(1);
-    startDate.setHours(0,0,0,0);
+    // Start of week (Monday)
+    const day = selectedDate.getDay();
+    const diff = selectedDate.getDate() - day + (day === 0 ? -6 : 1); 
     
-    endDate = new Date(startDate);
-    endDate.setMonth(startDate.getMonth() + 1);
-    endDate.setDate(0); // Last day of previous month (which is the month we want)
-    endDate.setHours(23, 59, 59, 999);
+    const startDate = new Date(selectedDate);
+    startDate.setDate(diff); // Set to Monday
+    
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6); // Set to Sunday
+
+    startStr = formatDateLocal(startDate);
+    endStr = formatDateLocal(endDate);
+  } else { // month
+    const startDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+    const endDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
+    
+    startStr = formatDateLocal(startDate);
+    endStr = formatDateLocal(endDate);
   }
-  
-  // Convert to string for comparison if storing as YYYY-MM-DD
-  const startStr = startDate.toISOString().split('T')[0];
-  const endStr = endDate.toISOString().split('T')[0];
-  
-  // Note: Since 'tanggalRilis' is YYYY-MM-DD string, we can compare strings directly for range.
-  // EXCEPT for 'day' filter where we want exact match. 
-  // But wait, the previous code filtered by `ticket.status`.
-  // Also existing data `tanggalRilis` is likely just "YYYY-MM-DD".
   
   let q;
   if (filterType === 'day') {
@@ -180,7 +188,5 @@ export const getChartData = async (filterType, selectedDateString) => {
 
   const snapshot = await getDocs(q);
   const tickets = snapshot.docs.map(doc => doc.data());
-  
-  // Filter for COMPLETED/CANCELLED in memory as before
-  return tickets.filter(t => t.status === TICKET_STATUS.COMPLETED || t.status === TICKET_STATUS.CANCELLED);
+  return tickets;
 };

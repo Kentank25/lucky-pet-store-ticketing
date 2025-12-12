@@ -18,7 +18,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
     nama: "",
     telepon: "",
     layanan: SERVICE_TYPE.GROOMING,
-    tanggalRilis: new Date().toISOString().split("T")[0],
+    tanggalRilis: new Date().toLocaleDateString("en-CA"),
     jam: "",
     catatan: "",
   });
@@ -44,10 +44,9 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
     e.preventDefault();
     setLoading(true);
 
-    const isGuest = !role; // If no role context, assume guest/public kiosk
+    const isGuest = !role;
     const isKioskMode = role === "kiosk" || isGuest;
 
-    // Clean up data
     const cleanedFormData = {
       ...formData,
       catatan: formData.catatan.trim(),
@@ -55,7 +54,6 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
       nama: formData.nama.trim(),
     };
 
-    // Zod Validation
     const validationResult = ticketSchema.safeParse(cleanedFormData);
 
     if (!validationResult.success) {

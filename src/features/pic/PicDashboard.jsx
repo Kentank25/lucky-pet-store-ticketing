@@ -12,6 +12,7 @@ import { useRole } from "../../context/RoleContext";
 import { updateTicketStatus } from "../../services/ticketService";
 import toast from "react-hot-toast";
 import { TICKET_STATUS, SERVICE_TYPE } from "../../constants";
+import { useState } from "react";
 
 export default function PicDashboard() {
   const { tickets, loading } = useTickets();
@@ -20,6 +21,8 @@ export default function PicDashboard() {
   const service =
     role === "pic_grooming" ? SERVICE_TYPE.GROOMING : SERVICE_TYPE.KLINIK;
   const isGrooming = service === SERVICE_TYPE.GROOMING;
+
+  const [processingId, setProcessingId] = useState(null);
 
   if (loading)
     return (
@@ -68,6 +71,7 @@ export default function PicDashboard() {
 
     if (!confirm(`Ambil antrian untuk ${nextTicket.nama}?`)) return;
 
+    setProcessingId(nextTicket.id);
     try {
       await updateTicketStatus(
         nextTicket.id,
@@ -78,12 +82,16 @@ export default function PicDashboard() {
       toast.success(`Berhasil mengambil antrian: ${nextTicket.nama}`);
     } catch (error) {
       console.error(error);
-      toast.error("Gagal mengambil tiket.");
+      toast.error(`Gagal: ${error.message || "Terjadi kesalahan"}`);
+    } finally {
+      setProcessingId(null);
     }
   };
 
   const handleCompleteTicket = async (ticket) => {
     if (!confirm("Apakah layanan sudah selesai? Lanjut ke pembayaran?")) return;
+
+    setProcessingId(ticket.id);
     try {
       await updateTicketStatus(
         ticket.id,
@@ -94,7 +102,9 @@ export default function PicDashboard() {
       toast.success("Layanan selesai!");
     } catch (error) {
       console.error(error);
-      toast.error("Gagal mengupdate status.");
+      toast.error(`Gagal: ${error.message || "Terjadi kesalahan"}`);
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -230,10 +240,20 @@ export default function PicDashboard() {
                     </div>
                     <button
                       onClick={() => handleCompleteTicket(ticket)}
-                      className="w-full py-5 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white rounded-2xl font-bold text-lg shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-3 group-hover:shadow-emerald-300"
+                      disabled={processingId === ticket.id}
+                      className="w-full py-5 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white rounded-2xl font-bold text-lg shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-3 group-hover:shadow-emerald-300 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                      <span>Selesaikan Layanan</span>
-                      <CheckIcon className="h-6 w-6" />
+                      {processingId === ticket.id ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          <span>Memproses...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Selesaikan Layanan</span>
+                          <CheckIcon className="h-6 w-6" />
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>

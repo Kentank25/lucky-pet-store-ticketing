@@ -24,9 +24,8 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/monitor/:id" element={<QueueMonitor />} />
-      {/* Public Kiosk Route */}
       <Route path="/kiosk" element={<KioskDashboard />} />
+      <Route path="/monitor/:id" element={<QueueMonitor />} />
 
       <Route
         path="/"
@@ -36,14 +35,9 @@ function App() {
           ) : (
             <Layout>
               {role === "admin" && <AdminDashboard />}
-              {/* Kiosk role removed from here */}
               {(role === "pic_grooming" ||
                 role === "pic_klinik" ||
-                role === "kiosk") && (
-                // Keeping role check just in case for legacy support, but UI wont show it if we remove from UserManagement
-                <PicDashboard />
-              )}
-              {/* Fallback for safety if old kiosk accounts login */}
+                role === "kiosk") && <PicDashboard />}
               {role === "kiosk" && (
                 <div className="p-4">
                   Akun Kiosk dialihkan ke{" "}

@@ -1,4 +1,14 @@
 import { useLogs } from "../../hooks/useLogs";
+import {
+  PlusCircleIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  PlayCircleIcon,
+  FlagIcon,
+  CurrencyDollarIcon,
+  DocumentTextIcon,
+  ArchiveBoxXMarkIcon,
+} from "@heroicons/react/24/outline";
 
 export default function LogList() {
   const { logs, loading } = useLogs();
@@ -13,7 +23,9 @@ export default function LogList() {
   if (logs.length === 0)
     return (
       <div className="text-center py-8 opacity-50">
-        <div className="text-4xl mb-2">📜</div>
+        <div className="text-4xl mb-2 flex justify-center">
+          <DocumentTextIcon className="w-12 h-12 text-gray-300" />
+        </div>
         <p className="text-sm font-bold text-gray-400">Belum ada riwayat.</p>
       </div>
     );
@@ -27,22 +39,44 @@ export default function LogList() {
         {logs.map((log) => {
           const getLogStyle = (msg) => {
             if (msg.includes("dibuat"))
-              return { icon: "🆕", color: "bg-blue-400 border-blue-200" };
+              return {
+                icon: <PlusCircleIcon className="w-4 h-4 text-white" />,
+                color: "bg-blue-500 border-blue-200 shadow-blue-200",
+              };
             if (msg.includes("Diterima"))
-              return { icon: "✅", color: "bg-emerald-400 border-emerald-200" };
+              return {
+                icon: <CheckCircleIcon className="w-4 h-4 text-white" />,
+                color: "bg-emerald-500 border-emerald-200 shadow-emerald-200",
+              };
             if (
               msg.includes("Ditolak") ||
               msg.includes("dibatalkan") ||
               msg.includes("Batal")
             )
-              return { icon: "🚫", color: "bg-rose-400 border-rose-200" };
+              return {
+                icon: <XCircleIcon className="w-4 h-4 text-white" />,
+                color: "bg-rose-500 border-rose-200 shadow-rose-200",
+              };
             if (msg.includes("diambil"))
-              return { icon: "▶️", color: "bg-amber-400 border-amber-200" };
+              return {
+                icon: <PlayCircleIcon className="w-4 h-4 text-white" />,
+                color: "bg-amber-500 border-amber-200 shadow-amber-200",
+              };
             if (msg.includes("Layanan selesai"))
-              return { icon: "🏁", color: "bg-purple-400 border-purple-200" };
+              return {
+                icon: <FlagIcon className="w-4 h-4 text-white" />,
+                color: "bg-purple-500 border-purple-200 shadow-purple-200",
+              };
             if (msg.includes("Pembayaran"))
-              return { icon: "💰", color: "bg-emerald-500 border-emerald-300" };
-            return { icon: "📝", color: "bg-gray-400 border-gray-200" };
+              return {
+                icon: <CurrencyDollarIcon className="w-4 h-4 text-white" />,
+                color: "bg-emerald-600 border-emerald-300 shadow-emerald-200",
+              };
+
+            return {
+              icon: <DocumentTextIcon className="w-4 h-4 text-white" />,
+              color: "bg-gray-400 border-gray-200 shadow-gray-200",
+            };
           };
 
           const style = getLogStyle(log.message);
@@ -51,7 +85,7 @@ export default function LogList() {
             <div key={log.id} className="relative pl-8 group">
               {/* Timeline Dot with Icon */}
               <div
-                className={`absolute left-[-5px] top-0 w-8 h-8 rounded-full border-4 border-white shadow-sm z-10 flex items-center justify-center text-[10px] transition-transform group-hover:scale-110 ${style.color}`}
+                className={`absolute left-[-5px] top-0 w-8 h-8 rounded-full border-4 border-white z-10 flex items-center justify-center transition-transform group-hover:scale-110 shadow-lg ${style.color}`}
               >
                 {style.icon}
               </div>

@@ -178,7 +178,7 @@ export default function QueueMonitor() {
                   Layanan
                 </p>
                 <div className="flex items-center gap-2 text-slate-700 font-bold">
-                  {isGrooming ? <FaCut /> : <FaStethoscope />}
+                  {isGrooming ? <ScissorsIcon /> : <HeartIcon />}
                   {ticket.layanan}
                 </div>
               </div>
@@ -188,7 +188,7 @@ export default function QueueMonitor() {
                   Waktu
                 </p>
                 <div className="flex items-center justify-end gap-2 text-slate-700 font-bold">
-                  <FiCalendar />
+                  <CalendarIcon />
                   {ticket.jam || "-"}
                 </div>
               </div>

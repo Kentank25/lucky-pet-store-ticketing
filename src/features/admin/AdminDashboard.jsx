@@ -3,6 +3,7 @@ import {
   ChevronDownIcon,
   ScissorsIcon,
   HeartIcon,
+  ClockIcon,
 } from "@heroicons/react/24/outline";
 import { createPortal } from "react-dom";
 import TicketForm from "../../components/tickets/TicketForm";
@@ -15,7 +16,6 @@ import AdminAnalytics from "./AdminAnalytics";
 import UserManagement from "./UserManagement";
 import { TICKET_STATUS, SERVICE_TYPE } from "../../constants";
 
-// Reusable Minimalist Accordion Component
 const AccordionItem = ({
   title,
   count,
@@ -86,7 +86,6 @@ const PaymentAccordion = ({
   const allSelected = items.every((t) => selectedPaymentIds.has(t.id));
   const someSelected = items.some((t) => selectedPaymentIds.has(t.id));
 
-  // Custom Header Extra for Checkbox
   const headerCheckbox = (
     <div
       onClick={(e) => e.stopPropagation()}
@@ -294,7 +293,6 @@ export default function AdminDashboard() {
       );
       toast.success("Pembayaran berhasil dikonfirmasi!", { id: toastId });
 
-      // Clear selection of confirmed tickets
       const newSelected = new Set(selectedPaymentIds);
       idsToConfirm.forEach((id) => newSelected.delete(id));
       setSelectedPaymentIds(newSelected);
@@ -304,7 +302,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // Modern Minimalist Tabs
   const headerActions = (
     <div className="flex p-1 bg-slate-100/50 rounded-xl">
       {["dashboard", "analytics", "users"].map((tab) => (
@@ -335,7 +332,10 @@ export default function AdminDashboard() {
         <div className="space-y-8 animate-fade-in">
           <AdminAnalytics />
           <div className="glass-panel p-6 rounded-3xl">
-            <h3 className="text-xl font-bold text-slate-800 mb-4">
+            <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <span className="bg-indigo-50 text-indigo-600 w-8 h-8 rounded-lg flex items-center justify-center">
+                <ClockIcon className="w-5 h-5" />
+              </span>
               Riwayat Aktivitas
             </h3>
             <div className="max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">

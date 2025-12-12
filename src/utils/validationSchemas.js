@@ -8,6 +8,8 @@ export const ticketSchema = z.object({
     errorMap: () => ({ message: "Pilih layanan yang valid" }),
   }),
   catatan: z.string().max(200, "Catatan maksimal 200 karakter").optional(),
+  jam: z.string().min(1, "Waktu/Jam wajib dipilih"),
+  tanggalRilis: z.string().min(1, "Tanggal wajib diisi"),
 });
 
 
