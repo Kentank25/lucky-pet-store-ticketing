@@ -3,8 +3,8 @@ import { addTicket, updateTicketDetails } from "../../services/ticketService";
 import { useRole } from "../../context/RoleContext";
 import toast from "react-hot-toast";
 import { SERVICE_TYPE, TICKET_STATUS } from "../../constants";
-import { ticketSchema } from "../../utils/validationSchemas"; // Zod imports
-import { QRCode } from "react-qr-code"; // Import QRCode
+import { ticketSchema } from "../../utils/validationSchemas";
+import { QRCode } from "react-qr-code";
 import {
   ScissorsIcon,
   HeartIcon,
@@ -12,7 +12,12 @@ import {
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 
-export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
+export default function TicketForm({
+  ticketToEdit,
+  onCancel,
+  className = "",
+  isPublicKiosk = false,
+}) {
   const { role } = useRole();
   const [formData, setFormData] = useState({
     nama: "",
@@ -26,6 +31,9 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
   const [isExpress, setIsExpress] = useState(false);
   const [errors, setErrors] = useState({}); // Zod errors state
   const [successData, setSuccessData] = useState(null); // State for success modal
+
+  const isGuest = !role;
+  const isKioskMode = isPublicKiosk || role === "kiosk" || isGuest;
 
   useEffect(() => {
     if (ticketToEdit) {
@@ -43,9 +51,6 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
-    const isGuest = !role;
-    const isKioskMode = role === "kiosk" || isGuest;
 
     const cleanedFormData = {
       ...formData,
@@ -70,7 +75,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
       return;
     }
 
-    setErrors({}); // Clear errors
+    setErrors({});
 
     try {
       if (ticketToEdit) {
@@ -90,7 +95,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
 
         const newTicketId = await addTicket(
           cleanedFormData,
-          role || "guest", // Pass 'guest' if role is null
+          role || "guest",
           newStatus
         );
 
@@ -103,7 +108,6 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
           toast.success("Tiket berhasil dibuat");
         }
 
-        // Reset Form
         setFormData({
           ...formData,
           nama: "",
@@ -294,7 +298,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
         </div>
 
         {/* Express Ticket Option (Admin Only) */}
-        {role === "admin" && !ticketToEdit && (
+        {role === "admin" && !isPublicKiosk && !ticketToEdit && (
           <div className="flex items-center gap-3 bg-red-50 p-4 rounded-xl border border-red-100">
             <input
               type="checkbox"
@@ -326,7 +330,7 @@ export default function TicketForm({ ticketToEdit, onCancel, className = "" }) {
               <>
                 {ticketToEdit
                   ? "Update Tiket"
-                  : role === "kiosk"
+                  : isKioskMode
                   ? "Ambil Antrian"
                   : "Simpan Tiket"}
                 {!ticketToEdit && <ArrowRightIcon className="w-6 h-6" />}

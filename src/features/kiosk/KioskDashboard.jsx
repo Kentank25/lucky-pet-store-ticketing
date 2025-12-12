@@ -67,7 +67,7 @@ export default function KioskDashboard() {
             <p className="text-gray-500">Isi data diri Anda di bawah ini</p>
           </div>
 
-          <TicketForm />
+          <TicketForm isPublicKiosk={true} />
         </div>
       </div>
     </div>

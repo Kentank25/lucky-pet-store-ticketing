@@ -236,7 +236,7 @@ export default function UserManagement() {
       {/* Modal Add User */}
       {isModalOpen &&
         createPortal(
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4 animate-fade-in">
             {/* Modal Content */}
             <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl relative animate-scale-in flex flex-col max-h-[90vh]">
               {/* Header */}
