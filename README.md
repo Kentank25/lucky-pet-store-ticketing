@@ -1,16 +1,85 @@
-# React + Vite
+# Lucky Pet Shop - Smart Ticketing System 🐾
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sistem manajemen antrian dan ticketing modern untuk Lucky Pet Shop, dibangun untuk tugas akhir mata kuliah Web Programming.
 
-Currently, two official plugins are available:
+## 🚀 Fitur Utama
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 1. **Multi-Role Dashboard**
 
-## React Compiler
+- **Admin**: Kontrol penuh (Validasi Tiket, Monitor Antrian, User Management, Analytics).
+- **PIC (Grooming & Klinik)**: Dashboard khusus untuk memproses layanan yang sedang berjalan.
+- **Kiosk (Self-Service)**: Mode layar sentuh untuk pelanggan mengambil nomor antrian sendiri.
+- **Queue Monitor**: Halaman publik untuk memantau status antrian secara real-time.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 2. **Real-Time Updates** (Firebase)
 
-## Expanding the ESLint configuration
+- Status tiket berubah langsung di semua layar tanpa refresh browser.
+- Sinkronisasi instan antara Kiosk, Admin, dan Layar Monitor.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 3. **Smart Features**
+
+- **QR Code Tracking**: Pelanggan bisa scan QR di struk untuk memantau antrian dari HP masing-masing.
+- **WhatsApp Integration**: Admin bisa chat pelanggan langsung (Direct Link) dari dashboard.
+- **Skeleton Loading**: UX modern saat memuat data.
+
+### 4. **Modern UI/UX**
+
+- **Glassmorphism Design**: Tampilan 'frosted glass' yang estetik dan premium.
+- **Mobile Responsive**: Dashboard bisa diakses dari Tablet/HP dengan layout yang menyesuaikan.
+- **Micro-Interactions**: Animasi halus pada hover, klik, dan transisi halaman.
+
+---
+
+## 🛠️ Teknologi yang Digunakan
+
+- **Frontend**: React + Vite
+- **Styling**: Tailwind CSS
+- **Database**: Firebase Firestore (Real-Time)
+- **Auth**: Firebase Authentication
+- **Icons**: Heroicons
+- **Validation**: Zod & React Hook Form Logic
+
+---
+
+## 📦 Cara Install & Jalankan
+
+1. **Clone Repository**
+
+   ```bash
+   git clone <repository-url>
+   cd project-pet-shop
+   ```
+
+2. **Install Dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Jalankan Project**
+   ```bash
+   npm run dev
+   ```
+   Buka `http://localhost:5173` di browser.
+
+---
+
+## 🔐 Akun Demo (Untuk Penguji)
+
+| Role                                | Email                    | Password   |
+| ----------------------------------- | ------------------------ | ---------- |
+| **Admin**                           | `admin@lucky.com`        | `admin123` |
+| **PIC Grooming**                    | `pic.grooming@lucky.com` | `pic123`   |
+| **PIC Klinik**                      | `pic.klinik@lucky.com`   | `pic123`   |
+| **Kiosk Mode** (Khusus Tablet Toko) | `kiosk@lucky.com`        | `kiosk123` |
+
+> **Catatan**:
+>
+> - Halaman Kiosk Publik tersedia di `/kiosk` (tanpa login).
+> - Halaman Monitor Antrian tersedia via Scan QR atau link `/monitor/:id`.
+
+---
+
+## 👨‍💻 Developer
+
+Dibuat oleh **Keane** - Semester 3 Web Programming.

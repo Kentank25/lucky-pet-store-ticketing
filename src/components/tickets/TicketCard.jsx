@@ -92,10 +92,21 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
             </div>
 
             {ticket.telepon && (
-              <div className="flex items-center gap-2 mb-2 text-sm text-gray-500 font-bold">
-                <PhoneIcon className="w-4 h-4 text-gray-400" />
+              <a
+                href={`https://wa.me/${ticket.telepon
+                  .replace(/^0/, "62")
+                  .replace(/\D/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 mb-2 text-sm text-gray-500 font-bold hover:text-green-600 transition-colors group/wa"
+                title="Chat via WhatsApp"
+              >
+                <PhoneIcon className="w-4 h-4 text-gray-400 group-hover/wa:text-green-600" />
                 <span>{ticket.telepon}</span>
-              </div>
+                <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full opacity-0 group-hover/wa:opacity-100 transition-opacity">
+                  Chat WA
+                </span>
+              </a>
             )}
 
             <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 font-medium">
