@@ -1,14 +1,24 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { registerUser, getUsers, deleteUser } from "../../services/userService";
+import {
+  registerUser,
+  getUsers,
+  deleteUser,
+  updateUser,
+} from "../../services/userService";
 import toast from "react-hot-toast";
 import { userSchema } from "../../utils/validationSchemas";
-import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  PlusIcon,
+  XMarkIcon,
+  PencilSquareIcon,
+} from "@heroicons/react/24/outline";
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -37,7 +47,20 @@ export default function UserManagement() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    const validationResult = userSchema.safeParse(formData);
+    // Skip password validation for edit mode
+    let validationResult;
+    if (editingUser) {
+      // Manual simple validation for edit
+      validationResult = {
+        success: formData.name.length >= 2,
+        error: {
+          flatten: () => ({ fieldErrors: { name: ["Nama terlalu pendek"] } }),
+        },
+      };
+      if (formData.name.length < 2) validationResult.success = false;
+    } else {
+      validationResult = userSchema.safeParse(formData);
+    }
 
     if (!validationResult.success) {
       const formatted = validationResult.error.flatten();
@@ -55,13 +78,21 @@ export default function UserManagement() {
     setErrors({});
     setIsSubmitting(true);
     try {
-      await registerUser(
-        formData.email,
-        formData.password,
-        formData.name,
-        formData.role
-      );
-      toast.success("User berhasil dibuat!");
+      if (editingUser) {
+        await updateUser(editingUser.id, {
+          name: formData.name,
+          role: formData.role,
+        });
+        toast.success("Data user diperbarui!");
+      } else {
+        await registerUser(
+          formData.email,
+          formData.password,
+          formData.name,
+          formData.role
+        );
+        toast.success("User berhasil dibuat!");
+      }
       handleCloseModal();
       fetchUsers(); // Refresh list
     } catch (error) {
@@ -69,11 +100,22 @@ export default function UserManagement() {
       const msg =
         error.code === "auth/email-already-in-use"
           ? "Email sudah terdaftar!"
-          : "Gagal membuat user. Cek console.";
+          : "Gagal menyimpan data. Cek console.";
       toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleEdit = (user) => {
+    setEditingUser(user);
+    setFormData({
+      name: user.name,
+      email: user.email,
+      password: "", // Password not validated in edit
+      role: user.role,
+    });
+    setIsModalOpen(true);
   };
 
   const handleDelete = async (uid) => {
@@ -130,6 +172,7 @@ export default function UserManagement() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setEditingUser(null);
     setFormData({
       name: "",
       email: "",
@@ -217,12 +260,21 @@ export default function UserManagement() {
                           : "-"}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button
-                          onClick={() => handleDelete(user.id)}
-                          className="text-red-400 hover:text-red-600 font-bold text-xs px-3 py-1 hover:bg-red-50 rounded-lg transition-colors"
-                        >
-                          Hapus
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleEdit(user)}
+                            className="text-blue-400 hover:text-blue-600 font-bold text-xs px-3 py-1 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-1"
+                          >
+                            <PencilSquareIcon className="w-4 h-4" />
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(user.id)}
+                            className="text-red-400 hover:text-red-600 font-bold text-xs px-3 py-1 hover:bg-red-50 rounded-lg transition-colors"
+                          >
+                            Hapus
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -242,7 +294,7 @@ export default function UserManagement() {
               {/* Header */}
               <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-white rounded-t-3xl sticky top-0 z-10">
                 <h2 className="text-xl font-bold text-gray-800">
-                  Tambah User Baru
+                  {editingUser ? "Edit User" : "Tambah User Baru"}
                 </h2>
                 <button
                   onClick={handleCloseModal}
@@ -261,6 +313,9 @@ export default function UserManagement() {
                     </label>
                     <div className="space-y-4">
                       <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">
+                          Nama
+                        </label>
                         <input
                           type="text"
                           value={formData.name}
@@ -282,6 +337,9 @@ export default function UserManagement() {
                       </div>
 
                       <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">
+                          Email
+                        </label>
                         <input
                           type="email"
                           value={formData.email}
@@ -292,8 +350,13 @@ export default function UserManagement() {
                             errors.email
                               ? "border-red-200 focus:border-red-500 focus:ring-red-100"
                               : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
+                          } ${
+                            editingUser
+                              ? "opacity-60 cursor-not-allowed bg-gray-100"
+                              : ""
                           }`}
                           placeholder="Alamat Email"
+                          disabled={!!editingUser}
                         />
                         {errors.email && (
                           <p className="text-red-500 text-xs mt-1 font-bold ml-1">
@@ -302,30 +365,35 @@ export default function UserManagement() {
                         )}
                       </div>
 
-                      <div>
-                        <input
-                          type="password"
-                          minLength={6}
-                          value={formData.password}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              password: e.target.value,
-                            })
-                          }
-                          className={`w-full px-4 py-3 rounded-xl bg-gray-50 border transition-all font-semibold outline-none text-gray-800 placeholder-gray-400 focus:bg-white focus:ring-2 ${
-                            errors.password
-                              ? "border-red-200 focus:border-red-500 focus:ring-red-100"
-                              : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
-                          }`}
-                          placeholder="Password (Min. 6 karakter)"
-                        />
-                        {errors.password && (
-                          <p className="text-red-500 text-xs mt-1 font-bold ml-1">
-                            {errors.password}
-                          </p>
-                        )}
-                      </div>
+                      {!editingUser && (
+                        <div>
+                          <label className="block text-sm font-bold text-gray-700 mb-1">
+                            Password
+                          </label>
+                          <input
+                            type="password"
+                            minLength={6}
+                            value={formData.password}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                password: e.target.value,
+                              })
+                            }
+                            className={`w-full px-4 py-3 rounded-xl bg-gray-50 border transition-all font-semibold outline-none text-gray-800 placeholder-gray-400 focus:bg-white focus:ring-2 ${
+                              errors.password
+                                ? "border-red-200 focus:border-red-500 focus:ring-red-100"
+                                : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
+                            }`}
+                            placeholder="Password (Min. 6 karakter)"
+                          />
+                          {errors.password && (
+                            <p className="text-red-500 text-xs mt-1 font-bold ml-1">
+                              {errors.password}
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -398,8 +466,16 @@ export default function UserManagement() {
                         </>
                       ) : (
                         <>
-                          <PlusIcon className="w-5 h-5" />
-                          <span>Buat Akun User</span>
+                          {editingUser ? (
+                            <PencilSquareIcon className="w-5 h-5" />
+                          ) : (
+                            <PlusIcon className="w-5 h-5" />
+                          )}
+                          <span>
+                            {editingUser
+                              ? "Simpan Perubahan"
+                              : "Buat Akun User"}
+                          </span>
                         </>
                       )}
                     </button>

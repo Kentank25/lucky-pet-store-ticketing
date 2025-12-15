@@ -6,13 +6,13 @@ export default function KioskDashboard() {
     <div className="min-h-[85vh] flex items-center justify-center p-4 md:p-8 animate-fade-in mb-20 lg:mb-0">
       <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
         <div className="relative group h-full">
-          <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-indigo-600 rounded-[2.5rem] rotate-3 opacity-20 group-hover:rotate-6 transition-transform duration-500 blur-xl"></div>
+          <div className="absolute inset-0 bg-linear-gradient-to-r from-violet-600 to-indigo-600 rounded-[2.5rem] rotate-3 opacity-20 group-hover:rotate-6 transition-transform duration-500 blur-xl"></div>
 
-          <div className="h-full flex flex-col justify-center bg-gradient-to-br from-violet-600 to-indigo-700 rounded-[2.5rem] p-8 md:p-14 text-white shadow-2xl shadow-indigo-200 relative overflow-hidden transform transition-transform duration-500 hover:scale-[1.01]">
+          <div className="h-full flex flex-col justify-center bg-linear-to-br from-violet-600 to-indigo-700 rounded-[2.5rem] p-8 md:p-14 text-white shadow-2xl shadow-indigo-200 relative overflow-hidden transform transition-transform duration-500 hover:scale-[1.01]">
             <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-60 h-60 bg-purple-500 opacity-20 rounded-full blur-3xl"></div>
 
             <div className="relative z-10 flex flex-col justify-center h-full">
-              <div className="inline-flex items-center justify-center w-16 h-16 md:w-18 md:h-18 bg-white/20 backdrop-blur-md rounded-3xl mb-8 md:mb-10 p-1 text-5xl shadow-inner border border-white/10">
+              <div className="inline-flex items-center w-16 h-16 md:w-18 md:h-18 bg-white/20 backdrop-blur-md rounded-3xl mb-8 md:mb-10 p-1 text-5xl shadow-inner border border-white/10">
                 <img
                   src="/public/Lucky Pet Store Logo (Black).png"
                   alt="Black Logo"
@@ -22,7 +22,7 @@ export default function KioskDashboard() {
 
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 md:mb-6 leading-tight tracking-tight drop-shadow-sm">
                 Selamat Datang <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-pink-200">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-200 to-pink-200">
                   di Pet Shop!
                 </span>
               </h2>

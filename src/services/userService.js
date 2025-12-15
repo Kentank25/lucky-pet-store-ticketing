@@ -1,6 +1,6 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { doc, setDoc, getDocs, collection, deleteDoc } from "firebase/firestore";
+import { doc, setDoc, getDocs, collection, deleteDoc, updateDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
 const firebaseConfig = {
@@ -47,7 +47,11 @@ export const getUsers = async () => {
   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 };
 
-export const deleteUser = async (uid) => {
+export const updateUser = async (uid, data) => {
+  const userRef = doc(db, "users", uid);
+  await updateDoc(userRef, data);
+};
 
+export const deleteUser = async (uid) => {
   await deleteDoc(doc(db, "users", uid));
 };
