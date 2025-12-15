@@ -32,13 +32,18 @@ export default function TicketList({
 
   return (
     <div className="grid grid-cols-1 gap-6">
-      {filteredTickets.map((ticket) => (
-        <TicketCard
+      {filteredTickets.map((ticket, index) => (
+        <div
           key={ticket.id}
-          ticket={ticket}
-          onEdit={onEdit}
-          className={cardClassName}
-        />
+          style={{ animationDelay: `${index * 100}ms` }}
+          className="animate-fade-in"
+        >
+          <TicketCard
+            ticket={ticket}
+            onEdit={onEdit}
+            className={`${cardClassName} !animate-none`}
+          />
+        </div>
       ))}
     </div>
   );

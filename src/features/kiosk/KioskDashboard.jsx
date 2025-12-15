@@ -56,7 +56,7 @@ export default function KioskDashboard() {
           </div>
         </div>
 
-        <div className="h-full flex flex-col justify-center bg-white/80 backdrop-blur-xl p-6 md:p-10 rounded-[2.5rem] shadow-2xl shadow-gray-200/50 border border-white/50 relative">
+        <div className="h-full flex flex-col justify-center glass-panel p-6 md:p-10 rounded-[2.5rem] relative">
           <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-100 rounded-full blur-3xl -z-10 opacity-50"></div>
           <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-pink-100 rounded-full blur-3xl -z-10 opacity-50"></div>
 

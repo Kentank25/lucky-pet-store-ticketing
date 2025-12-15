@@ -105,7 +105,7 @@ export default function PicDashboard() {
     <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-8 animate-fade-in pb-24">
       {/* Hero Header Section */}
       <div
-        className={`relative rounded-[3rem] p-8 md:p-12 overflow-hidden shadow-2xl transition-all duration-500 ${
+        className={`relative rounded-[2rem] md:rounded-[3rem] p-6 md:p-12 overflow-hidden shadow-2xl transition-all duration-500 ${
           isGrooming
             ? "bg-linear-to-br from-blue-600 via-indigo-600 to-purple-700 shadow-blue-200"
             : "bg-linear-to-br from-rose-500 via-pink-600 to-orange-500 shadow-rose-200"
@@ -115,43 +115,43 @@ export default function PicDashboard() {
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-white opacity-10 rounded-full blur-3xl mix-blend-overlay animate-pulse"></div>
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-white opacity-10 rounded-full blur-3xl mix-blend-overlay"></div>
 
-        <div className="relative z-10 flex flex-col md:flex-row justify-between items-end gap-8">
+        <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <span className="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-bold tracking-wider uppercase border border-white/10 shadow-lg">
+              <span className="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-xs md:text-sm font-bold tracking-wider uppercase border border-white/10 shadow-lg">
                 Dashboard PIC
               </span>
               <span className="text-2xl animate-bounce">
                 {isGrooming ? (
-                  <ScissorsIcon className="w-8 h-8" />
+                  <ScissorsIcon className="w-6 h-6 md:w-8 md:h-8" />
                 ) : (
-                  <HeartIcon className="w-8 h-8" />
+                  <HeartIcon className="w-6 h-6 md:w-8 md:h-8" />
                 )}
               </span>
             </div>
-            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-3 drop-shadow-sm">
+            <h1 className="text-3xl md:text-4xl lg:text-6xl font-black text-white tracking-tight mb-3 drop-shadow-sm">
               {service} Area
             </h1>
-            <p className="text-white/90 text-lg font-medium max-w-md leading-relaxed">
+            <p className="text-white/90 text-sm md:text-lg font-medium max-w-md leading-relaxed">
               Selamat bekerja! Kelola antrian pelanggan dengan senyuman.
             </p>
           </div>
 
           {/* Stats Cards */}
-          <div className="flex gap-4">
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-3xl flex flex-col items-center min-w-[120px] shadow-xl hover:bg-white/20 transition-all cursor-default group">
-              <span className="text-4xl font-black text-white mb-1 group-hover:scale-110 transition-transform">
+          <div className="flex gap-4 w-full lg:w-auto overflow-x-auto no-scrollbar pb-2">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 md:p-5 rounded-2xl md:rounded-3xl flex flex-col items-center flex-1 min-w-[100px] md:min-w-[120px] shadow-xl hover:bg-white/20 transition-all cursor-default group">
+              <span className="text-2xl md:text-4xl font-black text-white mb-1 group-hover:scale-110 transition-transform">
                 {completedCount}
               </span>
-              <span className="text-xs font-bold text-white/70 uppercase tracking-widest">
+              <span className="text-[10px] md:text-xs font-bold text-white/70 uppercase tracking-widest">
                 Selesai
               </span>
             </div>
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-3xl flex flex-col items-center min-w-[120px] shadow-xl hover:bg-white/20 transition-all cursor-default group">
-              <span className="text-4xl font-black text-white mb-1 group-hover:scale-110 transition-transform">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 md:p-5 rounded-2xl md:rounded-3xl flex flex-col items-center flex-1 min-w-[100px] md:min-w-[120px] shadow-xl hover:bg-white/20 transition-all cursor-default group">
+              <span className="text-2xl md:text-4xl font-black text-white mb-1 group-hover:scale-110 transition-transform">
                 {waitingTickets.length}
               </span>
-              <span className="text-xs font-bold text-white/70 uppercase tracking-widest">
+              <span className="text-[10px] md:text-xs font-bold text-white/70 uppercase tracking-widest">
                 Antrian
               </span>
             </div>

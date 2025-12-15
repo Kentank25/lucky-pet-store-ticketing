@@ -68,11 +68,11 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
             : isPayment
             ? "border-purple-200 bg-purple-50/30"
             : "border-transparent"
-        } animate-fade-in hover:shadow-xl transition-shadow duration-300 relative group overflow-hidden ${className}`}
+        } animate-fade-in hover-lift hover:shadow-xl transition-shadow duration-300 relative group overflow-hidden ${className}`}
       >
-        <div className="flex justify-between items-start flex-wrap gap-4 w-full relative z-10">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
+        <div className="flex flex-col md:flex-row justify-between items-start flex-wrap gap-4 w-full relative z-10">
+          <div className="w-full md:w-auto">
+            <div className="flex items-center gap-3 mb-2 flex-wrap">
               <h3 className="font-bold text-gray-800 text-xl">{ticket.nama}</h3>
               <span
                 className={`text-xs font-bold px-3 py-1 rounded-full ${
@@ -122,7 +122,7 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
               </div>
             )}
 
-            <div className="mt-4 flex items-center gap-2">
+            <div className="mt-4 flex items-center gap-2 flex-wrap">
               <span
                 className={`text-xs px-3 py-1 rounded-full font-bold border ${
                   isPending
@@ -140,7 +140,7 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 w-full md:w-auto">
             {/* Admin Validation Actions */}
             {isAdmin && isPending && (
               <div className="flex gap-2">
@@ -151,7 +151,7 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
                       "Validasi Admin: Diterima. Masuk Antrian."
                     )
                   }
-                  className="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md shadow-blue-200"
+                  className="flex-1 md:flex-none px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md shadow-blue-200"
                 >
                   Terima
                 </button>
@@ -162,7 +162,7 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
                       "Validasi Admin: Ditolak."
                     )
                   }
-                  className="px-4 py-2 bg-white text-rose-600 border border-rose-100 text-sm font-bold rounded-xl hover:bg-rose-50 transition-all"
+                  className="flex-1 md:flex-none px-4 py-2 bg-white text-rose-600 border border-rose-100 text-sm font-bold rounded-xl hover:bg-rose-50 transition-all"
                 >
                   Tolak
                 </button>
@@ -178,7 +178,7 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
                     "Pembayaran diterima. Tiket selesai."
                   )
                 }
-                className="px-6 py-2 bg-purple-600 text-white text-sm font-bold rounded-xl hover:bg-purple-700 transition-all shadow-lg shadow-purple-200"
+                className="w-full md:w-auto px-6 py-2 bg-purple-600 text-white text-sm font-bold rounded-xl hover:bg-purple-700 transition-all shadow-lg shadow-purple-200"
               >
                 Konfirmasi Bayar
               </button>
@@ -191,7 +191,7 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
                 <div className="flex gap-2">
                   <button
                     onClick={() => onEdit(ticket)}
-                    className="px-4 py-2 bg-amber-100 text-amber-700 text-sm font-bold rounded-xl hover:bg-amber-200 transition-all"
+                    className="flex-1 md:flex-none px-4 py-2 bg-amber-100 text-amber-700 text-sm font-bold rounded-xl hover:bg-amber-200 transition-all"
                   >
                     Edit
                   </button>
@@ -202,7 +202,7 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
                         "Tiket dibatalkan oleh Admin."
                       )
                     }
-                    className="px-4 py-2 bg-rose-100 text-rose-700 text-sm font-bold rounded-xl hover:bg-rose-200 transition-all"
+                    className="flex-1 md:flex-none px-4 py-2 bg-rose-100 text-rose-700 text-sm font-bold rounded-xl hover:bg-rose-200 transition-all"
                   >
                     Batalkan
                   </button>
@@ -221,7 +221,7 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
                         `Layanan selesai. Menunggu pembayaran.`
                       )
                     }
-                    className="px-6 py-2 bg-emerald-500 text-white text-sm font-bold rounded-xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-200"
+                    className="flex-1 md:flex-none px-6 py-2 bg-emerald-500 text-white text-sm font-bold rounded-xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-200"
                   >
                     Selesai
                   </button>
@@ -232,7 +232,7 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
                         "Tiket dibatalkan oleh PIC."
                       )
                     }
-                    className="px-4 py-2 bg-rose-100 text-rose-700 text-sm font-bold rounded-xl hover:bg-rose-200 transition-all"
+                    className="flex-1 md:flex-none px-4 py-2 bg-rose-100 text-rose-700 text-sm font-bold rounded-xl hover:bg-rose-200 transition-all"
                   >
                     Batalkan
                   </button>
