@@ -67,10 +67,14 @@ const AdminAnalytics = () => {
       const monday = new Date(date);
       monday.setDate(diff);
 
+      const days = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"]; // Helper for labels if needed but we use toLocaleDateString
+
       for (let i = 0; i < 7; i++) {
         const current = new Date(monday);
         current.setDate(monday.getDate() + i);
 
+        // Key format must match ticket data or how we parse it.
+        // TicketService returns raw data. We need to match dates.
         const year = current.getFullYear();
         const month = String(current.getMonth() + 1).padStart(2, "0");
         const d = String(current.getDate()).padStart(2, "0");
@@ -78,12 +82,13 @@ const AdminAnalytics = () => {
 
         const label = current.toLocaleDateString("id-ID", {
           weekday: "short",
-          day: "numeric",
+          day: "numeric", // e.g. "Sen 15"
         });
         slots.push({ key, label, completed: 0, cancelled: 0, total: 0 });
       }
       return slots;
-    } else {
+    } else if (type === "month") {
+      // Monthly view: 1 - 31
       const year = date.getFullYear();
       const month = date.getMonth();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -93,6 +98,32 @@ const AdminAnalytics = () => {
         const m = String(month + 1).padStart(2, "0");
         const key = `${year}-${m}-${d}`;
         const label = `${i}`;
+        slots.push({ key, label, completed: 0, cancelled: 0, total: 0 });
+      }
+      return slots;
+    } else {
+      // year
+      const year = date.getFullYear();
+      const monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "Mei",
+        "Jun",
+        "Jul",
+        "Agu",
+        "Sep",
+        "Okt",
+        "Nov",
+        "Des",
+      ];
+
+      for (let i = 0; i < 12; i++) {
+        // Key is just YYYY-MM
+        const m = String(i + 1).padStart(2, "0");
+        const key = `${year}-${m}`;
+        const label = monthNames[i];
         slots.push({ key, label, completed: 0, cancelled: 0, total: 0 });
       }
       return slots;
@@ -127,7 +158,14 @@ const AdminAnalytics = () => {
               const hour = ticket.jam.split(":")[0] + ":00";
               key = hour;
             }
+          } else if (filterType === "year") {
+            // Annual
+            // Group by YYYY-MM
+            if (ticket.tanggalRilis) {
+              key = ticket.tanggalRilis.substring(0, 7);
+            }
           } else {
+            // For Week and Month, ticket needs to match key "YYYY-MM-DD"
             key = ticket.tanggalRilis;
           }
 
@@ -320,6 +358,7 @@ const AdminAnalytics = () => {
             <option value="day">Harian</option>
             <option value="week">Mingguan</option>
             <option value="month">Bulanan</option>
+            <option value="year">Tahunan</option>
           </select>
           <input
             type="date"

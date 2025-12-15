@@ -164,9 +164,17 @@ export const getChartData = async (filterType, selectedDateString) => {
 
     startStr = formatDateLocal(startDate);
     endStr = formatDateLocal(endDate);
-  } else { // month
+  } else if (filterType === 'month') {
+    // Monthly view: 1st to End of Month
     const startDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
     const endDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
+    
+    startStr = formatDateLocal(startDate);
+    endStr = formatDateLocal(endDate);
+  } else { // year
+    // Annual view: Jan 1 to Dec 31
+    const startDate = new Date(selectedDate.getFullYear(), 0, 1);
+    const endDate = new Date(selectedDate.getFullYear(), 11, 31);
     
     startStr = formatDateLocal(startDate);
     endStr = formatDateLocal(endDate);

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 const CANCELLATION_REASONS = [
@@ -28,7 +29,7 @@ export default function CancellationModal({
     setIsSubmitting(false);
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in p-4">
       <div className="bg-white rounded-4xl w-full max-w-sm shadow-2xl overflow-hidden scale-100 animate-scale-in">
         <div className="p-6 bg-rose-50 border-b border-rose-100">
@@ -93,6 +94,7 @@ export default function CancellationModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

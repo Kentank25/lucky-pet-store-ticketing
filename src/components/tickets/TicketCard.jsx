@@ -3,6 +3,7 @@ import { updateTicketStatus } from "../../services/ticketService";
 import toast from "react-hot-toast";
 import { TICKET_STATUS, SERVICE_TYPE } from "../../constants";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import CancellationModal from "../modals/CancellationModal";
 import QRCode from "react-qr-code";
 import {
@@ -251,42 +252,44 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
         ticketName={ticket.nama}
       />
 
-      {isQrModalOpen && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl relative animate-scale-in text-center">
-            <button
-              onClick={() => setIsQrModalOpen(false)}
-              className="absolute top-4 right-4 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors font-bold text-xl"
-            >
-              ×
-            </button>
+      {isQrModalOpen &&
+        createPortal(
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+            <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl relative animate-scale-in text-center">
+              <button
+                onClick={() => setIsQrModalOpen(false)}
+                className="absolute top-4 right-4 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors font-bold text-xl"
+              >
+                ×
+              </button>
 
-            <h3 className="text-2xl font-black text-gray-800 mb-2">
-              Scan QR Code
-            </h3>
-            <p className="text-gray-500 mb-6">
-              Pantau status tiket ini secara real-time.
-            </p>
-
-            <div className="bg-white p-4 rounded-2xl border-2 border-gray-100 inline-block mb-6 shadow-none">
-              <QRCode
-                value={`${window.location.origin}/monitor/${ticket.id}`}
-                size={200}
-                viewBox={`0 0 256 256`}
-              />
-            </div>
-
-            <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 text-left">
-              <p className="text-xs text-blue-600 font-bold uppercase mb-1">
-                Link Monitor:
+              <h3 className="text-2xl font-black text-gray-800 mb-2">
+                Scan QR Code
+              </h3>
+              <p className="text-gray-500 mb-6">
+                Pantau status tiket ini secara real-time.
               </p>
-              <p className="text-sm text-gray-700 font-mono break-all leading-tight">
-                {`${window.location.origin}/monitor/${ticket.id}`}
-              </p>
+
+              <div className="bg-white p-4 rounded-2xl border-2 border-gray-100 inline-block mb-6 shadow-none">
+                <QRCode
+                  value={`${window.location.origin}/monitor/${ticket.id}`}
+                  size={200}
+                  viewBox={`0 0 256 256`}
+                />
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 text-left">
+                <p className="text-xs text-blue-600 font-bold uppercase mb-1">
+                  Link Monitor:
+                </p>
+                <p className="text-sm text-gray-700 font-mono break-all leading-tight">
+                  {`${window.location.origin}/monitor/${ticket.id}`}
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </>
   );
 }

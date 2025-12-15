@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { addTicket, updateTicketDetails } from "../../services/ticketService";
 import { useRole } from "../../context/RoleContext";
 import toast from "react-hot-toast";
@@ -350,58 +351,60 @@ export default function TicketForm({
       </div>
 
       {/* Success Modal for Kiosk/Guest */}
-      {successData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-scale-in relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-2 bg-linear-to-r from-blue-500 to-purple-500"></div>
+      {successData &&
+        createPortal(
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
+            <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-scale-in relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-2 bg-linear-to-r from-blue-500 to-purple-500"></div>
 
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600 animate-bounce">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-10 w-10"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M5 13l4 4L19 7"
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600 animate-bounce">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-10 w-10"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+
+              <h3 className="text-2xl font-black text-gray-800 mb-2">
+                Berhasil!
+              </h3>
+              <p className="text-gray-500 mb-6 font-medium">
+                Tiket untuk{" "}
+                <strong className="text-gray-800">{successData.nama}</strong>{" "}
+                telah dibuat.
+              </p>
+
+              <div className="bg-white p-4 rounded-2xl border-2 border-dashed border-gray-200 inline-block mb-6">
+                <QRCode
+                  value={`${window.location.origin}/monitor/${successData.id}`}
+                  size={180}
                 />
-              </svg>
+              </div>
+
+              <p className="text-xs text-gray-400 mb-8 max-w-[200px] mx-auto">
+                Scan QR Code ini untuk memantau status antrian Anda secara
+                real-time.
+              </p>
+
+              <button
+                onClick={() => setSuccessData(null)}
+                className="w-full py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-black transition-all shadow-lg active:scale-95"
+              >
+                Selesai & Tutup
+              </button>
             </div>
-
-            <h3 className="text-2xl font-black text-gray-800 mb-2">
-              Berhasil!
-            </h3>
-            <p className="text-gray-500 mb-6 font-medium">
-              Tiket untuk{" "}
-              <strong className="text-gray-800">{successData.nama}</strong>{" "}
-              telah dibuat.
-            </p>
-
-            <div className="bg-white p-4 rounded-2xl border-2 border-dashed border-gray-200 inline-block mb-6">
-              <QRCode
-                value={`${window.location.origin}/monitor/${successData.id}`}
-                size={180}
-              />
-            </div>
-
-            <p className="text-xs text-gray-400 mb-8 max-w-[200px] mx-auto">
-              Scan QR Code ini untuk memantau status antrian Anda secara
-              real-time.
-            </p>
-
-            <button
-              onClick={() => setSuccessData(null)}
-              className="w-full py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-black transition-all shadow-lg active:scale-95"
-            >
-              Selesai & Tutup
-            </button>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </form>
   );
 }
