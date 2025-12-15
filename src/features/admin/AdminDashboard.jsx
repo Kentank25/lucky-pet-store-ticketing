@@ -164,7 +164,14 @@ const PaymentAccordion = ({
   );
 };
 
-const ValidationAccordion = ({ title, items, isOpen, onToggle, icon }) => {
+const ValidationAccordion = ({
+  title,
+  items,
+  isOpen,
+  onToggle,
+  icon,
+  loading,
+}) => {
   if (items.length === 0) return null;
 
   return (
@@ -177,7 +184,7 @@ const ValidationAccordion = ({ title, items, isOpen, onToggle, icon }) => {
       colorClass="amber"
     >
       <div className="mt-4">
-        <TicketList tickets={items} />
+        <TicketList tickets={items} loading={loading} />
       </div>
     </AccordionItem>
   );
@@ -196,13 +203,6 @@ export default function AdminDashboard() {
     Klinik: true,
   });
   const [activeTab, setActiveTab] = useState("dashboard");
-
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-slate-600"></div>
-      </div>
-    );
 
   const pendingTickets = tickets
     .filter((t) => t.status === TICKET_STATUS.PENDING)
@@ -379,6 +379,7 @@ export default function AdminDashboard() {
                   isOpen={expandedValidationSections.Grooming}
                   onToggle={() => toggleValidationSection("Grooming")}
                   icon={<ScissorsIcon className="w-5 h-5" />}
+                  loading={loading}
                 />
                 <ValidationAccordion
                   title="Klinik"
@@ -386,6 +387,7 @@ export default function AdminDashboard() {
                   isOpen={expandedValidationSections.Klinik}
                   onToggle={() => toggleValidationSection("Klinik")}
                   icon={<HeartIcon className="w-5 h-5" />}
+                  loading={loading}
                 />
               </div>
             )}
@@ -456,7 +458,11 @@ export default function AdminDashboard() {
                   {activeTickets.length}
                 </span>
               </h3>
-              <TicketList tickets={activeTickets} onEdit={setTicketToEdit} />
+              <TicketList
+                tickets={activeTickets}
+                onEdit={setTicketToEdit}
+                loading={loading}
+              />
             </div>
           </div>
         </div>

@@ -1,14 +1,25 @@
-import TicketCard from './TicketCard';
+import TicketCard from "./TicketCard";
+import TicketSkeleton from "./TicketSkeleton";
 
-export default function TicketList({ tickets, onEdit, filterStatus, filterService, cardClassName }) {
+export default function TicketList({
+  tickets,
+  onEdit,
+  filterStatus,
+  filterService,
+  cardClassName,
+}) {
   let filteredTickets = tickets;
 
   if (filterStatus) {
-    filteredTickets = filteredTickets.filter(t => filterStatus.includes(t.status));
+    filteredTickets = filteredTickets.filter((t) =>
+      filterStatus.includes(t.status)
+    );
   }
 
   if (filterService) {
-    filteredTickets = filteredTickets.filter(t => t.layanan === filterService);
+    filteredTickets = filteredTickets.filter(
+      (t) => t.layanan === filterService
+    );
   }
 
   if (filteredTickets.length === 0) {
@@ -21,8 +32,13 @@ export default function TicketList({ tickets, onEdit, filterStatus, filterServic
 
   return (
     <div className="grid grid-cols-1 gap-6">
-      {filteredTickets.map(ticket => (
-        <TicketCard key={ticket.id} ticket={ticket} onEdit={onEdit} className={cardClassName} />
+      {filteredTickets.map((ticket) => (
+        <TicketCard
+          key={ticket.id}
+          ticket={ticket}
+          onEdit={onEdit}
+          className={cardClassName}
+        />
       ))}
     </div>
   );

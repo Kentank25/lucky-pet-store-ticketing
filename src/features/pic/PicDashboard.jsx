@@ -26,18 +26,11 @@ export default function PicDashboard() {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="relative">
-          <div
-            className={`w-16 h-16 rounded-full border-4 border-t-transparent animate-spin ${
-              isGrooming ? "border-blue-500" : "border-rose-500"
-            }`}
-          ></div>
-          <div
-            className={`absolute inset-0 w-16 h-16 rounded-full border-4 border-opacity-20 ${
-              isGrooming ? "border-blue-500" : "border-rose-500"
-            }`}
-          ></div>
+      <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-8 animate-fade-in pb-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+          {[1, 2, 3, 4].map((i) => (
+            <TicketSkeleton key={i} />
+          ))}
         </div>
       </div>
     );

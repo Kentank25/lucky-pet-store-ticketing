@@ -14,8 +14,13 @@ function App() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="min-h-screen bg-slate-50 flex flex-col p-4 md:p-6 gap-8">
+        {/* Simple Skeleton for Global Loading */}
+        <div className="w-full h-24 bg-slate-200 rounded-3xl animate-pulse"></div>
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="bg-slate-200 rounded-3xl animate-pulse h-96"></div>
+          <div className="lg:col-span-2 bg-slate-200 rounded-3xl animate-pulse h-96"></div>
+        </div>
       </div>
     );
   }
