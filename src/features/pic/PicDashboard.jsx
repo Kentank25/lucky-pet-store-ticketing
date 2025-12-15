@@ -12,6 +12,7 @@ import { useAuth } from "../../context/AuthContext";
 import { updateTicketStatus } from "../../services/ticketService";
 import toast from "react-hot-toast";
 import { TICKET_STATUS, SERVICE_TYPE } from "../../constants";
+import TicketSkeleton from "../../components/tickets/TicketSkeleton";
 import { useState } from "react";
 
 export default function PicDashboard() {
@@ -121,7 +122,7 @@ export default function PicDashboard() {
               <span className="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-xs md:text-sm font-bold tracking-wider uppercase border border-white/10 shadow-lg">
                 Dashboard PIC
               </span>
-              <span className="text-2xl animate-bounce">
+              <span className="text-2xl">
                 {isGrooming ? (
                   <ScissorsIcon className="w-6 h-6 md:w-8 md:h-8" />
                 ) : (
