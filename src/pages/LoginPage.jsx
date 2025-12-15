@@ -52,7 +52,7 @@ export default function LoginPage() {
         <div className="relative z-10">
           <div className="text-center mb-8">
             <img
-              src="/src/assets/Lucky Pet Store Logo (Black).png"
+              src="/public/Lucky Pet Store Logo (Black).png"
               className="w-20 h-20 mx-auto mb-4 block object-contain"
               alt="Logo"
             />
