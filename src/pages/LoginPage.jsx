@@ -45,14 +45,14 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-blue-100 border border-white w-full max-w-md relative overflow-hidden animate-fade-in">
-        <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-blue-50 rounded-full blur-3xl opacity-50"></div>
-        <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-40 h-40 bg-purple-50 rounded-full blur-3xl opacity-50"></div>
+      <div className="glass-panel p-8 rounded-[2.5rem] shadow-xl shadow-indigo-100 border border-white w-full max-w-md relative overflow-hidden animate-fade-in">
+        <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-indigo-50 rounded-full blur-3xl opacity-50"></div>
+        <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-40 h-40 bg-rose-50 rounded-full blur-3xl opacity-50"></div>
 
         <div className="relative z-10">
           <div className="text-center mb-8">
             <img
-              src="/public/Lucky Pet Store Logo (Black).png"
+              src="/Lucky Pet Store Logo (Black).png"
               className="w-20 h-20 mx-auto mb-4 block object-contain"
               alt="Logo"
             />
@@ -73,10 +73,8 @@ export default function LoginPage() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className={`w-full px-6 py-4 bg-gray-50 rounded-2xl border transition-all font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${
-                  errors.email
-                    ? "border-red-500 focus:border-red-500"
-                    : "border-gray-100"
+                className={`input-minimal px-6 py-4 rounded-2xl ${
+                  errors.email ? "border-red-500 focus:border-red-500" : ""
                 }`}
                 placeholder="Masukkan username..."
               />
@@ -95,10 +93,8 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`w-full px-6 py-4 bg-gray-50 rounded-2xl border transition-all font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${
-                  errors.password
-                    ? "border-red-500 focus:border-red-500"
-                    : "border-gray-100"
+                className={`input-minimal px-6 py-4 rounded-2xl ${
+                  errors.password ? "border-red-500 focus:border-red-500" : ""
                 }`}
                 placeholder="••••••••"
               />
@@ -113,7 +109,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+                className="btn-primary w-full py-4 rounded-2xl flex justify-center items-center gap-2"
               >
                 {loading ? (
                   <>
@@ -132,7 +128,7 @@ export default function LoginPage() {
                     href="https://wa.me/6281286422525?text=Saya%20kesulitan%20masuk%20dan%20ingin%20meminta%20bantuan%20administrator."
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-700 font-bold transition-colors cursor-pointer"
+                    className="text-indigo-600 hover:text-indigo-700 font-bold transition-colors cursor-pointer"
                   >
                     Hubungi Administrator.
                   </a>

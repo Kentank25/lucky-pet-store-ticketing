@@ -194,30 +194,30 @@ export default function UserManagement() {
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-gray-200 transition-all hover:scale-105"
+            className="btn-primary flex items-center gap-2 hover:scale-105"
           >
             <PlusIcon className="w-6 h-6" /> Tambah User
           </button>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="glass-panel rounded-3xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="bg-gray-50 border-b border-gray-100">
+              <thead className="bg-white/50 border-b border-indigo-50">
                 <tr>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">
                     Nama
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">
                     Email
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">
                     Role
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">
                     Dibuat
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase text-right">
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-right">
                     Aksi
                   </th>
                 </tr>
@@ -227,7 +227,7 @@ export default function UserManagement() {
                   <tr>
                     <td
                       colSpan="5"
-                      className="px-6 py-8 text-center text-gray-400"
+                      className="px-6 py-8 text-center text-slate-400"
                     >
                       Loading...
                     </td>
@@ -236,7 +236,7 @@ export default function UserManagement() {
                   <tr>
                     <td
                       colSpan="5"
-                      className="px-6 py-8 text-center text-gray-400"
+                      className="px-6 py-8 text-center text-slate-400"
                     >
                       Belum ada user.
                     </td>
@@ -245,16 +245,16 @@ export default function UserManagement() {
                   users.map((user) => (
                     <tr
                       key={user.id}
-                      className="border-b border-gray-50 last:border-none hover:bg-gray-50 transition-colors"
+                      className="border-b border-slate-50 last:border-none hover:bg-white/40 transition-colors"
                     >
-                      <td className="px-6 py-4 font-bold text-gray-800">
+                      <td className="px-6 py-4 font-bold text-slate-800">
                         {user.name}
                       </td>
-                      <td className="px-6 py-4 text-gray-600 font-medium font-mono text-sm">
+                      <td className="px-6 py-4 text-slate-600 font-medium font-mono text-sm">
                         {user.email}
                       </td>
                       <td className="px-6 py-4">{getRoleBadge(user.role)}</td>
-                      <td className="px-6 py-4 text-gray-500 text-xs">
+                      <td className="px-6 py-4 text-slate-500 text-xs">
                         {user.createdAt
                           ? new Date(user.createdAt).toLocaleDateString()
                           : "-"}
@@ -263,14 +263,14 @@ export default function UserManagement() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleEdit(user)}
-                            className="text-blue-400 hover:text-blue-600 font-bold text-xs px-3 py-1 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-1"
+                            className="text-indigo-400 hover:text-indigo-600 font-bold text-xs px-3 py-1 hover:bg-indigo-50 rounded-lg transition-colors flex items-center gap-1"
                           >
                             <PencilSquareIcon className="w-4 h-4" />
                             Edit
                           </button>
                           <button
                             onClick={() => handleDelete(user.id)}
-                            className="text-red-400 hover:text-red-600 font-bold text-xs px-3 py-1 hover:bg-red-50 rounded-lg transition-colors"
+                            className="text-rose-400 hover:text-rose-600 font-bold text-xs px-3 py-1 hover:bg-rose-50 rounded-lg transition-colors"
                           >
                             Hapus
                           </button>
@@ -288,32 +288,32 @@ export default function UserManagement() {
       {/* Modal Add User */}
       {isModalOpen &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
             {/* Modal Content */}
-            <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl relative animate-scale-in flex flex-col max-h-[90vh]">
+            <div className="bg-white rounded-4xl w-full max-w-lg shadow-2xl relative animate-scale-in flex flex-col max-h-[90vh] overflow-hidden">
               {/* Header */}
-              <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-white rounded-t-3xl sticky top-0 z-10">
-                <h2 className="text-xl font-bold text-gray-800">
+              <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10">
+                <h2 className="text-xl font-black text-gray-800">
                   {editingUser ? "Edit User" : "Tambah User Baru"}
                 </h2>
                 <button
                   onClick={handleCloseModal}
-                  className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition-colors"
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
                 >
-                  <XMarkIcon className="w-5 h-5" />
+                  <XMarkIcon className="w-6 h-6" />
                 </button>
               </div>
 
               {/* Scrollable Form Body */}
-              <div className="p-6 overflow-y-auto custom-scrollbar">
-                <form onSubmit={handleRegister} className="space-y-5">
+              <div className="p-6 overflow-y-auto custom-scrollbar bg-slate-50/50">
+                <form onSubmit={handleRegister} className="space-y-6">
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                       Informasi Dasar
                     </label>
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">
+                        <label className="block text-sm font-bold text-slate-700 mb-1">
                           Nama
                         </label>
                         <input
@@ -322,10 +322,10 @@ export default function UserManagement() {
                           onChange={(e) =>
                             setFormData({ ...formData, name: e.target.value })
                           }
-                          className={`w-full px-4 py-3 rounded-xl bg-gray-50 border transition-all font-semibold outline-none text-gray-800 placeholder-gray-400 focus:bg-white focus:ring-2 ${
+                          className={`input-minimal ${
                             errors.name
-                              ? "border-red-200 focus:border-red-500 focus:ring-red-100"
-                              : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
+                              ? "border-red-500 focus:border-red-500 ring-red-100"
+                              : ""
                           }`}
                           placeholder="Nama Lengkap"
                         />
@@ -337,7 +337,7 @@ export default function UserManagement() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">
+                        <label className="block text-sm font-bold text-slate-700 mb-1">
                           Email
                         </label>
                         <input
@@ -346,13 +346,13 @@ export default function UserManagement() {
                           onChange={(e) =>
                             setFormData({ ...formData, email: e.target.value })
                           }
-                          className={`w-full px-4 py-3 rounded-xl bg-gray-50 border transition-all font-semibold outline-none text-gray-800 placeholder-gray-400 focus:bg-white focus:ring-2 ${
+                          className={`input-minimal ${
                             errors.email
-                              ? "border-red-200 focus:border-red-500 focus:ring-red-100"
-                              : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
+                              ? "border-red-500 focus:border-red-500 ring-red-100"
+                              : ""
                           } ${
                             editingUser
-                              ? "opacity-60 cursor-not-allowed bg-gray-100"
+                              ? "opacity-60 cursor-not-allowed bg-slate-100"
                               : ""
                           }`}
                           placeholder="Alamat Email"
@@ -367,7 +367,7 @@ export default function UserManagement() {
 
                       {!editingUser && (
                         <div>
-                          <label className="block text-sm font-bold text-gray-700 mb-1">
+                          <label className="block text-sm font-bold text-slate-700 mb-1">
                             Password
                           </label>
                           <input
@@ -380,10 +380,10 @@ export default function UserManagement() {
                                 password: e.target.value,
                               })
                             }
-                            className={`w-full px-4 py-3 rounded-xl bg-gray-50 border transition-all font-semibold outline-none text-gray-800 placeholder-gray-400 focus:bg-white focus:ring-2 ${
+                            className={`input-minimal ${
                               errors.password
-                                ? "border-red-200 focus:border-red-500 focus:ring-red-100"
-                                : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
+                                ? "border-red-500 focus:border-red-500 ring-red-100"
+                                : ""
                             }`}
                             placeholder="Password (Min. 6 karakter)"
                           />
@@ -398,7 +398,7 @@ export default function UserManagement() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                       Pilih Role Akses
                     </label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -425,27 +425,27 @@ export default function UserManagement() {
                           onClick={() =>
                             setFormData({ ...formData, role: roleOption.value })
                           }
-                          className={`p-3 rounded-xl border-2 text-left transition-all relative ${
+                          className={`p-3 rounded-2xl border-2 text-left transition-all relative ${
                             formData.role === roleOption.value
-                              ? "border-blue-500 bg-blue-50/50"
-                              : "border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50"
+                              ? "border-indigo-500 bg-indigo-50/50"
+                              : "border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50"
                           }`}
                         >
                           <div className="flex items-center justify-between mb-1">
                             <span
                               className={`font-bold text-sm ${
                                 formData.role === roleOption.value
-                                  ? "text-blue-700"
-                                  : "text-gray-700"
+                                  ? "text-indigo-700"
+                                  : "text-slate-700"
                               }`}
                             >
                               {roleOption.label}
                             </span>
                             {formData.role === roleOption.value && (
-                              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                              <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
                             )}
                           </div>
-                          <span className="text-xs text-gray-400 font-medium">
+                          <span className="text-xs text-slate-400 font-medium">
                             {roleOption.desc}
                           </span>
                         </button>
@@ -457,7 +457,7 @@ export default function UserManagement() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-4 bg-gray-900 hover:bg-black text-white rounded-xl font-bold shadow-lg shadow-gray-200 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="btn-primary w-full flex items-center justify-center gap-2"
                     >
                       {isSubmitting ? (
                         <>

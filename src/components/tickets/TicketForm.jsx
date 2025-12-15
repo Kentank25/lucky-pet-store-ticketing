@@ -148,15 +148,7 @@ export default function TicketForm({
   };
 
   const timeSlots = generateTimeSlots(formData.layanan);
-
-  // Modern Minimalist Styles
-  const inputClass =
-    "w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-slate-700 placeholder-slate-400"; // Using new minimalist input style manually or via @apply
-
   const labelClass = "block text-sm font-semibold text-slate-600 mb-2 ml-1";
-
-  const buttonClass =
-    "flex-1 bg-indigo-600 text-white py-3 px-6 rounded-xl hover:bg-indigo-700 hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg shadow-lg shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2";
 
   return (
     <form onSubmit={handleSubmit} className={`relative ${className}`}>
@@ -170,7 +162,7 @@ export default function TicketForm({
             required
             value={formData.nama}
             onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
-            className={`${inputClass} ${
+            className={`input-minimal ${
               errors.nama ? "border-red-500 ring-2 ring-red-200" : ""
             }`}
             placeholder="Contoh: Budi / Mochi"
@@ -193,7 +185,7 @@ export default function TicketForm({
               const val = e.target.value.replace(/\D/g, "");
               setFormData({ ...formData, telepon: val });
             }}
-            className={`${inputClass} tracking-wider ${
+            className={`input-minimal tracking-wider ${
               errors.kontak ? "border-red-500 ring-2 ring-red-200" : ""
             }`}
             placeholder="08xxxxxxxxxx"
@@ -231,7 +223,7 @@ export default function TicketForm({
                 onClick={() =>
                   setFormData({ ...formData, layanan: option.value })
                 }
-                className={`flex-1 p-4 rounded-2xl border transition-all font-bold text-lg flex flex-col items-center justify-center gap-2 ${
+                className={`flex-1 p-4 rounded-2xl border transition-all font-bold text-lg flex flex-col items-center justify-center gap-2 hover:scale-105 active:scale-95 ${
                   formData.layanan === option.value
                     ? option.activeClass
                     : "bg-white border-slate-100 text-slate-400 hover:bg-slate-50 hover:border-slate-200"
@@ -254,10 +246,10 @@ export default function TicketForm({
                 setFormData({ ...formData, tanggalRilis: e.target.value })
               }
               disabled={!!ticketToEdit}
-              className={`${inputClass} w-full disabled:opacity-60`}
+              className={`input-minimal w-full disabled:opacity-60`}
             />
 
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
               {timeSlots.map((slot) => (
                 <button
                   key={slot}
@@ -288,7 +280,7 @@ export default function TicketForm({
             onChange={(e) =>
               setFormData({ ...formData, catatan: e.target.value })
             }
-            className={`${inputClass} resize-none font-medium`}
+            className={`input-minimal resize-none font-medium`}
             placeholder={
               formData.layanan === SERVICE_TYPE.GROOMING
                 ? "Contoh: Mandi Kutu, Potong Kuku..."
@@ -320,7 +312,11 @@ export default function TicketForm({
         )}
 
         <div className="flex gap-3 pt-4">
-          <button type="submit" disabled={loading} className={buttonClass}>
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary flex-1 flex items-center justify-center gap-2"
+          >
             {loading ? (
               <>
                 <div className="w-5 h-5 md:w-6 md:h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

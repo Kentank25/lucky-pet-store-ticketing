@@ -28,10 +28,10 @@ const AccordionItem = ({
 }) => {
   return (
     <div
-      className={`bg-white rounded-2xl border border-slate-100 overflow-hidden mb-4 transition-all duration-300 ${
+      className={`glass-panel mb-4 transition-all duration-300 rounded-3xl ${
         isOpen
-          ? "shadow-lg shadow-slate-100 ring-1 ring-slate-100"
-          : "hover:border-slate-200"
+          ? "shadow-lg shadow-indigo-100 ring-1 ring-indigo-50"
+          : "hover:border-indigo-100"
       }`}
     >
       <div
@@ -119,10 +119,10 @@ const PaymentAccordion = ({
           <div
             key={ticket.id}
             onClick={() => onToggleSelect(ticket.id)}
-            className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 relative group ${
+            className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 relative group ${
               selectedPaymentIds.has(ticket.id)
                 ? "bg-indigo-50 border-indigo-200 shadow-sm"
-                : "bg-slate-50 border-transparent hover:bg-white hover:border-slate-200"
+                : "bg-white/50 border-transparent hover:bg-white hover:border-indigo-100"
             }`}
           >
             <div className="flex justify-between items-start mb-2">
@@ -137,7 +137,7 @@ const PaymentAccordion = ({
               </span>
               <input
                 type="checkbox"
-                className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                 checked={selectedPaymentIds.has(ticket.id)}
                 onChange={() => onToggleSelect(ticket.id)}
                 onClick={(e) => e.stopPropagation()}
@@ -196,11 +196,6 @@ export default function AdminDashboard() {
     Klinik: true,
   });
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   if (loading)
     return (
@@ -303,15 +298,15 @@ export default function AdminDashboard() {
   };
 
   const headerActions = (
-    <div className="flex p-1 bg-slate-100/50 rounded-xl">
+    <div className="flex p-1 bg-slate-100/50 backdrop-blur-sm rounded-2xl border border-white/20">
       {["dashboard", "analytics", "users"].map((tab) => (
         <button
           key={tab}
           onClick={() => setActiveTab(tab)}
-          className={`px-4 py-2 rounded-lg text-sm font-bold capitalize transition-all duration-300 ${
+          className={`px-4 py-2 rounded-xl text-sm font-bold capitalize transition-all duration-300 ${
             activeTab === tab
-              ? "bg-white text-indigo-600 shadow-sm"
-              : "text-slate-500 hover:text-slate-700"
+              ? "bg-white text-indigo-600 shadow-md shadow-indigo-100"
+              : "text-slate-500 hover:text-slate-700 hover:bg-white/50"
           }`}
         >
           {tab}
@@ -323,8 +318,7 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-8 pb-12">
       {/* Header Tabs Portal */}
-      {mounted &&
-        document.getElementById("header-actions") &&
+      {document.getElementById("header-actions") &&
         createPortal(headerActions, document.getElementById("header-actions"))}
 
       {/* Main Content */}
@@ -414,7 +408,7 @@ export default function AdminDashboard() {
                         onClick={() =>
                           handleConfirmPayments(Array.from(selectedPaymentIds))
                         }
-                        className="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
+                        className="btn-primary py-2 px-4 shadow-lg shadow-indigo-200 text-sm"
                       >
                         Konfirmasi ({selectedPaymentIds.size})
                       </button>

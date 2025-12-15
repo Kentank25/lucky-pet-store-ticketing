@@ -181,7 +181,7 @@ export default function PicDashboard() {
             {activeTickets.map((ticket) => (
               <div
                 key={ticket.id}
-                className="group bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 p-8 md:p-10 relative overflow-hidden transition-all hover:shadow-2xl"
+                className="group glass-panel rounded-4xl p-8 md:p-10 relative overflow-hidden transition-all hover:shadow-2xl hover:-translate-y-1"
               >
                 {/* Decorative Side Bar */}
                 <div
