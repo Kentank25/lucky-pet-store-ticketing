@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useRole } from "../context/RoleContext";
+import { useAuth } from "../context/AuthContext";
 import { loginSchema } from "../utils/validationSchemas";
 
 export default function LoginPage() {
-  const { login } = useRole();
+  const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);

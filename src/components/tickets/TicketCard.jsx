@@ -1,4 +1,4 @@
-import { useRole } from "../../context/RoleContext";
+import { useAuth } from "../../context/AuthContext";
 import { updateTicketStatus } from "../../services/ticketService";
 import toast from "react-hot-toast";
 import { TICKET_STATUS, SERVICE_TYPE } from "../../constants";
@@ -11,10 +11,11 @@ import {
   CalendarIcon,
   ClockIcon,
   QrCodeIcon,
+  DevicePhoneMobileIcon,
 } from "@heroicons/react/24/outline";
 
 export default function TicketCard({ ticket, onEdit, className = "" }) {
-  const { role } = useRole();
+  const { role } = useAuth();
 
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
@@ -82,6 +83,12 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
               >
                 {ticket.layanan}
               </span>
+              {ticket.source === "kiosk" && (
+                <span className="text-xs font-bold px-3 py-1 rounded-full bg-violet-100 text-violet-700 flex items-center gap-1">
+                  <DevicePhoneMobileIcon className="w-3 h-3" />
+                  Self-Service
+                </span>
+              )}
             </div>
 
             {ticket.telepon && (

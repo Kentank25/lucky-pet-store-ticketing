@@ -46,10 +46,13 @@ export const addTicket = async (ticketData, role, customStatus = null) => {
     ? `Tiket dibuat oleh Tamu/Public (${ticketData.layanan}). Menunggu validasi Admin.`
     : `Tiket dibuat oleh Admin (${ticketData.layanan}). Menunggu validasi.`;
 
+  const isKiosk = role === "kiosk" || role === "guest";
+  
   const newTicket = {
     ...ticketData,
     tanggalSelesai: "",
     status: initialStatus,
+    source: isKiosk ? "kiosk" : "admin",
     log: [
       {
         timestamp: new Date().toISOString(),

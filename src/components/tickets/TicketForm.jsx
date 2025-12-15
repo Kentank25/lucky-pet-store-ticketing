@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { addTicket, updateTicketDetails } from "../../services/ticketService";
-import { useRole } from "../../context/RoleContext";
+import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import { SERVICE_TYPE, TICKET_STATUS } from "../../constants";
 import { ticketSchema } from "../../utils/validationSchemas";
@@ -19,7 +19,7 @@ export default function TicketForm({
   className = "",
   isPublicKiosk = false,
 }) {
-  const { role } = useRole();
+  const { role } = useAuth();
   const [formData, setFormData] = useState({
     nama: "",
     telepon: "",

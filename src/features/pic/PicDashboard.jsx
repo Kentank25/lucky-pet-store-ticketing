@@ -8,7 +8,7 @@ import {
   ArrowRightIcon,
   SparklesIcon,
 } from "@heroicons/react/24/outline";
-import { useRole } from "../../context/RoleContext";
+import { useAuth } from "../../context/AuthContext";
 import { updateTicketStatus } from "../../services/ticketService";
 import toast from "react-hot-toast";
 import { TICKET_STATUS, SERVICE_TYPE } from "../../constants";
@@ -16,7 +16,7 @@ import { useState } from "react";
 
 export default function PicDashboard() {
   const { tickets, loading } = useTickets();
-  const { role } = useRole();
+  const { role } = useAuth();
 
   const service =
     role === "pic_grooming" ? SERVICE_TYPE.GROOMING : SERVICE_TYPE.KLINIK;

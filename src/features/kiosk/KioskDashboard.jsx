@@ -14,7 +14,7 @@ export default function KioskDashboard() {
             <div className="relative z-10 flex flex-col justify-center h-full">
               <div className="inline-flex items-center w-16 h-16 md:w-18 md:h-18 bg-white/20 backdrop-blur-md rounded-3xl mb-8 md:mb-10 p-1 text-5xl shadow-inner border border-white/10">
                 <img
-                  src="/public/Lucky Pet Store Logo (Black).png"
+                  src="/Lucky Pet Store Logo (Black).png"
                   alt="Black Logo"
                   className="w-full h-full p-1"
                 ></img>

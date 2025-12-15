@@ -1,8 +1,8 @@
-import { useRole } from "../../context/RoleContext";
+import { useAuth } from "../../context/AuthContext";
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 
 export default function Layout({ children }) {
-  const { user, logout } = useRole();
+  const { user, logout } = useAuth();
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 selection:bg-blue-100 selection:text-blue-900">
@@ -11,7 +11,7 @@ export default function Layout({ children }) {
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-linear-to-tr from-blue-600 to-blue-400 rounded-xl shadow-lg shadow-blue-200 flex items-center justify-center text-xl animate-float">
               <img
-                src="/public/Lucky Pet Store Logo (Black).png"
+                src="/Lucky Pet Store Logo (Black).png"
                 alt="Black Logo"
                 className="w-full h-full p-1"
               ></img>
