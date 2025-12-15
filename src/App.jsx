@@ -8,6 +8,7 @@ import LoginPage from "./pages/LoginPage";
 
 import { Routes, Route, Navigate } from "react-router-dom";
 import QueueMonitor from "./pages/QueueMonitor";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   const { role, loading } = useAuth();
@@ -54,7 +55,7 @@ function App() {
           )
         }
       />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
