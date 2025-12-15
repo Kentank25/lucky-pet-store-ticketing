@@ -57,14 +57,14 @@ export default function KioskDashboard() {
         </div>
 
         <div className="h-full flex flex-col justify-center glass-panel p-6 md:p-10 rounded-[2.5rem] relative">
-          <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-100 rounded-full blur-3xl -z-10 opacity-50"></div>
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-pink-100 rounded-full blur-3xl -z-10 opacity-50"></div>
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-100/50 rounded-full blur-3xl -z-10 opacity-50"></div>
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-pink-100/50 rounded-full blur-3xl -z-10 opacity-50"></div>
 
           <div className="text-center mb-6 md:mb-8">
-            <h3 className="text-xl md:text-2xl font-black text-gray-800 mb-2">
+            <h3 className="text-xl md:text-2xl font-black text-text-main mb-2">
               Ambil Antrian Baru
             </h3>
-            <p className="text-gray-500">Isi data diri Anda di bawah ini</p>
+            <p className="text-text-muted">Isi data diri Anda di bawah ini</p>
           </div>
 
           <TicketForm isPublicKiosk={true} />

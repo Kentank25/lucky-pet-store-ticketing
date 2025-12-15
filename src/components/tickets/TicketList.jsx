@@ -24,7 +24,7 @@ export default function TicketList({
 
   if (filteredTickets.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500 bg-white rounded-lg border border-dashed border-gray-300">
+      <div className="text-center py-8 text-text-muted bg-bg-surface rounded-lg border border-dashed border-border-subtle">
         Tidak ada tiket yang sesuai.
       </div>
     );

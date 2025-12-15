@@ -2,7 +2,7 @@ import Skeleton from "../common/Skeleton";
 
 export default function TicketSkeleton() {
   return (
-    <div className="p-6 bg-white rounded-3xl shadow-lg border border-slate-100 mb-6">
+    <div className="p-6 bg-bg-surface rounded-3xl shadow-lg border border-border-subtle mb-6">
       <div className="flex justify-between items-start mb-4">
         <div>
           {/* Title & Badge */}
@@ -32,7 +32,7 @@ export default function TicketSkeleton() {
       </div>
 
       {/* Footer / QR Button */}
-      <div className="mt-6 pt-4 border-t border-gray-50 flex justify-end">
+      <div className="mt-6 pt-4 border-t border-border-subtle flex justify-end">
         <Skeleton className="h-8 w-24 rounded-xl" />
       </div>
     </div>

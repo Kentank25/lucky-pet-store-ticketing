@@ -187,8 +187,10 @@ export default function UserManagement() {
       <div className="space-y-6 animate-fade-in">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800">Manajemen User</h1>
-            <p className="text-gray-500 mt-1">
+            <h1 className="text-3xl font-bold text-text-main">
+              Manajemen User
+            </h1>
+            <p className="text-text-muted mt-1">
               Kelola akun akses aplikasi (Admin, PIC, Kiosk)
             </p>
           </div>
@@ -203,21 +205,21 @@ export default function UserManagement() {
         <div className="glass-panel rounded-3xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="bg-white/50 border-b border-indigo-50">
+              <thead className="bg-bg-surface/50 border-b border-border-subtle">
                 <tr>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">
+                  <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase">
                     Nama
                   </th>
                   <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">
                     Email
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">
+                  <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase">
                     Role
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">
+                  <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase">
                     Dibuat
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-right">
+                  <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase text-right">
                     Aksi
                   </th>
                 </tr>
@@ -245,16 +247,16 @@ export default function UserManagement() {
                   users.map((user) => (
                     <tr
                       key={user.id}
-                      className="border-b border-slate-50 last:border-none hover:bg-white/40 transition-colors"
+                      className="border-b border-border-subtle last:border-none hover:bg-bg-surface/40 transition-colors"
                     >
-                      <td className="px-6 py-4 font-bold text-slate-800">
+                      <td className="px-6 py-4 font-bold text-text-main">
                         {user.name}
                       </td>
-                      <td className="px-6 py-4 text-slate-600 font-medium font-mono text-sm">
+                      <td className="px-6 py-4 text-text-secondary font-medium font-mono text-sm">
                         {user.email}
                       </td>
                       <td className="px-6 py-4">{getRoleBadge(user.role)}</td>
-                      <td className="px-6 py-4 text-slate-500 text-xs">
+                      <td className="px-6 py-4 text-text-muted text-xs">
                         {user.createdAt
                           ? new Date(user.createdAt).toLocaleDateString()
                           : "-"}
@@ -288,32 +290,32 @@ export default function UserManagement() {
       {/* Modal Add User */}
       {isModalOpen &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
             {/* Modal Content */}
-            <div className="bg-white rounded-4xl w-full max-w-lg shadow-2xl relative animate-scale-in flex flex-col max-h-[90vh] overflow-hidden">
+            <div className="bg-bg-surface rounded-4xl w-full max-w-lg shadow-2xl relative animate-scale-in flex flex-col max-h-[90vh] overflow-hidden">
               {/* Header */}
-              <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10">
-                <h2 className="text-xl font-black text-gray-800">
+              <div className="p-6 border-b border-border-subtle flex justify-between items-center bg-bg-surface sticky top-0 z-10">
+                <h2 className="text-xl font-black text-text-main">
                   {editingUser ? "Edit User" : "Tambah User Baru"}
                 </h2>
                 <button
                   onClick={handleCloseModal}
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-bg-subtle hover:bg-red-50 text-text-muted hover:text-red-500 transition-colors"
                 >
                   <XMarkIcon className="w-6 h-6" />
                 </button>
               </div>
 
               {/* Scrollable Form Body */}
-              <div className="p-6 overflow-y-auto custom-scrollbar bg-slate-50/50">
+              <div className="p-6 overflow-y-auto custom-scrollbar bg-bg-canvas/50">
                 <form onSubmit={handleRegister} className="space-y-6">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                    <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">
                       Informasi Dasar
                     </label>
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1">
+                        <label className="block text-sm font-bold text-text-main mb-1">
                           Nama
                         </label>
                         <input
@@ -337,7 +339,7 @@ export default function UserManagement() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1">
+                        <label className="block text-sm font-bold text-text-main mb-1">
                           Email
                         </label>
                         <input
@@ -367,7 +369,7 @@ export default function UserManagement() {
 
                       {!editingUser && (
                         <div>
-                          <label className="block text-sm font-bold text-slate-700 mb-1">
+                          <label className="block text-sm font-bold text-text-main mb-1">
                             Password
                           </label>
                           <input
@@ -428,7 +430,7 @@ export default function UserManagement() {
                           className={`p-3 rounded-2xl border-2 text-left transition-all relative ${
                             formData.role === roleOption.value
                               ? "border-indigo-500 bg-indigo-50/50"
-                              : "border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50"
+                              : "border-border-subtle bg-bg-surface hover:border-border-main hover:bg-bg-subtle"
                           }`}
                         >
                           <div className="flex items-center justify-between mb-1">
@@ -436,7 +438,7 @@ export default function UserManagement() {
                               className={`font-bold text-sm ${
                                 formData.role === roleOption.value
                                   ? "text-indigo-700"
-                                  : "text-slate-700"
+                                  : "text-text-secondary"
                               }`}
                             >
                               {roleOption.label}

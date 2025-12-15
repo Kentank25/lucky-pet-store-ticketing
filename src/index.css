@@ -1,27 +1,103 @@
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 
-@theme {
-  --font-sans: "Outfit", sans-serif;
+:root {
+  /* =========================================
+     SEMANTIC TOKENS (Light Mode - Default)
+     ========================================= */
+  
+  /* Backgrounds */
+  --color-bg-canvas: #f1f5f9;  /* slate-100 - Main Page Background */
+  --color-bg-surface: #ffffff; /* white - Card/Panel Background */
+  --color-bg-subtle: #f8fafc;  /* slate-50 - Secondary Backgrounds */
+  --color-bg-muted: #f1f5f9;   /* slate-100 - Muted/Hover Backgrounds */
+  
+  /* Text */
+  --color-text-main: #1e293b;     /* slate-800 - Primary Text */
+  --color-text-secondary: #475569; /* slate-600 - Secondary Text */
+  --color-text-muted: #64748b;    /* slate-500 - Muted Text */
+  --color-text-inverted: #ffffff; /* white - Text on primary bg */
 
-  /* Modern Minimalist Palette */
-  --color-primary: #6366f1; /* Indigo 500 */
-  --color-primary-soft: #e0e7ff; /* Indigo 100 */
-  --color-secondary: #f43f5e; /* Rose 500 */
-  --color-bg-page: #f8fafc; /* Slate 50 */
-  --color-text-main: #1e293b; /* Slate 800 */
-  --color-text-muted: #64748b; /* Slate 500 */
+  /* Borders */
+  --color-border-subtle: #e2e8f0; /* slate-200 */
+  --color-border-main: #cbd5e1;   /* slate-300 */
 
-  /* Glassmorphism Variables */
+  /* Primary Brand (Indigo) */
+  --color-primary: #6366f1;       /* Indigo 500 */
+  --color-primary-soft: #e0e7ff;  /* Indigo 100 */
+  --color-primary-hover: #4f46e5; /* Indigo 600 */
+
+  /* Secondary Brand (Rose) */
+  --color-secondary: #f43f5e;     /* Rose 500 */
+  
+  /* Glassmorphism */
   --glass-bg: rgba(255, 255, 255, 0.65);
   --glass-border: rgba(255, 255, 255, 0.6);
   --glass-shadow: 0 8px 32px -4px rgba(99, 102, 241, 0.05),
-    0 4px 16px -2px rgba(99, 102, 241, 0.03);
+                  0 4px 16px -2px rgba(99, 102, 241, 0.03);
+}
+
+.dark {
+  /* =========================================
+     SEMANTIC TOKENS (Dark Mode)
+     ========================================= */
+
+  /* Backgrounds */
+  --color-bg-canvas: #020617;  /* slate-950 */
+  --color-bg-surface: #0f172a; /* slate-900 */
+  --color-bg-subtle: #1e293b;  /* slate-800 */
+  --color-bg-muted: #334155;   /* slate-700 */
+
+  /* Text */
+  --color-text-main: #f1f5f9;      /* slate-100 */
+  --color-text-secondary: #cbd5e1; /* slate-300 */
+  --color-text-muted: #94a3b8;     /* slate-400 */
+  
+  /* Borders */
+  --color-border-subtle: #1e293b; /* slate-800 */
+  --color-border-main: #334155;   /* slate-700 */
+
+  /* Glassmorphism - Darker & More Opaque */
+  --glass-bg: rgba(15, 23, 42, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.3),
+                  0 4px 16px -2px rgba(0, 0, 0, 0.2);
+}
+
+@theme {
+  --font-sans: "Outfit", sans-serif;
+
+  /* Expose Semantic Colors as Utilities */
+  /* Usage: bg-bg-canvas, text-text-main, border-border-subtle */
+  
+  --color-bg-canvas: var(--color-bg-canvas);
+  --color-bg-surface: var(--color-bg-surface);
+  --color-bg-subtle: var(--color-bg-subtle);
+  --color-bg-muted: var(--color-bg-muted);
+  
+  --color-text-main: var(--color-text-main);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+  --color-text-inverted: var(--color-text-inverted);
+
+  --color-border-subtle: var(--color-border-subtle);
+  --color-border-main: var(--color-border-main);
+
+  --color-primary: var(--color-primary);
+  --color-primary-soft: var(--color-primary-soft);
+  --color-primary-hover: var(--color-primary-hover);
+  
+  --color-secondary: var(--color-secondary);
+
+  /* Glass Variables (for custom classes) */
+  --glass-bg: var(--glass-bg);
+  --glass-border: var(--glass-border);
+  --glass-shadow: var(--glass-shadow);
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: #f1f5f9; /* Slightly darker slate for better pop */
+  background-color: var(--color-bg-canvas);
   color: var(--color-text-main);
   background-image: radial-gradient(
       at 0% 0%,
@@ -53,7 +129,7 @@ body {
   }
 
   .input-minimal {
-    @apply w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-slate-200/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-medium text-slate-700 placeholder-slate-400 shadow-inner shadow-slate-200/50;
+    @apply w-full px-4 py-3 bg-bg-surface/60 backdrop-blur-sm border border-border-subtle/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-medium text-text-main placeholder-text-muted shadow-inner shadow-border-subtle/50;
   }
 
   .btn-primary {

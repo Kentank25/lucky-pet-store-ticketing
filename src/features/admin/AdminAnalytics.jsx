@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTheme } from "../../context/ThemeContext";
 import { getChartData } from "../../services/ticketService";
 import {
   ClipboardDocumentListIcon,
@@ -31,6 +32,7 @@ ChartJS.register(
 );
 
 const AdminAnalytics = () => {
+  const { theme } = useTheme();
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState("day");
   const [selectedDate, setSelectedDate] = useState(
@@ -235,6 +237,12 @@ const AdminAnalytics = () => {
     ],
   };
 
+  const isDark = theme === "dark";
+  const textColor = isDark ? "#94a3b8" : "#6b7280"; // slate-400 : gray-500
+  const gridColor = isDark ? "#334155" : "#f3f4f6"; // slate-700 : gray-100
+  const tooltipBg = isDark ? "#1e293b" : "#1f2937"; // slate-800 : gray-800
+  const tooltipText = "#f8fafc"; // slate-50
+
   const barOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -250,13 +258,13 @@ const AdminAnalytics = () => {
             family: "'Inter', sans-serif",
             weight: "bold",
           },
-          color: "#6b7280",
+          color: textColor,
         },
       },
       tooltip: {
-        backgroundColor: "#1f2937",
-        titleColor: "#f3f4f6",
-        bodyColor: "#f3f4f6",
+        backgroundColor: tooltipBg,
+        titleColor: tooltipText,
+        bodyColor: tooltipText,
         cornerRadius: 8,
         padding: 12,
         titleFont: { size: 13, weight: "bold" },
@@ -273,19 +281,19 @@ const AdminAnalytics = () => {
         },
         ticks: {
           font: { size: 10 },
-          color: "#9ca3af",
+          color: textColor,
         },
       },
       y: {
         stacked: true,
         beginAtZero: true,
         grid: {
-          color: "#f3f4f6",
+          color: gridColor,
           borderDash: [4, 4],
         },
         ticks: {
           font: { size: 10 },
-          color: "#9ca3af",
+          color: textColor,
           stepSize: 1,
         },
         border: {
@@ -320,7 +328,9 @@ const AdminAnalytics = () => {
         display: false,
       },
       tooltip: {
-        backgroundColor: "#1f2937",
+        backgroundColor: tooltipBg,
+        titleColor: tooltipText,
+        bodyColor: tooltipText,
         cornerRadius: 8,
         padding: 12,
       },
@@ -341,19 +351,19 @@ const AdminAnalytics = () => {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-800 tracking-tight">
+          <h1 className="text-3xl font-extrabold text-text-main tracking-tight">
             Dashboard Analytics
           </h1>
-          <p className="text-gray-500 font-medium mt-2 text-lg">
+          <p className="text-text-muted font-medium mt-2 text-lg">
             Ringkasan performa & statistik operasional
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-3 bg-white p-2 rounded-2xl shadow-sm border border-gray-200/60 items-center justify-end w-full md:w-auto">
+        <div className="flex flex-wrap gap-3 bg-bg-surface p-2 rounded-2xl shadow-sm border border-border-subtle/60 items-center justify-end w-full md:w-auto">
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="px-5 py-2.5 bg-gray-50 border-transparent focus:border-blue-500 focus:bg-white rounded-xl text-sm font-bold text-gray-700 outline-none transition-all cursor-pointer hover:bg-gray-100"
+            className="px-5 py-2.5 bg-bg-subtle border-transparent focus:border-blue-500 focus:bg-bg-surface rounded-xl text-sm font-bold text-text-secondary outline-none transition-all cursor-pointer hover:bg-bg-muted"
           >
             <option value="day">Harian</option>
             <option value="week">Mingguan</option>
@@ -364,62 +374,64 @@ const AdminAnalytics = () => {
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="px-5 py-2.5 bg-gray-50 border-transparent focus:border-blue-500 focus:bg-white rounded-xl text-sm font-bold text-gray-700 outline-none transition-all cursor-pointer hover:bg-gray-100"
+            className="px-5 py-2.5 bg-bg-subtle border-transparent focus:border-blue-500 focus:bg-bg-surface rounded-xl text-sm font-bold text-text-secondary outline-none transition-all cursor-pointer hover:bg-bg-muted"
           />
         </div>
       </div>
 
       {/* 4-Column Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
+        <div className="bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
           <div className="p-4 bg-blue-50 rounded-2xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
             <ClipboardDocumentListIcon className="h-8 w-8" />
           </div>
           <div>
-            <p className="text-sm text-gray-400 font-semibold mb-1">
+            <p className="text-sm text-text-muted font-semibold mb-1">
               Total Tiket
             </p>
-            <h3 className="text-3xl font-black text-gray-800">
+            <h3 className="text-3xl font-black text-text-main">
               {stats.totalServices}
             </h3>
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
+        <div className="bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
           <div className="p-4 bg-green-50 rounded-2xl text-green-600 group-hover:bg-green-500 group-hover:text-white transition-colors duration-300">
             <CheckCircleIcon className="h-8 w-8" />
           </div>
           <div>
-            <p className="text-sm text-gray-400 font-semibold mb-1">Selesai</p>
-            <h3 className="text-3xl font-black text-gray-800">
+            <p className="text-sm text-text-muted font-semibold mb-1">
+              Selesai
+            </p>
+            <h3 className="text-3xl font-black text-text-main">
               {stats.completed}
             </h3>
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
+        <div className="bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
           <div className="p-4 bg-amber-50 rounded-2xl text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300">
             <ClockIcon className="h-8 w-8" />
           </div>
           <div>
-            <p className="text-sm text-gray-400 font-semibold mb-1">
+            <p className="text-sm text-text-muted font-semibold mb-1">
               Dalam Proses
             </p>
-            <h3 className="text-3xl font-black text-gray-800">
+            <h3 className="text-3xl font-black text-text-main">
               {stats.totalServices - (stats.completed + stats.cancelled)}
             </h3>
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
+        <div className="bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
           <div className="p-4 bg-red-50 rounded-2xl text-red-600 group-hover:bg-red-500 group-hover:text-white transition-colors duration-300">
             <XCircleIcon className="h-8 w-8" />
           </div>
           <div>
-            <p className="text-sm text-gray-400 font-semibold mb-1">
+            <p className="text-sm text-text-muted font-semibold mb-1">
               Dibatalkan
             </p>
-            <h3 className="text-3xl font-black text-gray-800">
+            <h3 className="text-3xl font-black text-text-main">
               {stats.cancelled}
             </h3>
           </div>
@@ -428,10 +440,12 @@ const AdminAnalytics = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Chart Section */}
-        <div className="lg:col-span-2 bg-white rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] border border-gray-100 p-8">
+        <div className="lg:col-span-2 bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-8">
           <div className="mb-6">
-            <h3 className="text-xl font-bold text-gray-800">Timeline Trafik</h3>
-            <p className="text-sm text-gray-400 mt-1">
+            <h3 className="text-xl font-bold text-text-main">
+              Timeline Trafik
+            </h3>
+            <p className="text-sm text-text-muted mt-1">
               Volume tiket berdasarkan waktu
             </p>
           </div>
@@ -439,7 +453,7 @@ const AdminAnalytics = () => {
             {stats.chartData.length > 0 ? (
               <Bar data={barChartData} options={barOptions} />
             ) : (
-              <div className="flex h-full items-center justify-center text-gray-400">
+              <div className="flex h-full items-center justify-center text-text-muted">
                 Data tidak tersedia
               </div>
             )}
@@ -447,10 +461,10 @@ const AdminAnalytics = () => {
         </div>
 
         {/* Distribution Section */}
-        <div className="bg-white rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] border border-gray-100 p-8 flex flex-col relative overflow-hidden">
+        <div className="bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-8 flex flex-col relative overflow-hidden">
           <div className="absolute top-0 right-0 p-32 bg-blue-50/50 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
-          <h3 className="text-xl font-bold text-gray-800 mb-8 w-full text-left relative z-10">
+          <h3 className="text-xl font-bold text-text-main mb-8 w-full text-left relative z-10">
             Sebaran Layanan
           </h3>
 
@@ -458,10 +472,10 @@ const AdminAnalytics = () => {
             <Doughnut data={doughnutData} options={doughnutOptions} />
             {/* Center Text */}
             <div className="absolute inset-0 m-auto w-fit h-fit flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-4xl font-black text-gray-800 tracking-tighter">
+              <span className="text-4xl font-black text-text-main tracking-tighter">
                 {stats.totalServices}
               </span>
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
+              <span className="text-xs font-bold text-text-muted uppercase tracking-widest mt-1">
                 Total
               </span>
             </div>
@@ -469,16 +483,16 @@ const AdminAnalytics = () => {
 
           <div className="w-full space-y-4 z-10 mt-auto">
             {/* Grooming Legend */}
-            <div className="flex justify-between items-center p-4 bg-white border border-blue-50 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-center p-4 bg-bg-surface border border-blue-100 dark:border-blue-900/30 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+                <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
                   <ScissorsIcon className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-sm font-bold text-gray-600 block">
+                  <span className="text-sm font-bold text-text-secondary block">
                     Grooming
                   </span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-text-muted">
                     {groomingPercent}% dari total
                   </span>
                 </div>
@@ -489,16 +503,16 @@ const AdminAnalytics = () => {
             </div>
 
             {/* Klinik Legend */}
-            <div className="flex justify-between items-center p-4 bg-white border border-amber-50 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-center p-4 bg-bg-surface border border-amber-50 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
+                <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400">
                   <HeartIcon className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-sm font-bold text-gray-600 block">
+                  <span className="text-sm font-bold text-text-secondary block">
                     Klinik
                   </span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-text-muted">
                     {klinikPercent}% dari total
                   </span>
                 </div>

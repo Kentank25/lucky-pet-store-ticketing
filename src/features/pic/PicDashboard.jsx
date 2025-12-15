@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import { TICKET_STATUS, SERVICE_TYPE } from "../../constants";
 import TicketSkeleton from "../../components/tickets/TicketSkeleton";
 import { useState } from "react";
+import ThemeToggle from "../../components/common/ThemeToggle";
 
 export default function PicDashboard() {
   const { tickets, loading } = useTickets();
@@ -108,13 +109,18 @@ export default function PicDashboard() {
       <div
         className={`relative rounded-[2rem] md:rounded-[3rem] p-6 md:p-12 overflow-hidden shadow-2xl transition-all duration-500 ${
           isGrooming
-            ? "bg-linear-to-br from-blue-600 via-indigo-600 to-purple-700 shadow-blue-200"
-            : "bg-linear-to-br from-rose-500 via-pink-600 to-orange-500 shadow-rose-200"
+            ? "bg-linear-to-br from-blue-600 via-indigo-600 to-purple-700 shadow-blue-200 dark:shadow-none"
+            : "bg-linear-to-br from-rose-500 via-pink-600 to-orange-500 shadow-rose-200 dark:shadow-none"
         }`}
       >
         {/* Abstract Background Shapes */}
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-white opacity-10 rounded-full blur-3xl mix-blend-overlay animate-pulse"></div>
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-white opacity-10 rounded-full blur-3xl mix-blend-overlay"></div>
+
+        {/* Theme Toggle */}
+        <div className="absolute top-6 right-6 z-20">
+          <ThemeToggle className="bg-white/20! hover:bg-white/30! text-white! border-none shadow-lg backdrop-blur-md" />
+        </div>
 
         <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8">
           <div>
@@ -167,7 +173,7 @@ export default function PicDashboard() {
           <div className="space-y-6">
             <div className="flex items-center gap-3 px-2">
               <div className="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></div>
-              <h3 className="text-xl font-bold text-gray-700">
+              <h3 className="text-xl font-bold text-text-muted">
                 Sedang Dikerjakan
               </h3>
             </div>
@@ -198,26 +204,26 @@ export default function PicDashboard() {
                         {ticket.layanan}
                       </span>
                       <div className="text-right">
-                        <div className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">
+                        <div className="text-xs text-text-muted font-bold uppercase tracking-wider mb-1">
                           Waktu Masuk
                         </div>
-                        <div className="text-2xl font-black text-gray-800 font-mono">
+                        <div className="text-2xl font-black text-text-main font-mono">
                           {ticket.jam || "-"}
                         </div>
                       </div>
                     </div>
 
-                    <h2 className="text-5xl font-black text-gray-800 mb-2 tracking-tight">
+                    <h2 className="text-5xl font-black text-text-main mb-2 tracking-tight">
                       {ticket.nama}
                     </h2>
-                    <p className="text-gray-400 font-medium text-lg mb-8">
+                    <p className="text-text-muted font-medium text-lg mb-8">
                       ID: #{ticket.id.slice(-6)}
                     </p>
 
                     {ticket.catatan && (
-                      <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100 relative">
-                        <ChatBubbleLeftRightIcon className="absolute -top-3 -left-2 text-4xl opacity-20 w-8 h-8" />
-                        <p className="text-gray-600 text-lg italic relative z-10 pl-4">
+                      <div className="bg-bg-subtle p-6 rounded-3xl border border-border-subtle relative">
+                        <ChatBubbleLeftRightIcon className="absolute -top-3 -left-2 text-4xl opacity-20 w-8 h-8 text-text-muted" />
+                        <p className="text-text-secondary text-lg italic relative z-10 pl-4">
                           {ticket.catatan}
                         </p>
                       </div>
@@ -225,17 +231,17 @@ export default function PicDashboard() {
                   </div>
 
                   {/* Right: Action */}
-                  <div className="lg:w-1/3 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-gray-100 pt-8 lg:pt-0 lg:pl-12">
+                  <div className="lg:w-1/3 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-border-subtle pt-8 lg:pt-0 lg:pl-12">
                     <div className="mb-6 text-center lg:text-left">
-                      <p className="text-gray-500 mb-2">Status Pengerjaan</p>
-                      <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                      <p className="text-text-muted mb-2">Status Pengerjaan</p>
+                      <div className="h-2 w-full bg-bg-subtle rounded-full overflow-hidden">
                         <div className="h-full bg-emerald-500 w-2/3 animate-pulse rounded-full"></div>
                       </div>
                     </div>
                     <button
                       onClick={() => handleCompleteTicket(ticket)}
                       disabled={processingId === ticket.id}
-                      className="w-full py-5 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white rounded-2xl font-bold text-lg shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-3 group-hover:shadow-emerald-300 disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="w-full py-5 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white rounded-2xl font-bold text-lg shadow-lg shadow-emerald-200 dark:shadow-none transition-all flex items-center justify-center gap-3 group-hover:shadow-emerald-300 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                       {processingId === ticket.id ? (
                         <>
@@ -261,12 +267,12 @@ export default function PicDashboard() {
           <div className="space-y-6">
             <div className="flex items-center gap-3 px-2">
               <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-              <h3 className="text-xl font-bold text-gray-700">
+              <h3 className="text-xl font-bold text-text-muted">
                 Menunggu Tindakan
               </h3>
             </div>
 
-            <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 p-10 text-center relative overflow-hidden group">
+            <div className="bg-bg-surface rounded-[2.5rem] shadow-xl shadow-gray-200/50 dark:shadow-none border border-border-subtle p-10 text-center relative overflow-hidden group">
               <div
                 className={`absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-500 ${
                   isGrooming ? "bg-blue-600" : "bg-rose-600"
@@ -275,14 +281,14 @@ export default function PicDashboard() {
 
               <div className="relative z-10 max-w-2xl mx-auto">
                 <div className="flex justify-center mb-6">
-                  <TicketIcon className="text-7xl animate-bounce text-gray-800 w-20 h-20" />
+                  <TicketIcon className="text-7xl animate-bounce text-text-main w-20 h-20" />
                 </div>
-                <h3 className="text-3xl font-black text-gray-800 mb-3">
+                <h3 className="text-3xl font-black text-text-main mb-3">
                   Antrian Tersedia
                 </h3>
-                <p className="text-gray-500 text-lg mb-10">
+                <p className="text-text-muted text-lg mb-10">
                   Pelanggan{" "}
-                  <span className="font-bold text-gray-800">
+                  <span className="font-bold text-text-main">
                     {waitingTickets[0].nama}
                   </span>{" "}
                   sedang menunggu layanan Anda.
@@ -292,8 +298,8 @@ export default function PicDashboard() {
                   onClick={handleTakeTicket}
                   className={`mx-auto px-10 py-5 rounded-2xl text-white font-bold text-xl shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-4 ${
                     isGrooming
-                      ? "bg-blue-600 shadow-blue-200 hover:bg-blue-700"
-                      : "bg-rose-600 shadow-rose-200 hover:bg-rose-700"
+                      ? "bg-blue-600 shadow-blue-200 dark:shadow-none hover:bg-blue-700"
+                      : "bg-rose-600 shadow-rose-200 dark:shadow-none hover:bg-rose-700"
                   }`}
                 >
                   <span>Panggil & Ambil Antrian</span>
@@ -306,14 +312,14 @@ export default function PicDashboard() {
 
         {/* EMPTY STATE */}
         {activeTickets.length === 0 && waitingTickets.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 bg-white/50 backdrop-blur-sm rounded-[3rem] border-2 border-dashed border-gray-200">
-            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center text-4xl mb-6 animate-pulse">
-              <SparklesIcon className="text-gray-600 w-12 h-12" />
+          <div className="flex flex-col items-center justify-center py-20 bg-bg-surface/50 backdrop-blur-sm rounded-[3rem] border-2 border-dashed border-border-subtle">
+            <div className="w-24 h-24 bg-bg-subtle rounded-full flex items-center justify-center text-4xl mb-6 animate-pulse">
+              <SparklesIcon className="text-text-muted w-12 h-12" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-400 mb-2">
+            <h3 className="text-2xl font-bold text-text-muted mb-2">
               Tidak ada antrian
             </h3>
-            <p className="text-gray-400">Silakan istirahat sejenak.</p>
+            <p className="text-text-muted">Silakan istirahat sejenak.</p>
           </div>
         )}
       </div>

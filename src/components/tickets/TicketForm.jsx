@@ -148,7 +148,7 @@ export default function TicketForm({
   };
 
   const timeSlots = generateTimeSlots(formData.layanan);
-  const labelClass = "block text-sm font-semibold text-slate-600 mb-2 ml-1";
+  const labelClass = "block text-sm font-semibold text-text-muted mb-2 ml-1";
 
   return (
     <form
@@ -228,7 +228,7 @@ export default function TicketForm({
                 className={`flex-1 p-4 rounded-2xl border transition-all font-bold text-lg flex flex-col items-center justify-center gap-2 hover:scale-105 active:scale-95 ${
                   formData.layanan === option.value
                     ? option.activeClass
-                    : "bg-white border-slate-100 text-slate-400 hover:bg-slate-50 hover:border-slate-200"
+                    : "bg-bg-surface border-border-subtle text-text-muted hover:bg-bg-subtle hover:border-border-main"
                 }`}
               >
                 <span className="text-3xl mb-1">{option.icon}</span>
@@ -291,7 +291,7 @@ export default function TicketForm({
               className={`text-xs font-bold ${
                 formData.catatan.length > 200
                   ? "text-red-500"
-                  : "text-slate-400"
+                  : "text-text-muted"
               }`}
             >
               {formData.catatan.length}/200
@@ -329,11 +329,11 @@ export default function TicketForm({
               className="w-5 h-5 text-red-600 rounded focus:ring-red-500 border-gray-300 cursor-pointer"
             />
             <label htmlFor="express" className="cursor-pointer select-none">
-              <span className="font-bold text-gray-800 text-sm flex items-center gap-2">
+              <span className="font-bold text-text-main text-sm flex items-center gap-2">
                 <ExclamationTriangleIcon className="w-5 h-5 text-red-500" />{" "}
                 Emergency Ticket (Langsung Aktif)
               </span>
-              <span className="block text-xs text-gray-500">
+              <span className="block text-xs text-text-muted">
                 Lewati proses validasi (untuk kondisi darurat).
               </span>
             </label>
@@ -367,7 +367,7 @@ export default function TicketForm({
             <button
               type="button"
               onClick={onCancel}
-              className="px-6 py-4 bg-gray-100 text-gray-600 rounded-2xl hover:bg-gray-200 font-bold transition-colors"
+              className="px-6 py-4 bg-bg-subtle text-text-secondary rounded-2xl hover:bg-bg-muted font-bold transition-colors"
             >
               Batal
             </button>
@@ -379,7 +379,7 @@ export default function TicketForm({
       {successData &&
         createPortal(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
-            <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-scale-in relative overflow-hidden">
+            <div className="bg-bg-surface rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-scale-in relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-2 bg-linear-to-r from-blue-500 to-purple-500"></div>
 
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600 animate-bounce">
@@ -399,30 +399,30 @@ export default function TicketForm({
                 </svg>
               </div>
 
-              <h3 className="text-2xl font-black text-gray-800 mb-2">
+              <h3 className="text-2xl font-black text-text-main mb-2">
                 Berhasil!
               </h3>
-              <p className="text-gray-500 mb-6 font-medium">
+              <p className="text-text-muted mb-6 font-medium">
                 Tiket untuk{" "}
-                <strong className="text-gray-800">{successData.nama}</strong>{" "}
+                <strong className="text-text-main">{successData.nama}</strong>{" "}
                 telah dibuat.
               </p>
 
-              <div className="bg-white p-4 rounded-2xl border-2 border-dashed border-gray-200 inline-block mb-6">
+              <div className="bg-white p-4 rounded-2xl border-2 border-dashed border-border-subtle inline-block mb-6">
                 <QRCode
                   value={`${window.location.origin}/monitor/${successData.id}`}
                   size={180}
                 />
               </div>
 
-              <p className="text-xs text-gray-400 mb-8 max-w-[200px] mx-auto">
+              <p className="text-xs text-text-muted mb-8 max-w-[200px] mx-auto">
                 Scan QR Code ini untuk memantau status antrian Anda secara
                 real-time.
               </p>
 
               <button
                 onClick={() => setSuccessData(null)}
-                className="w-full py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-black transition-all shadow-lg active:scale-95"
+                className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-black transition-all shadow-lg active:scale-95"
               >
                 Selesai & Tutup
               </button>

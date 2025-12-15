@@ -44,10 +44,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="glass-panel p-8 rounded-[2.5rem] shadow-xl shadow-indigo-100 border border-white w-full max-w-md relative overflow-hidden animate-fade-in">
-        <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-indigo-50 rounded-full blur-3xl opacity-50"></div>
-        <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-40 h-40 bg-rose-50 rounded-full blur-3xl opacity-50"></div>
+    <div className="min-h-screen flex items-center justify-center bg-bg-canvas p-4">
+      <div className="glass-panel p-8 rounded-[2.5rem] shadow-xl shadow-indigo-100 dark:shadow-none border border-white dark:border-border-subtle w-full max-w-md relative overflow-hidden animate-fade-in">
+        <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-indigo-50 dark:bg-indigo-900/20 rounded-full blur-3xl opacity-50"></div>
+        <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-40 h-40 bg-rose-50 dark:bg-rose-900/20 rounded-full blur-3xl opacity-50"></div>
 
         <div className="relative z-10">
           <div className="text-center mb-8">
@@ -56,17 +56,17 @@ export default function LoginPage() {
               className="w-20 h-20 mx-auto mb-4 block object-contain"
               alt="Logo"
             />
-            <h1 className="text-3xl font-black text-gray-800 tracking-tight">
+            <h1 className="text-3xl font-black text-text-main tracking-tight">
               Login Portal
             </h1>
-            <p className="text-gray-400 font-medium">
+            <p className="text-text-muted font-medium">
               Masuk untuk mengelola tiket
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
+              <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2 ml-1">
                 Username
               </label>
               <input
@@ -86,7 +86,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
+              <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2 ml-1">
                 Password
               </label>
               <input
@@ -122,7 +122,7 @@ export default function LoginPage() {
               </button>
 
               <div className="mt-6 text-center">
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-text-muted">
                   Lupa password?{" "}
                   <a
                     href="https://wa.me/6281286422525?text=Saya%20kesulitan%20masuk%20dan%20ingin%20meminta%20bantuan%20administrator."
