@@ -151,7 +151,11 @@ export default function TicketForm({
   const labelClass = "block text-sm font-semibold text-slate-600 mb-2 ml-1";
 
   return (
-    <form onSubmit={handleSubmit} className={`relative ${className}`}>
+    <form
+      onSubmit={handleSubmit}
+      className={`relative ${className}`}
+      noValidate
+    >
       {/* Header is handled by parent or hidden if not needed */}
 
       <div className="space-y-5 max-w-md mx-auto">
@@ -159,7 +163,6 @@ export default function TicketForm({
           <label className={labelClass}>Nama Pelanggan / Hewan</label>
           <input
             type="text"
-            required
             value={formData.nama}
             onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
             className={`input-minimal ${
@@ -179,7 +182,6 @@ export default function TicketForm({
           <input
             type="tel"
             inputMode="numeric"
-            required
             value={formData.telepon || ""}
             onChange={(e) => {
               const val = e.target.value.replace(/\D/g, "");
@@ -249,7 +251,11 @@ export default function TicketForm({
               className={`input-minimal w-full disabled:opacity-60`}
             />
 
-            <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+            <div
+              className={`grid grid-cols-3 md:grid-cols-4 gap-2 ${
+                errors.jam ? "ring-2 ring-red-200 rounded-lg p-1" : ""
+              }`}
+            >
               {timeSlots.map((slot) => (
                 <button
                   key={slot}
@@ -270,17 +276,35 @@ export default function TicketForm({
                 </p>
               )}
             </div>
+            {errors.jam && (
+              <p className="text-red-500 text-sm mt-1 font-bold ml-1">
+                {errors.jam}
+              </p>
+            )}
           </div>
         </div>
 
         <div>
-          <label className={labelClass}>Catatan (Opsional)</label>
+          <div className="flex justify-between">
+            <label className={labelClass}>Catatan (Opsional)</label>
+            <span
+              className={`text-xs font-bold ${
+                formData.catatan.length > 200
+                  ? "text-red-500"
+                  : "text-slate-400"
+              }`}
+            >
+              {formData.catatan.length}/200
+            </span>
+          </div>
           <textarea
             value={formData.catatan}
             onChange={(e) =>
               setFormData({ ...formData, catatan: e.target.value })
             }
-            className={`input-minimal resize-none font-medium`}
+            className={`input-minimal resize-none font-medium ${
+              errors.catatan ? "border-red-500 ring-2 ring-red-200" : ""
+            }`}
             placeholder={
               formData.layanan === SERVICE_TYPE.GROOMING
                 ? "Contoh: Mandi Kutu, Potong Kuku..."
@@ -288,6 +312,11 @@ export default function TicketForm({
             }
             rows="4"
           />
+          {errors.catatan && (
+            <p className="text-red-500 text-sm mt-1 font-bold ml-2">
+              {errors.catatan}
+            </p>
+          )}
         </div>
 
         {role === "admin" && !isPublicKiosk && !ticketToEdit && (
