@@ -209,14 +209,14 @@ export default function TicketForm({
                 label: "Grooming",
                 icon: <ScissorsIcon className="w-8 h-8" />,
                 activeClass:
-                  "bg-blue-50 border-blue-200 text-blue-600 ring-2 ring-blue-100",
+                  "bg-blue-50 border-blue-200 text-blue-600 ring-2 ring-blue-100 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300 dark:ring-blue-900/50",
               },
               {
                 value: SERVICE_TYPE.KLINIK,
                 label: "Klinik",
                 icon: <HeartIcon className="w-8 h-8" />,
                 activeClass:
-                  "bg-rose-50 border-rose-200 text-rose-600 ring-2 ring-rose-100",
+                  "bg-rose-50 border-rose-200 text-rose-600 ring-2 ring-rose-100 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-300 dark:ring-rose-900/50",
               },
             ].map((option) => (
               <button
@@ -263,8 +263,8 @@ export default function TicketForm({
                   onClick={() => setFormData({ ...formData, jam: slot })}
                   className={`py-2 rounded-lg font-semibold text-sm transition-all ${
                     formData.jam === slot
-                      ? "bg-slate-800 text-white shadow-md transform scale-105"
-                      : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+                      ? "bg-primary text-white shadow-lg shadow-primary/30 transform scale-105 border border-primary"
+                      : "bg-bg-surface text-text-secondary border border-border-subtle hover:bg-bg-subtle hover:border-border-main dark:bg-bg-subtle dark:text-text-muted dark:hover:bg-bg-muted"
                   }`}
                 >
                   {slot}
@@ -320,7 +320,7 @@ export default function TicketForm({
         </div>
 
         {role === "admin" && !isPublicKiosk && !ticketToEdit && (
-          <div className="flex items-center gap-3 bg-red-50 p-4 rounded-xl border border-red-100">
+          <div className="flex items-center gap-3 bg-red-50 p-4 rounded-xl border border-red-100 dark:bg-red-900/10 dark:border-red-900/30">
             <input
               type="checkbox"
               id="express"
@@ -422,7 +422,7 @@ export default function TicketForm({
 
               <button
                 onClick={() => setSuccessData(null)}
-                className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-black transition-all shadow-lg active:scale-95"
+                className="w-full py-4 bg-text-main text-bg-canvas font-bold rounded-2xl hover:opacity-90 transition-all shadow-lg active:scale-95"
               >
                 Selesai & Tutup
               </button>

@@ -92,7 +92,7 @@ export default function QueueMonitor() {
   const getStatusLabel = (status) => {
     switch (status) {
       case TICKET_STATUS.PENDING:
-        return "Menunggu Konfirmasi";
+        return "Menunggu Kehadiran Anda";
       case TICKET_STATUS.WAITING:
         return "Dalam Antrian";
       case TICKET_STATUS.ACTIVE:

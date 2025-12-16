@@ -382,7 +382,7 @@ const AdminAnalytics = () => {
       {/* 4-Column Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
-          <div className="p-4 bg-blue-50 rounded-2xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+          <div className="p-4 bg-blue-50 dark:bg-blue-500/10 rounded-2xl text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
             <ClipboardDocumentListIcon className="h-8 w-8" />
           </div>
           <div>
@@ -396,7 +396,7 @@ const AdminAnalytics = () => {
         </div>
 
         <div className="bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
-          <div className="p-4 bg-green-50 rounded-2xl text-green-600 group-hover:bg-green-500 group-hover:text-white transition-colors duration-300">
+          <div className="p-4 bg-green-50 dark:bg-green-500/10 rounded-2xl text-green-600 dark:text-green-400 group-hover:bg-green-500 group-hover:text-white transition-colors duration-300">
             <CheckCircleIcon className="h-8 w-8" />
           </div>
           <div>
@@ -410,7 +410,7 @@ const AdminAnalytics = () => {
         </div>
 
         <div className="bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
-          <div className="p-4 bg-amber-50 rounded-2xl text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300">
+          <div className="p-4 bg-amber-50 dark:bg-amber-500/10 rounded-2xl text-amber-600 dark:text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300">
             <ClockIcon className="h-8 w-8" />
           </div>
           <div>
@@ -424,7 +424,7 @@ const AdminAnalytics = () => {
         </div>
 
         <div className="bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
-          <div className="p-4 bg-red-50 rounded-2xl text-red-600 group-hover:bg-red-500 group-hover:text-white transition-colors duration-300">
+          <div className="p-4 bg-red-50 dark:bg-red-500/10 rounded-2xl text-red-600 dark:text-red-400 group-hover:bg-red-500 group-hover:text-white transition-colors duration-300">
             <XCircleIcon className="h-8 w-8" />
           </div>
           <div>
@@ -462,8 +462,6 @@ const AdminAnalytics = () => {
 
         {/* Distribution Section */}
         <div className="bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-8 flex flex-col relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-32 bg-blue-50/50 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-
           <h3 className="text-xl font-bold text-text-main mb-8 w-full text-left relative z-10">
             Sebaran Layanan
           </h3>
@@ -483,9 +481,9 @@ const AdminAnalytics = () => {
 
           <div className="w-full space-y-4 z-10 mt-auto">
             {/* Grooming Legend */}
-            <div className="flex justify-between items-center p-4 bg-bg-surface border border-blue-100 dark:border-blue-900/30 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-center p-4 bg-bg-surface border border-blue-100 dark:border-blue-500/20 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
                   <ScissorsIcon className="w-5 h-5" />
                 </div>
                 <div>
@@ -497,15 +495,15 @@ const AdminAnalytics = () => {
                   </span>
                 </div>
               </div>
-              <span className="font-extrabold text-blue-600 text-lg">
+              <span className="font-extrabold text-blue-600 dark:text-blue-400 text-lg">
                 {stats.groomingCount}
               </span>
             </div>
 
             {/* Klinik Legend */}
-            <div className="flex justify-between items-center p-4 bg-bg-surface border border-amber-50 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-center p-4 bg-bg-surface border border-amber-50 dark:border-amber-500/20 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
                   <HeartIcon className="w-5 h-5" />
                 </div>
                 <div>
@@ -517,7 +515,7 @@ const AdminAnalytics = () => {
                   </span>
                 </div>
               </div>
-              <span className="font-extrabold text-amber-600 text-lg">
+              <span className="font-extrabold text-amber-600 dark:text-amber-400 text-lg">
                 {stats.klinikCount}
               </span>
             </div>

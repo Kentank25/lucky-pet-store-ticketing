@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap");
+@config "../tailwind.config.js";
 @import "tailwindcss";
 
 :root {
@@ -64,39 +65,10 @@
                   0 4px 16px -2px rgba(0, 0, 0, 0.2);
 }
 
-@theme {
-  --font-sans: "Outfit", sans-serif;
 
-  /* Expose Semantic Colors as Utilities */
-  /* Usage: bg-bg-canvas, text-text-main, border-border-subtle */
-  
-  --color-bg-canvas: var(--color-bg-canvas);
-  --color-bg-surface: var(--color-bg-surface);
-  --color-bg-subtle: var(--color-bg-subtle);
-  --color-bg-muted: var(--color-bg-muted);
-  
-  --color-text-main: var(--color-text-main);
-  --color-text-secondary: var(--color-text-secondary);
-  --color-text-muted: var(--color-text-muted);
-  --color-text-inverted: var(--color-text-inverted);
-
-  --color-border-subtle: var(--color-border-subtle);
-  --color-border-main: var(--color-border-main);
-
-  --color-primary: var(--color-primary);
-  --color-primary-soft: var(--color-primary-soft);
-  --color-primary-hover: var(--color-primary-hover);
-  
-  --color-secondary: var(--color-secondary);
-
-  /* Glass Variables (for custom classes) */
-  --glass-bg: var(--glass-bg);
-  --glass-border: var(--glass-border);
-  --glass-shadow: var(--glass-shadow);
-}
 
 body {
-  font-family: var(--font-sans);
+  @apply font-sans;
   background-color: var(--color-bg-canvas);
   color: var(--color-text-main);
   background-image: radial-gradient(
@@ -111,14 +83,6 @@ body {
 }
 
 @layer utilities {
-  .animate-fade-in {
-    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
-  .animate-scale-in {
-    animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
   /* Glassmorphism Utility */
   .glass-panel {
     background: var(--glass-bg);
@@ -133,11 +97,11 @@ body {
   }
 
   .btn-primary {
-    @apply bg-linear-to-br from-indigo-500 to-indigo-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-indigo-200 hover:shadow-indigo-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed border-t border-white/20;
+    @apply bg-linear-to-br from-indigo-500 to-indigo-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30 hover:shadow-indigo-300 dark:hover:shadow-indigo-900/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed border-t border-white/20 dark:border-white/5;
   }
 
   .hover-lift {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-black/50;
   }
 
   .active-press {
@@ -150,27 +114,5 @@ body {
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
   }
 }

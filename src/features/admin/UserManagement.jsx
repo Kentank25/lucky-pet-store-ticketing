@@ -139,31 +139,31 @@ export default function UserManagement() {
     switch (role) {
       case "admin":
         return (
-          <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold uppercase">
+          <span className="bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 px-3 py-1 rounded-full text-xs font-bold uppercase">
             Admin
           </span>
         );
       case "kiosk":
         return (
-          <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase">
+          <span className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 px-3 py-1 rounded-full text-xs font-bold uppercase">
             Kiosk
           </span>
         );
       case "pic_grooming":
         return (
-          <span className="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-xs font-bold uppercase">
+          <span className="bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300 px-3 py-1 rounded-full text-xs font-bold uppercase">
             PIC Grooming
           </span>
         );
       case "pic_klinik":
         return (
-          <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold uppercase">
+          <span className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 px-3 py-1 rounded-full text-xs font-bold uppercase">
             PIC Klinik
           </span>
         );
       default:
         return (
-          <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase">
+          <span className="bg-bg-subtle text-text-muted dark:bg-white/5 px-3 py-1 rounded-full text-xs font-bold uppercase">
             {role}
           </span>
         );
@@ -210,7 +210,7 @@ export default function UserManagement() {
                   <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase">
                     Nama
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">
+                  <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase">
                     Email
                   </th>
                   <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase">
@@ -238,7 +238,7 @@ export default function UserManagement() {
                   <tr>
                     <td
                       colSpan="5"
-                      className="px-6 py-8 text-center text-slate-400"
+                      className="px-6 py-8 text-center text-text-muted"
                     >
                       Belum ada user.
                     </td>
@@ -354,7 +354,7 @@ export default function UserManagement() {
                               : ""
                           } ${
                             editingUser
-                              ? "opacity-60 cursor-not-allowed bg-slate-100"
+                              ? "opacity-60 cursor-not-allowed disabled:bg-bg-muted dark:disabled:bg-bg-subtle"
                               : ""
                           }`}
                           placeholder="Alamat Email"
