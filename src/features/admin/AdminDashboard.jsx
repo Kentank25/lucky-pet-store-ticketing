@@ -4,6 +4,9 @@ import {
   ScissorsIcon,
   HeartIcon,
   ClockIcon,
+  HomeIcon,
+  ChartBarIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { createPortal } from "react-dom";
 import TicketForm from "../../components/tickets/TicketForm";
@@ -300,20 +303,26 @@ export default function AdminDashboard() {
 
   const headerActions = (
     <div className="flex p-1 bg-bg-muted/50 backdrop-blur-sm rounded-2xl border border-border-subtle/20 dark:border-white/10">
-      {["dashboard", "analytics", "users"].map((tab) => (
+      {[
+        { id: "dashboard", label: "Dashboard", icon: HomeIcon },
+        { id: "analytics", label: "Analytics", icon: ChartBarIcon },
+        { id: "users", label: "Users", icon: UserGroupIcon },
+      ].map((tab) => (
         <button
-          key={tab}
-          onClick={() => setActiveTab(tab)}
-          className={`px-4 py-2 rounded-xl text-sm font-bold capitalize transition-all duration-300 ${
-            activeTab === tab
+          key={tab.id}
+          onClick={() => setActiveTab(tab.id)}
+          className={`px-3 md:px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-all duration-300 ${
+            activeTab === tab.id
               ? "bg-bg-surface text-primary shadow-md shadow-indigo-100 dark:shadow-none dark:bg-primary/20 dark:text-primary-soft"
               : "text-text-muted hover:text-text-main hover:bg-bg-surface/50 dark:hover:bg-white/5"
           }`}
+          title={tab.label}
         >
-          {tab}
+          <tab.icon className="w-5 h-5" />
+          <span className="hidden md:inline">{tab.label}</span>
         </button>
       ))}
-      <div className="ml-auto">
+      <div className="ml-2 pl-2 border-l border-border-subtle/50">
         <ThemeToggle />
       </div>
     </div>

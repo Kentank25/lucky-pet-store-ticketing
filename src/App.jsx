@@ -32,10 +32,15 @@ function App() {
       <Route path="/monitor/:id" element={<QueueMonitor />} />
 
       <Route
+        path="/login"
+        element={!role ? <LoginPage /> : <Navigate to="/" replace />}
+      />
+
+      <Route
         path="/"
         element={
           !role ? (
-            <LoginPage />
+            <Navigate to="/login" replace />
           ) : (
             <Layout>
               {role === "admin" && <AdminDashboard />}

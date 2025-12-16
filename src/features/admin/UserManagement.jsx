@@ -185,7 +185,7 @@ export default function UserManagement() {
   return (
     <>
       <div className="space-y-6 animate-fade-in">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-text-main">
               Manajemen User
@@ -196,13 +196,66 @@ export default function UserManagement() {
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="btn-primary flex items-center gap-2 hover:scale-105"
+            className="btn-primary w-full md:w-auto flex items-center justify-center gap-2 hover:scale-105"
           >
             <PlusIcon className="w-6 h-6" /> Tambah User
           </button>
         </div>
 
-        <div className="glass-panel rounded-3xl overflow-hidden">
+        {/* Mobile View (Cards) */}
+        <div className="grid grid-cols-1 gap-4 md:hidden">
+          {loading ? (
+            <div className="text-center py-8 text-slate-400">Loading...</div>
+          ) : users.length === 0 ? (
+            <div className="text-center py-8 text-text-muted">
+              Belum ada user.
+            </div>
+          ) : (
+            users.map((user) => (
+              <div
+                key={user.id}
+                className="glass-panel p-4 rounded-2xl flex flex-col gap-3"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-bold text-text-main text-lg">
+                      {user.name}
+                    </h3>
+                    <p className="text-text-secondary text-sm font-mono break-all">
+                      {user.email}
+                    </p>
+                  </div>
+                  {getRoleBadge(user.role)}
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-border-subtle mt-1">
+                  <span className="text-text-muted text-xs">
+                    {user.createdAt
+                      ? new Date(user.createdAt).toLocaleDateString()
+                      : "-"}
+                  </span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(user)}
+                      className="p-2 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                    >
+                      <PencilSquareIcon className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(user.id)}
+                      className="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                    >
+                      <XMarkIcon className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop View (Table) */}
+        <div className="hidden md:block glass-panel rounded-3xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead className="bg-bg-surface/50 border-b border-border-subtle">
