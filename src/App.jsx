@@ -15,12 +15,29 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg-canvas flex flex-col p-4 md:p-6 gap-8">
-        {/* Simple Skeleton for Global Loading */}
-        <div className="w-full h-24 bg-bg-subtle rounded-3xl animate-pulse"></div>
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="bg-bg-subtle rounded-3xl animate-pulse h-96"></div>
-          <div className="lg:col-span-2 bg-bg-subtle rounded-3xl animate-pulse h-96"></div>
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        {/* Abstract Background Shapes for Loading State */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[100px] animate-pulse-soft"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[100px] animate-pulse-soft delay-1000"></div>
+
+        <div className="glass-panel p-8 rounded-3xl flex flex-col items-center gap-6 relative z-10 border-white/20 shadow-2xl">
+          <div className="w-20 h-20 bg-linear-to-tr from-indigo-500 to-purple-500 rounded-2xl shadow-lg shadow-indigo-500/40 flex items-center justify-center animate-float">
+            <img
+              src="/Lucky Pet Store Logo (Black).png"
+              alt="Loading..."
+              className="w-full h-full object-cover p-1 opacity-90 invert dark:invert-0"
+            />
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+              LuckyPetStore
+            </h2>
+            <div className="flex gap-1">
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce delay-0"></div>
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce delay-100"></div>
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce delay-200"></div>
+            </div>
+          </div>
         </div>
       </div>
     );

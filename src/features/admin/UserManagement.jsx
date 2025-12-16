@@ -255,24 +255,24 @@ export default function UserManagement() {
         </div>
 
         {/* Desktop View (Table) */}
-        <div className="hidden md:block glass-panel rounded-3xl overflow-hidden">
+        <div className="hidden md:block glass-panel rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/5">
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-bg-surface/50 border-b border-border-subtle">
-                <tr>
-                  <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-white/10 bg-white/5 dark:bg-white/5 backdrop-blur-md">
+                  <th className="px-6 py-5 text-xs font-black text-text-secondary uppercase tracking-widest first:pl-8">
                     Nama
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase">
+                  <th className="px-6 py-5 text-xs font-black text-text-secondary uppercase tracking-widest">
                     Email
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase">
+                  <th className="px-6 py-5 text-xs font-black text-text-secondary uppercase tracking-widest">
                     Role
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase">
+                  <th className="px-6 py-5 text-xs font-black text-text-secondary uppercase tracking-widest">
                     Dibuat
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-text-muted uppercase text-right">
+                  <th className="px-6 py-5 text-xs font-black text-text-secondary uppercase tracking-widest text-right last:pr-8">
                     Aksi
                   </th>
                 </tr>
@@ -282,52 +282,60 @@ export default function UserManagement() {
                   <tr>
                     <td
                       colSpan="5"
-                      className="px-6 py-8 text-center text-slate-400"
+                      className="px-6 py-12 text-center text-text-muted italic animate-pulse"
                     >
-                      Loading...
+                      Loading user data...
                     </td>
                   </tr>
                 ) : users.length === 0 ? (
                   <tr>
                     <td
                       colSpan="5"
-                      className="px-6 py-8 text-center text-text-muted"
+                      className="px-6 py-12 text-center text-text-muted"
                     >
-                      Belum ada user.
+                      Belum ada user terdaftar.
                     </td>
                   </tr>
                 ) : (
                   users.map((user) => (
                     <tr
                       key={user.id}
-                      className="border-b border-border-subtle last:border-none hover:bg-bg-surface/40 transition-colors"
+                      className="group border-b border-border-subtle/50 last:border-none hover:bg-white/40 dark:hover:bg-white/5 transition-colors duration-200"
                     >
-                      <td className="px-6 py-4 font-bold text-text-main">
+                      <td className="px-6 py-4 font-bold text-text-main first:pl-8 group-hover:text-primary transition-colors">
                         {user.name}
                       </td>
-                      <td className="px-6 py-4 text-text-secondary font-medium font-mono text-sm">
+                      <td className="px-6 py-4 text-text-secondary font-medium font-mono text-xs opacity-80 group-hover:opacity-100">
                         {user.email}
                       </td>
                       <td className="px-6 py-4">{getRoleBadge(user.role)}</td>
-                      <td className="px-6 py-4 text-text-muted text-xs">
+                      <td className="px-6 py-4 text-text-muted text-xs font-medium">
                         {user.createdAt
-                          ? new Date(user.createdAt).toLocaleDateString()
+                          ? new Date(user.createdAt).toLocaleDateString(
+                              "id-ID",
+                              {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              }
+                            )
                           : "-"}
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="px-6 py-4 text-right last:pr-8">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                           <button
                             onClick={() => handleEdit(user)}
-                            className="text-indigo-400 hover:text-indigo-600 font-bold text-xs px-3 py-1 hover:bg-indigo-50 rounded-lg transition-colors flex items-center gap-1"
+                            className="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 dark:text-indigo-400 p-2 rounded-xl transition-all hover:scale-105 shadow-sm"
+                            title="Edit User"
                           >
                             <PencilSquareIcon className="w-4 h-4" />
-                            Edit
                           </button>
                           <button
                             onClick={() => handleDelete(user.id)}
-                            className="text-rose-400 hover:text-rose-600 font-bold text-xs px-3 py-1 hover:bg-rose-50 rounded-lg transition-colors"
+                            className="bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 dark:text-rose-400 p-2 rounded-xl transition-all hover:scale-105 shadow-sm"
+                            title="Hapus User"
                           >
-                            Hapus
+                            <XMarkIcon className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
@@ -347,13 +355,14 @@ export default function UserManagement() {
             {/* Modal Content */}
             <div className="bg-bg-surface rounded-4xl w-full max-w-lg shadow-2xl relative animate-scale-in flex flex-col max-h-[90vh] overflow-hidden">
               {/* Header */}
-              <div className="p-6 border-b border-border-subtle flex justify-between items-center bg-bg-surface sticky top-0 z-10">
-                <h2 className="text-xl font-black text-text-main">
-                  {editingUser ? "Edit User" : "Tambah User Baru"}
+              {/* Header */}
+              <div className="p-6 border-b border-white/10 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl sticky top-0 z-10 flex justify-between items-center">
+                <h2 className="text-2xl font-black text-text-main tracking-tight">
+                  {editingUser ? "Edit User" : "Tambah Member"}
                 </h2>
                 <button
                   onClick={handleCloseModal}
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-bg-subtle hover:bg-red-50 text-text-muted hover:text-red-500 transition-colors"
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-bg-canvas hover:bg-rose-100 hover:text-rose-600 text-text-muted transition-all duration-300 transform hover:rotate-90"
                 >
                   <XMarkIcon className="w-6 h-6" />
                 </button>

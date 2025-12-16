@@ -6,7 +6,7 @@ export default function KioskDashboard() {
     <div className="min-h-[85vh] flex items-center justify-center p-4 md:p-8 animate-fade-in mb-20 lg:mb-0">
       <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
         <div className="relative group h-full">
-          <div className="absolute inset-0 bg-linear-gradient-to-r from-violet-600 to-indigo-600 rounded-[2.5rem] rotate-3 opacity-20 group-hover:rotate-6 transition-transform duration-500 blur-xl"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-violet-600 to-indigo-600 rounded-[2.5rem] rotate-3 opacity-20 group-hover:rotate-6 transition-transform duration-500 blur-xl"></div>
 
           <div className="h-full flex flex-col justify-center bg-linear-to-br from-violet-600 to-indigo-700 rounded-[2.5rem] p-8 md:p-14 text-white shadow-2xl shadow-indigo-200 relative overflow-hidden transform transition-transform duration-500 hover:scale-[1.01]">
             <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-60 h-60 bg-purple-500 opacity-20 rounded-full blur-3xl"></div>

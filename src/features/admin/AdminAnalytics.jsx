@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTheme } from "../../context/ThemeContext";
 import { getChartData } from "../../services/ticketService";
 import {
@@ -8,6 +8,8 @@ import {
   XCircleIcon,
   ScissorsIcon,
   HeartIcon,
+  CalendarDaysIcon,
+  ChartBarIcon,
 } from "@heroicons/react/24/outline";
 import {
   Chart as ChartJS,
@@ -18,6 +20,7 @@ import {
   Tooltip,
   Legend,
   ArcElement,
+  Filler,
 } from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
 
@@ -28,7 +31,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement,
+  Filler
 );
 
 const AdminAnalytics = () => {
@@ -46,6 +50,8 @@ const AdminAnalytics = () => {
     totalServices: 0,
     chartData: [],
   });
+
+  const chartRef = useRef(null);
 
   const generateTimeSlots = (type, dateStr) => {
     const slots = [];
@@ -154,13 +160,10 @@ const AdminAnalytics = () => {
               key = hour;
             }
           } else if (filterType === "year") {
-            // Annual
-            // Group by YYYY-MM
             if (ticket.tanggalRilis) {
               key = ticket.tanggalRilis.substring(0, 7);
             }
           } else {
-            // For Week and Month, ticket needs to match key "YYYY-MM-DD"
             key = ticket.tanggalRilis;
           }
 
@@ -190,10 +193,21 @@ const AdminAnalytics = () => {
     fetchData();
   }, [filterType, selectedDate]);
 
+  // Create Gradients for Chart
+  const createGradient = (ctx, area, colorStart, colorEnd) => {
+    const gradient = ctx.createLinearGradient(0, area.bottom, 0, area.top);
+    gradient.addColorStop(0, colorStart);
+    gradient.addColorStop(1, colorEnd);
+    return gradient;
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="flex flex-col items-center justify-center h-96 gap-4">
+        <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+        <p className="text-text-muted font-bold animate-pulse">
+          Memuat Data Analytics...
+        </p>
       </div>
     );
   }
@@ -201,7 +215,6 @@ const AdminAnalytics = () => {
   const barLabels = stats.chartData.map((d) => d.label);
   const dataCompleted = stats.chartData.map((d) => d.completed);
   const dataCancelled = stats.chartData.map((d) => d.cancelled);
-
   const dataInProcess = stats.chartData.map(
     (d) => d.total - d.completed - d.cancelled
   );
@@ -212,29 +225,66 @@ const AdminAnalytics = () => {
       {
         label: "Selesai",
         data: dataCompleted,
-        backgroundColor: "#22c55e",
-        borderRadius: 4,
+        backgroundColor: function (context) {
+          const chart = context.chart;
+          const { ctx, chartArea } = chart;
+          if (!chartArea) return "#22c55e";
+          return createGradient(
+            ctx,
+            chartArea,
+            "rgba(34, 197, 94, 0.6)",
+            "rgba(34, 197, 94, 1)"
+          );
+        },
+        borderRadius: 6,
+        borderSkipped: false,
       },
       {
         label: "Dalam Proses",
         data: dataInProcess,
-        backgroundColor: "#f59e0b",
-        borderRadius: 4,
+        backgroundColor: function (context) {
+          const chart = context.chart;
+          const { ctx, chartArea } = chart;
+          if (!chartArea) return "#f59e0b";
+          return createGradient(
+            ctx,
+            chartArea,
+            "rgba(245, 158, 11, 0.6)",
+            "rgba(245, 158, 11, 1)"
+          );
+        },
+        borderRadius: 6,
+        borderSkipped: false,
       },
       {
         label: "Batal",
         data: dataCancelled,
-        backgroundColor: "#f87171",
-        borderRadius: 4,
+        backgroundColor: function (context) {
+          const chart = context.chart;
+          const { ctx, chartArea } = chart;
+          if (!chartArea) return "#f87171";
+          return createGradient(
+            ctx,
+            chartArea,
+            "rgba(248, 113, 113, 0.6)",
+            "rgba(248, 113, 113, 1)"
+          );
+        },
+        borderRadius: 6,
+        borderSkipped: false,
       },
     ],
   };
 
   const isDark = theme === "dark";
-  const textColor = isDark ? "#94a3b8" : "#6b7280"; // slate-400 : gray-500
-  const gridColor = isDark ? "#334155" : "#f3f4f6"; // slate-700 : gray-100
-  const tooltipBg = isDark ? "#1e293b" : "#1f2937"; // slate-800 : gray-800
-  const tooltipText = "#f8fafc"; // slate-50
+  const textColor = isDark ? "#94a3b8" : "#64748b";
+  const gridColor = isDark
+    ? "rgba(255, 255, 255, 0.05)"
+    : "rgba(0, 0, 0, 0.05)";
+  const tooltipBg = isDark
+    ? "rgba(15, 23, 42, 0.9)"
+    : "rgba(255, 255, 255, 0.9)";
+  const tooltipText = isDark ? "#fff" : "#1e293b";
 
   const barOptions = {
     responsive: true,
@@ -246,34 +296,49 @@ const AdminAnalytics = () => {
         labels: {
           usePointStyle: true,
           boxWidth: 8,
+          useBorderRadius: true,
+          borderRadius: 4,
           font: {
             size: 11,
             family: "'Inter', sans-serif",
-            weight: "bold",
+            weight: "600",
           },
           color: textColor,
+          padding: 20,
         },
       },
       tooltip: {
         backgroundColor: tooltipBg,
         titleColor: tooltipText,
         bodyColor: tooltipText,
-        cornerRadius: 8,
-        padding: 12,
-        titleFont: { size: 13, weight: "bold" },
-        bodyFont: { size: 12 },
+        cornerRadius: 12,
+        padding: 16,
+        titleFont: { size: 14, weight: "bold", family: "'Inter', sans-serif" },
+        bodyFont: { size: 13, family: "'Inter', sans-serif" },
+        borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+        borderWidth: 1,
         displayColors: true,
         usePointStyle: true,
+        callbacks: {
+          label: (context) => {
+            let label = context.dataset.label || "";
+            if (label) {
+              label += ": ";
+            }
+            if (context.parsed.y !== null) {
+              label += context.parsed.y + " Tiket";
+            }
+            return label;
+          },
+        },
       },
     },
     scales: {
       x: {
         stacked: true,
-        grid: {
-          display: false,
-        },
+        grid: { display: false },
         ticks: {
-          font: { size: 10 },
+          font: { size: 11, weight: "500", family: "'Inter', sans-serif" },
           color: textColor,
         },
       },
@@ -283,20 +348,24 @@ const AdminAnalytics = () => {
         grid: {
           color: gridColor,
           borderDash: [4, 4],
+          drawBorder: false,
         },
         ticks: {
-          font: { size: 10 },
+          font: { size: 10, family: "'Inter', sans-serif" },
           color: textColor,
           stepSize: 1,
+          padding: 10,
         },
-        border: {
-          display: false,
-        },
+        border: { display: false },
       },
     },
     interaction: {
       mode: "index",
       intersect: false,
+    },
+    animation: {
+      duration: 1000,
+      easing: "easeOutQuart",
     },
   };
 
@@ -306,8 +375,9 @@ const AdminAnalytics = () => {
       {
         data: [stats.groomingCount, stats.klinikCount],
         backgroundColor: ["#3b82f6", "#f59e0b"],
+        hoverBackgroundColor: ["#2563eb", "#d97706"],
         borderWidth: 0,
-        hoverOffset: 4,
+        hoverOffset: 10,
       },
     ],
   };
@@ -315,18 +385,22 @@ const AdminAnalytics = () => {
   const doughnutOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    cutout: "75%",
+    cutout: "80%",
     plugins: {
-      legend: {
-        display: false,
-      },
+      legend: { display: false },
       tooltip: {
         backgroundColor: tooltipBg,
-        titleColor: tooltipText,
         bodyColor: tooltipText,
-        cornerRadius: 8,
-        padding: 12,
+        callbacks: {
+          label: function (context) {
+            return ` ${context.label}: ${context.raw} Tiket`;
+          },
+        },
       },
+    },
+    animation: {
+      animateScale: true,
+      animateRotate: true,
     },
   };
 
@@ -339,176 +413,217 @@ const AdminAnalytics = () => {
       ? ((stats.klinikCount / stats.totalServices) * 100).toFixed(0)
       : 0;
 
+  const summaryCards = [
+    {
+      title: "Total Tiket",
+      value: stats.totalServices,
+      icon: ClipboardDocumentListIcon,
+      color: "blue",
+      subtext: "Semua layanan tercatat",
+    },
+    {
+      title: "Selesai",
+      value: stats.completed,
+      icon: CheckCircleIcon,
+      color: "green",
+      subtext: "Layanan rampung",
+    },
+    {
+      title: "Dalam Proses",
+      value: stats.totalServices - (stats.completed + stats.cancelled),
+      icon: ClockIcon,
+      color: "amber",
+      subtext: "Sedang berjalan",
+    },
+    {
+      title: "Dibatalkan",
+      value: stats.cancelled,
+      icon: XCircleIcon,
+      color: "red",
+      subtext: "Tidak dilanjutkan",
+    },
+  ];
+
   return (
     <div className="space-y-8 animate-fade-in py-4">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6">
         <div>
-          <h1 className="text-3xl font-extrabold text-text-main tracking-tight">
+          <h1 className="text-3xl font-black text-text-main tracking-tight flex items-center gap-3">
+            <span className="p-2 bg-indigo-500/10 rounded-xl text-indigo-600 dark:text-indigo-400">
+              <ChartChartIcon className="w-8 h-8" />
+            </span>
             Dashboard Analytics
           </h1>
-          <p className="text-text-muted font-medium mt-2 text-lg">
-            Ringkasan performa & statistik operasional
+          <p className="text-text-muted font-medium mt-2 text-lg max-w-2xl">
+            Ringkasan performa & statistik operasional secara real-time.
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-3 bg-bg-surface p-2 rounded-2xl shadow-sm border border-border-subtle/60 items-center justify-end w-full md:w-auto">
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="px-5 py-2.5 bg-bg-subtle border-transparent focus:border-blue-500 focus:bg-bg-surface rounded-xl text-sm font-bold text-text-secondary outline-none transition-all cursor-pointer hover:bg-bg-muted"
-          >
-            <option value="day">Harian</option>
-            <option value="week">Mingguan</option>
-            <option value="month">Bulanan</option>
-            <option value="year">Tahunan</option>
-          </select>
+        <div className="flex flex-wrap gap-3 bg-white dark:bg-slate-800/50 p-2 rounded-2xl shadow-sm border border-border-subtle items-center w-full xl:w-auto backdrop-blur-sm">
+          <div className="relative group">
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="appearance-none pl-4 pr-10 py-2.5 bg-bg-subtle border-transparent focus:border-indigo-500 focus:bg-bg-surface rounded-xl text-sm font-bold text-text-secondary outline-none transition-all cursor-pointer hover:bg-bg-muted"
+            >
+              <option value="day">Harian</option>
+              <option value="week">Mingguan</option>
+              <option value="month">Bulanan</option>
+              <option value="year">Tahunan</option>
+            </select>
+            <CalendarDaysIcon className="w-5 h-5 text-text-muted absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none group-hover:text-indigo-500 transition-colors" />
+          </div>
+
+          <div className="h-8 w-px bg-border-subtle mx-1 hidden sm:block"></div>
+
           <input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="px-5 py-2.5 bg-bg-subtle border-transparent focus:border-blue-500 focus:bg-bg-surface rounded-xl text-sm font-bold text-text-secondary outline-none transition-all cursor-pointer hover:bg-bg-muted"
+            className="px-4 py-2.5 bg-bg-subtle border-transparent focus:border-indigo-500 focus:bg-bg-surface rounded-xl text-sm font-bold text-text-secondary outline-none transition-all cursor-pointer hover:bg-bg-muted"
           />
         </div>
       </div>
 
       {/* 4-Column Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
-          <div className="p-4 bg-blue-50 dark:bg-blue-500/10 rounded-2xl text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
-            <ClipboardDocumentListIcon className="h-8 w-8" />
-          </div>
-          <div>
-            <p className="text-sm text-text-muted font-semibold mb-1">
-              Total Tiket
-            </p>
-            <h3 className="text-3xl font-black text-text-main">
-              {stats.totalServices}
-            </h3>
-          </div>
-        </div>
+        {summaryCards.map((card, idx) => (
+          <div
+            key={idx}
+            className={`glass-panel p-6 rounded-4xl border border-white/40 dark:border-white/5 shadow-xl shadow-${card.color}-900/5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group`}
+          >
+            {/* Background Blob */}
+            <div
+              className={`absolute -right-6 -top-6 w-24 h-24 bg-${card.color}-500/10 rounded-full blur-2xl group-hover:bg-${card.color}-500/20 transition-all duration-500`}
+            ></div>
 
-        <div className="bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
-          <div className="p-4 bg-green-50 dark:bg-green-500/10 rounded-2xl text-green-600 dark:text-green-400 group-hover:bg-green-500 group-hover:text-white transition-colors duration-300">
-            <CheckCircleIcon className="h-8 w-8" />
+            <div className="flex justify-between items-start relative z-10">
+              <div>
+                <p className="text-sm font-bold text-text-muted uppercase tracking-wider mb-1">
+                  {card.title}
+                </p>
+                <h3 className="text-4xl font-black text-text-main tracking-tight">
+                  {card.value}
+                </h3>
+              </div>
+              <div
+                className={`p-3 rounded-2xl bg-${card.color}-100 dark:bg-${card.color}-500/20 text-${card.color}-600 dark:text-${card.color}-400 shadow-inner`}
+              >
+                <card.icon className="w-6 h-6" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center gap-2">
+              <span
+                className={`text-xs font-bold px-2 py-1 rounded-lg bg-${card.color}-50 dark:bg-${card.color}-900/30 text-${card.color}-700 dark:text-${card.color}-300`}
+              >
+                +0%
+              </span>
+              <p className="text-xs text-text-muted font-medium">
+                {card.subtext}
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm text-text-muted font-semibold mb-1">
-              Selesai
-            </p>
-            <h3 className="text-3xl font-black text-text-main">
-              {stats.completed}
-            </h3>
-          </div>
-        </div>
-
-        <div className="bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
-          <div className="p-4 bg-amber-50 dark:bg-amber-500/10 rounded-2xl text-amber-600 dark:text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300">
-            <ClockIcon className="h-8 w-8" />
-          </div>
-          <div>
-            <p className="text-sm text-text-muted font-semibold mb-1">
-              Dalam Proses
-            </p>
-            <h3 className="text-3xl font-black text-text-main">
-              {stats.totalServices - (stats.completed + stats.cancelled)}
-            </h3>
-          </div>
-        </div>
-
-        <div className="bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-6 flex items-center gap-4 group hover:-translate-y-1 transition-transform duration-300">
-          <div className="p-4 bg-red-50 dark:bg-red-500/10 rounded-2xl text-red-600 dark:text-red-400 group-hover:bg-red-500 group-hover:text-white transition-colors duration-300">
-            <XCircleIcon className="h-8 w-8" />
-          </div>
-          <div>
-            <p className="text-sm text-text-muted font-semibold mb-1">
-              Dibatalkan
-            </p>
-            <h3 className="text-3xl font-black text-text-main">
-              {stats.cancelled}
-            </h3>
-          </div>
-        </div>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Chart Section */}
-        <div className="lg:col-span-2 bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-8">
-          <div className="mb-6">
-            <h3 className="text-xl font-bold text-text-main">
-              Timeline Trafik
-            </h3>
-            <p className="text-sm text-text-muted mt-1">
-              Volume tiket berdasarkan waktu
-            </p>
+        <div className="lg:col-span-2 glass-panel p-8 rounded-[2.5rem] border border-white/40 dark:border-white/5 relative overflow-hidden">
+          {/* Decor */}
+          <div className="absolute top-0 right-0 w-full h-1 bg-linear-to-r from-transparent via-indigo-500/20 to-transparent"></div>
+
+          <div className="mb-8 flex justify-between items-end">
+            <div>
+              <h3 className="text-xl font-bold text-text-main flex items-center gap-2">
+                <ChartBarIcon className="w-5 h-5 text-indigo-500" />
+                Timeline Trafik
+              </h3>
+              <p className="text-sm text-text-muted mt-1 font-medium">
+                Volume tiket berdasarkan{" "}
+                {filterType === "day"
+                  ? "jam"
+                  : filterType === "week"
+                  ? "hari"
+                  : "bulan"}
+              </p>
+            </div>
           </div>
-          <div className="h-80 w-full">
+
+          <div className="h-96 w-full">
             {stats.chartData.length > 0 ? (
-              <Bar data={barChartData} options={barOptions} />
+              <Bar ref={chartRef} data={barChartData} options={barOptions} />
             ) : (
-              <div className="flex h-full items-center justify-center text-text-muted">
-                Data tidak tersedia
+              <div className="flex h-full flex-col items-center justify-center text-text-muted opacity-50">
+                <ClipboardDocumentListIcon className="w-16 h-16 mb-2" />
+                <p>Belum ada data visual</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Distribution Section */}
-        <div className="bg-bg-surface rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] dark:shadow-none border border-border-subtle p-8 flex flex-col relative overflow-hidden">
-          <h3 className="text-xl font-bold text-text-main mb-8 w-full text-left relative z-10">
-            Sebaran Layanan
-          </h3>
+        <div className="glass-panel p-8 rounded-[2.5rem] border border-white/40 dark:border-white/5 flex flex-col items-center justify-between relative overflow-hidden">
+          <div className="w-full text-left relative z-10 mb-4">
+            <h3 className="text-xl font-bold text-text-main flex items-center gap-2">
+              <PieChartIcon className="w-5 h-5 text-indigo-500" />
+              Sebaran Layanan
+            </h3>
+            <p className="text-sm text-text-muted mt-1 font-medium">
+              Ratio Grooming vs Klinik
+            </p>
+          </div>
 
-          <div className="relative w-full aspect-square max-h-64 mx-auto mb-8 z-10">
+          <div className="relative w-full aspect-square max-h-64 mx-auto z-10 my-4">
             <Doughnut data={doughnutData} options={doughnutOptions} />
             {/* Center Text */}
             <div className="absolute inset-0 m-auto w-fit h-fit flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-4xl font-black text-text-main tracking-tighter">
+              <span className="text-5xl font-black text-text-main tracking-tight drop-shadow-sm">
                 {stats.totalServices}
               </span>
-              <span className="text-xs font-bold text-text-muted uppercase tracking-widest mt-1">
+              <span className="text-xs font-bold text-text-muted uppercase tracking-widest mt-1 opacity-70">
                 Total
               </span>
             </div>
           </div>
 
-          <div className="w-full space-y-4 z-10 mt-auto">
+          <div className="w-full space-y-3 z-10 mt-auto">
             {/* Grooming Legend */}
-            <div className="flex justify-between items-center p-4 bg-bg-surface border border-blue-100 dark:border-blue-500/20 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-center p-4 bg-white/50 dark:bg-white/5 border border-white/10 rounded-2xl hover:bg-white/80 dark:hover:bg-white/10 transition-colors">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm">
                   <ScissorsIcon className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-sm font-bold text-text-secondary block">
+                  <span className="text-sm font-bold text-text-main block">
                     Grooming
                   </span>
                   <span className="text-xs text-text-muted">
-                    {groomingPercent}% dari total
+                    {groomingPercent}% ratio
                   </span>
                 </div>
               </div>
-              <span className="font-extrabold text-blue-600 dark:text-blue-400 text-lg">
+              <span className="font-black text-text-main text-lg">
                 {stats.groomingCount}
               </span>
             </div>
 
             {/* Klinik Legend */}
-            <div className="flex justify-between items-center p-4 bg-bg-surface border border-amber-50 dark:border-amber-500/20 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-center p-4 bg-white/50 dark:bg-white/5 border border-white/10 rounded-2xl hover:bg-white/80 dark:hover:bg-white/10 transition-colors">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400 shadow-sm">
                   <HeartIcon className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-sm font-bold text-text-secondary block">
+                  <span className="text-sm font-bold text-text-main block">
                     Klinik
                   </span>
                   <span className="text-xs text-text-muted">
-                    {klinikPercent}% dari total
+                    {klinikPercent}% ratio
                   </span>
                 </div>
               </div>
-              <span className="font-extrabold text-amber-600 dark:text-amber-400 text-lg">
+              <span className="font-black text-text-main text-lg">
                 {stats.klinikCount}
               </span>
             </div>
@@ -518,5 +633,48 @@ const AdminAnalytics = () => {
     </div>
   );
 };
+
+function ChartChartIcon(props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      {...props}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605"
+      />
+    </svg>
+  );
+}
+
+function PieChartIcon(props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      {...props}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z"
+      />
+    </svg>
+  );
+}
 
 export default AdminAnalytics;

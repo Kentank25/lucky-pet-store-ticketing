@@ -6,36 +6,36 @@
   /* =========================================
      SEMANTIC TOKENS (Light Mode - Default)
      ========================================= */
-  
+
   /* Backgrounds */
-  --color-bg-canvas: #f1f5f9;  /* slate-100 - Main Page Background */
-  --color-bg-surface: #ffffff; /* white - Card/Panel Background */
-  --color-bg-subtle: #f8fafc;  /* slate-50 - Secondary Backgrounds */
-  --color-bg-muted: #f1f5f9;   /* slate-100 - Muted/Hover Backgrounds */
-  
+  --color-bg-canvas: #f8fafc; /* slate-50 - Brighter Canvas */
+  --color-bg-surface: #ffffff; /* white - Crisp Surface */
+  --color-bg-subtle: #f1f5f9; /* slate-100 - Subtle offsets */
+  --color-bg-muted: #e2e8f0; /* slate-200 - Inputs/Disabled */
+
   /* Text */
-  --color-text-main: #1e293b;     /* slate-800 - Primary Text */
-  --color-text-secondary: #475569; /* slate-600 - Secondary Text */
-  --color-text-muted: #64748b;    /* slate-500 - Muted Text */
-  --color-text-inverted: #ffffff; /* white - Text on primary bg */
+  --color-text-main: #0f172a; /* slate-900 - High Contrast */
+  --color-text-secondary: #475569; /* slate-600 - Readable Secondary */
+  --color-text-muted: #94a3b8; /* slate-400 - Muted */
+  --color-text-inverted: #ffffff; /* white */
 
   /* Borders */
   --color-border-subtle: #e2e8f0; /* slate-200 */
-  --color-border-main: #cbd5e1;   /* slate-300 */
+  --color-border-main: #cbd5e1; /* slate-300 */
 
-  /* Primary Brand (Indigo) */
-  --color-primary: #6366f1;       /* Indigo 500 */
-  --color-primary-soft: #e0e7ff;  /* Indigo 100 */
-  --color-primary-hover: #4f46e5; /* Indigo 600 */
+  /* Primary Brand (Indigo -> Violet Shift for Premium feel) */
+  --color-primary: #6366f1; /* Indigo 500 */
+  --color-primary-soft: #e0e7ff; /* Indigo 100 */
+  --color-primary-hover: #4338ca; /* Indigo 700 */
 
   /* Secondary Brand (Rose) */
-  --color-secondary: #f43f5e;     /* Rose 500 */
-  
+  --color-secondary: #f43f5e; /* Rose 500 */
+
   /* Glassmorphism */
-  --glass-bg: rgba(255, 255, 255, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.6);
-  --glass-shadow: 0 8px 32px -4px rgba(99, 102, 241, 0.05),
-                  0 4px 16px -2px rgba(99, 102, 241, 0.03);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 8px 32px -4px rgba(99, 102, 241, 0.1),
+    0 4px 16px -2px rgba(99, 102, 241, 0.05);
 }
 
 .dark {
@@ -43,29 +43,27 @@
      SEMANTIC TOKENS (Dark Mode)
      ========================================= */
 
-  /* Backgrounds */
-  --color-bg-canvas: #020617;  /* slate-950 */
+  /* Backgrounds: Deep rich slate/navy instead of flat black */
+  --color-bg-canvas: #020617; /* slate-950 */
   --color-bg-surface: #0f172a; /* slate-900 */
-  --color-bg-subtle: #1e293b;  /* slate-800 */
-  --color-bg-muted: #334155;   /* slate-700 */
+  --color-bg-subtle: #1e293b; /* slate-800 */
+  --color-bg-muted: #334155; /* slate-700 */
 
   /* Text */
-  --color-text-main: #f1f5f9;      /* slate-100 */
+  --color-text-main: #f8fafc; /* slate-50 */
   --color-text-secondary: #cbd5e1; /* slate-300 */
-  --color-text-muted: #94a3b8;     /* slate-400 */
-  
+  --color-text-muted: #64748b; /* slate-500 */
+
   /* Borders */
   --color-border-subtle: #1e293b; /* slate-800 */
-  --color-border-main: #334155;   /* slate-700 */
+  --color-border-main: #334155; /* slate-700 */
 
   /* Glassmorphism - Darker & More Opaque */
-  --glass-bg: rgba(15, 23, 42, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.3),
-                  0 4px 16px -2px rgba(0, 0, 0, 0.2);
+  --glass-bg: rgba(15, 23, 42, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.5),
+    0 4px 16px -2px rgba(0, 0, 0, 0.3);
 }
-
-
 
 body {
   @apply font-sans;
@@ -86,26 +84,46 @@ body {
   /* Glassmorphism Utility */
   .glass-panel {
     background: var(--glass-bg);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
   }
 
+  .container-padded {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
   .input-minimal {
-    @apply w-full px-4 py-3 bg-bg-surface/60 backdrop-blur-sm border border-border-subtle/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-medium text-text-main placeholder-text-muted shadow-inner shadow-border-subtle/50;
+    @apply w-full px-4 py-3 bg-bg-surface/60 backdrop-blur-sm border border-border-subtle/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium text-text-main placeholder-text-muted shadow-sm hover:border-border-main/80;
   }
 
   .btn-primary {
-    @apply bg-linear-to-br from-indigo-500 to-indigo-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30 hover:shadow-indigo-300 dark:hover:shadow-indigo-900/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed border-t border-white/20 dark:border-white/5;
+    @apply bg-gradient-to-br from-indigo-500 to-indigo-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-white/20;
+  }
+
+  .btn-secondary {
+    @apply bg-bg-surface text-text-main font-bold py-3 px-6 rounded-xl shadow-sm border border-border-subtle hover:bg-bg-subtle hover:border-border-main transition-all active:scale-95;
   }
 
   .hover-lift {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-black/50;
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-black/50;
   }
 
   .active-press {
     @apply transition-transform active:scale-95;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 dark:bg-slate-700 rounded-full hover:bg-slate-400 dark:hover:bg-slate-600 transition-colors;
   }
 
   .no-scrollbar::-webkit-scrollbar {

@@ -18,181 +18,10 @@ import toast from "react-hot-toast";
 import AdminAnalytics from "./AdminAnalytics";
 import UserManagement from "./UserManagement";
 import { TICKET_STATUS, SERVICE_TYPE } from "../../constants";
+import AccordionItem from "../../components/common/AccordionItem";
+import PaymentAccordion from "./PaymentAccordion";
+import ValidationAccordion from "./ValidationAccordion";
 import ThemeToggle from "../../components/common/ThemeToggle";
-
-const AccordionItem = ({
-  title,
-  count,
-  icon,
-  isOpen,
-  onToggle,
-  colorClass = "indigo",
-  children,
-  headerExtras,
-}) => {
-  return (
-    <div
-      className={`glass-panel mb-4 transition-all duration-300 rounded-3xl ${
-        isOpen
-          ? "shadow-lg shadow-indigo-100 dark:shadow-indigo-900/20 ring-1 ring-primary-soft dark:ring-primary/20"
-          : "hover:border-primary-soft dark:hover:border-primary/30"
-      }`}
-    >
-      <div
-        className="p-5 flex items-center justify-between cursor-pointer select-none bg-bg-surface hover:bg-bg-subtle/50 transition-colors rounded-3xl"
-        onClick={onToggle}
-      >
-        <div className="flex items-center gap-4">
-          <div
-            className={`text-2xl w-10 h-10 flex items-center justify-center rounded-full transition-colors bg-${colorClass}-50 text-${colorClass}-600 dark:bg-${colorClass}-500/10 dark:text-${colorClass}-300`}
-          >
-            {icon}
-          </div>
-          <div>
-            <h4 className="font-bold text-text-main text-base">{title}</h4>
-            <p className="text-text-muted text-xs font-medium">{count} Tiket</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          {headerExtras}
-          <div
-            className={`w-8 h-8 flex items-center justify-center rounded-full bg-bg-subtle text-text-muted transform transition-transform duration-300 ${
-              isOpen ? "rotate-180" : ""
-            }`}
-          >
-            <ChevronDownIcon className="h-5 w-5" />
-          </div>
-        </div>
-      </div>
-
-      {isOpen && (
-        <div className="p-5 pt-0 animate-fade-in border-t border-bg-subtle">
-          {children}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const PaymentAccordion = ({
-  title,
-  items,
-  isOpen,
-  onToggle,
-  icon,
-  selectedPaymentIds,
-  onToggleSelect,
-  onSelectAll,
-}) => {
-  if (items.length === 0) return null;
-
-  const allSelected = items.every((t) => selectedPaymentIds.has(t.id));
-  const someSelected = items.some((t) => selectedPaymentIds.has(t.id));
-
-  const headerCheckbox = (
-    <div
-      onClick={(e) => e.stopPropagation()}
-      className="flex items-center bg-bg-muted px-3 py-1.5 rounded-lg"
-    >
-      <input
-        type="checkbox"
-        className="w-4 h-4 rounded border-border-main text-primary focus:ring-primary cursor-pointer mr-2"
-        checked={allSelected}
-        ref={(input) => {
-          if (input) input.indeterminate = someSelected && !allSelected;
-        }}
-        onChange={(e) => onSelectAll(items, e.target.checked)}
-      />
-      <span className="text-xs font-bold text-text-secondary">All</span>
-    </div>
-  );
-
-  return (
-    <AccordionItem
-      title={title}
-      count={items.length}
-      icon={icon}
-      isOpen={isOpen}
-      onToggle={onToggle}
-      colorClass="indigo"
-      headerExtras={headerCheckbox}
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-        {items.map((ticket) => (
-          <div
-            key={ticket.id}
-            onClick={() => onToggleSelect(ticket.id)}
-            className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 relative group ${
-              selectedPaymentIds.has(ticket.id)
-                ? "bg-primary-soft/30 border-primary-soft shadow-sm dark:bg-indigo-900/40 dark:border-indigo-500/30"
-                : "bg-bg-surface/50 border-transparent hover:bg-bg-surface hover:border-primary-soft dark:hover:bg-white/5 dark:hover:border-white/10"
-            }`}
-          >
-            <div className="flex justify-between items-start mb-2">
-              <span
-                className={`text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider ${
-                  ticket.layanan === SERVICE_TYPE.GROOMING
-                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                    : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"
-                }`}
-              >
-                {ticket.layanan}
-              </span>
-              <input
-                type="checkbox"
-                className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                checked={selectedPaymentIds.has(ticket.id)}
-                onChange={() => onToggleSelect(ticket.id)}
-                onClick={(e) => e.stopPropagation()}
-              />
-            </div>
-
-            <h5 className="font-bold text-text-main text-sm mb-1 line-clamp-1">
-              {ticket.nama}
-            </h5>
-
-            <div className="flex items-center gap-3 text-xs text-text-muted">
-              <span>
-                {new Date(ticket.tanggalRilis).toLocaleDateString("id-ID", {
-                  day: "numeric",
-                  month: "short",
-                })}
-              </span>
-              {ticket.jam && <span>• {ticket.jam}</span>}
-            </div>
-          </div>
-        ))}
-      </div>
-    </AccordionItem>
-  );
-};
-
-const ValidationAccordion = ({
-  title,
-  items,
-  isOpen,
-  onToggle,
-  icon,
-  loading,
-}) => {
-  if (items.length === 0) return null;
-
-  return (
-    <AccordionItem
-      title={title}
-      count={items.length}
-      icon={icon}
-      isOpen={isOpen}
-      onToggle={onToggle}
-      colorClass="amber"
-    >
-      <div className="mt-4">
-        <TicketList tickets={items} loading={loading} />
-      </div>
-    </AccordionItem>
-  );
-};
 
 export default function AdminDashboard() {
   const { tickets, loading } = useTickets();
@@ -302,7 +131,7 @@ export default function AdminDashboard() {
   };
 
   const headerActions = (
-    <div className="flex p-1 bg-bg-muted/50 backdrop-blur-sm rounded-2xl border border-border-subtle/20 dark:border-white/10">
+    <div className="p-1.5 bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl rounded-2xl border border-white/20 dark:border-white/5 shadow-2xl flex items-center gap-1">
       {[
         { id: "dashboard", label: "Dashboard", icon: HomeIcon },
         { id: "analytics", label: "Analytics", icon: ChartBarIcon },
@@ -311,18 +140,26 @@ export default function AdminDashboard() {
         <button
           key={tab.id}
           onClick={() => setActiveTab(tab.id)}
-          className={`px-3 md:px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-all duration-300 ${
+          className={`px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all duration-300 relative overflow-hidden group ${
             activeTab === tab.id
-              ? "bg-bg-surface text-primary shadow-md shadow-indigo-100 dark:shadow-none dark:bg-primary/20 dark:text-primary-soft"
-              : "text-text-muted hover:text-text-main hover:bg-bg-surface/50 dark:hover:bg-white/5"
+              ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30"
+              : "text-text-secondary hover:text-text-main hover:bg-white/50 dark:hover:bg-white/5"
           }`}
           title={tab.label}
         >
-          <tab.icon className="w-5 h-5" />
+          <tab.icon
+            className={`w-5 h-5 transition-transform duration-300 ${
+              activeTab === tab.id ? "scale-110" : "group-hover:scale-110"
+            }`}
+          />
           <span className="hidden md:inline">{tab.label}</span>
+          {activeTab === tab.id && (
+            <div className="absolute inset-0 bg-white/20 animate-pulse-soft rounded-xl pointer-events-none"></div>
+          )}
         </button>
       ))}
-      <div className="ml-2 pl-2 border-l border-border-subtle/50">
+      <div className="w-px h-6 bg-gray-200 dark:bg-white/10 mx-1"></div>
+      <div className="px-1">
         <ThemeToggle />
       </div>
     </div>

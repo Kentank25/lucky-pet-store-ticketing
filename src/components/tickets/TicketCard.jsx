@@ -12,11 +12,15 @@ import {
   ClockIcon,
   QrCodeIcon,
   DevicePhoneMobileIcon,
+  CheckBadgeIcon,
+  XMarkIcon,
+  BanknotesIcon,
+  PencilSquareIcon,
+  InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 
 export default function TicketCard({ ticket, onEdit, className = "" }) {
   const { role } = useAuth();
-
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [cancelData, setCancelData] = useState(null);
@@ -50,7 +54,6 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
 
   const isPending = ticket.status === TICKET_STATUS.PENDING;
   const isPayment = ticket.status === TICKET_STATUS.PAYMENT;
-
   const isAdmin = role === "admin";
   const isPicGrooming = role === "pic_grooming";
   const isPicKlinik = role === "pic_klinik";
@@ -59,209 +62,233 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
     (isPicGrooming && ticket.layanan === SERVICE_TYPE.GROOMING) ||
     (isPicKlinik && ticket.layanan === SERVICE_TYPE.KLINIK);
 
+  // Dynamic Styles based on status
+  const cardStyles = isPending
+    ? "bg-amber-50/50 border-amber-200/60 dark:bg-amber-900/10 dark:border-amber-900/30"
+    : isPayment
+    ? "bg-indigo-50/50 border-indigo-200/60 dark:bg-indigo-900/10 dark:border-indigo-900/30"
+    : "glass-panel dark:bg-slate-800/40";
+
   return (
     <>
       <div
-        className={`p-6 bg-bg-surface rounded-3xl shadow-lg shadow-gray-100 dark:shadow-none border ${
-          isPending
-            ? "border-yellow-200 dark:border-yellow-900/30 bg-yellow-50/30 dark:bg-yellow-900/10"
-            : isPayment
-            ? "border-purple-200 dark:border-purple-900/30 bg-purple-50/30 dark:bg-purple-900/10"
-            : "border-transparent dark:border-border-subtle"
-        } animate-fade-in hover-lift hover:shadow-xl transition-shadow duration-300 relative group overflow-hidden ${className}`}
+        className={`relative p-6 rounded-3xl border transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group ${cardStyles} ${className}`}
       >
-        <div className="flex flex-col md:flex-row justify-between items-start flex-wrap gap-4 w-full relative z-10">
-          <div className="w-full md:w-auto">
-            <div className="flex items-center gap-3 mb-2 flex-wrap">
-              <h3 className="font-bold text-text-main text-xl">
+        {/* Decorative Gradient Blob */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-current opacity-[0.03] rounded-bl-4xl pointer-events-none -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+
+        <div className="flex flex-col gap-4">
+          {/* Header: Name & Service & Source */}
+          <div className="flex justify-between items-start gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <span
+                  className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg ${
+                    ticket.layanan === SERVICE_TYPE.GROOMING
+                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                      : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"
+                  }`}
+                >
+                  {ticket.layanan}
+                </span>
+                {ticket.source === "kiosk" && (
+                  <span className="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 flex items-center gap-1">
+                    <DevicePhoneMobileIcon className="w-3 h-3" />
+                    App
+                  </span>
+                )}
+              </div>
+              <h3 className="font-extrabold text-text-main text-lg leading-tight line-clamp-2">
                 {ticket.nama}
               </h3>
-              <span
-                className={`text-xs font-bold px-3 py-1 rounded-full ${
-                  ticket.layanan === SERVICE_TYPE.GROOMING
-                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                    : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"
-                }`}
-              >
-                {ticket.layanan}
-              </span>
-              {ticket.source === "kiosk" && (
-                <span className="text-xs font-bold px-3 py-1 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 flex items-center gap-1">
-                  <DevicePhoneMobileIcon className="w-3 h-3" />
-                  Self-Service
-                </span>
-              )}
             </div>
 
-            {ticket.telepon && (
-              <a
-                href={`https://wa.me/${ticket.telepon
-                  .replace(/^0/, "62")
-                  .replace(/\D/g, "")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 mb-2 text-sm text-text-muted font-bold hover:text-green-600 transition-colors group/wa"
-                title="Chat via WhatsApp"
-              >
-                <PhoneIcon className="w-4 h-4 text-text-muted group-hover/wa:text-green-600" />
-                <span>{ticket.telepon}</span>
-                <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full opacity-0 group-hover/wa:opacity-100 transition-opacity">
-                  Chat WA
-                </span>
-              </a>
-            )}
+            {/* Status Badge */}
+            <div
+              className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 shadow-sm ${
+                isPending
+                  ? "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800"
+                  : isPayment
+                  ? "bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-800"
+                  : "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800"
+              }`}
+            >
+              <span className="relative flex h-2 w-2">
+                <span
+                  className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                    isPending
+                      ? "bg-amber-500"
+                      : isPayment
+                      ? "bg-indigo-500"
+                      : "bg-emerald-500"
+                  }`}
+                ></span>
+                <span
+                  className={`relative inline-flex rounded-full h-2 w-2 ${
+                    isPending
+                      ? "bg-amber-500"
+                      : isPayment
+                      ? "bg-indigo-500"
+                      : "bg-emerald-500"
+                  }`}
+                ></span>
+              </span>
+              {ticket.status}
+            </div>
+          </div>
 
-            <div className="flex items-center gap-3 mt-1 text-sm text-text-muted font-medium">
-              <span className="flex items-center gap-1">
-                <CalendarIcon className="w-4 h-4 text-text-muted" />
+          {/* Details: WhatsApp, Date, Time */}
+          <div className="flex flex-col gap-2 text-sm text-text-secondary font-medium pl-1 border-l-2 border-border-subtle">
+            {ticket.telepon && (
+              <div className="flex items-center gap-2">
+                <PhoneIcon className="w-4 h-4 text-text-muted" />
+                <span>{ticket.telepon}</span>
+                <a
+                  href={`https://wa.me/${ticket.telepon
+                    .replace(/^0/, "62")
+                    .replace(/\D/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] font-bold bg-green-100 text-green-700 px-2 rounded-md hover:bg-green-200 transition-colors ml-auto"
+                >
+                  WA
+                </a>
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <CalendarIcon className="w-4 h-4 text-text-muted" />
+              <span>
                 {new Date(ticket.tanggalRilis).toLocaleDateString("id-ID", {
                   day: "numeric",
                   month: "short",
                 })}
               </span>
               {ticket.jam && (
-                <span className="flex items-center gap-1">
-                  <ClockIcon className="w-4 h-4 text-text-muted" /> {ticket.jam}
-                </span>
+                <>
+                  <span className="text-text-muted">•</span>
+                  <ClockIcon className="w-4 h-4 text-text-muted" />
+                  <span>{ticket.jam}</span>
+                </>
               )}
-            </div>
-
-            {ticket.catatan && (
-              <div className="mt-3 bg-bg-subtle p-3 rounded-xl text-sm text-text-secondary border border-border-subtle">
-                <span className="font-bold text-text-muted text-xs uppercase tracking-wider block mb-1">
-                  Catatan:
-                </span>
-                {ticket.catatan}
-              </div>
-            )}
-
-            <div className="mt-4 flex items-center gap-2 flex-wrap">
-              <span
-                className={`text-xs px-3 py-1 rounded-full font-bold border ${
-                  isPending
-                    ? "bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-800"
-                    : isPayment
-                    ? "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800"
-                    : "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800"
-                }`}
-              >
-                {ticket.status}
-              </span>
-              <p className="text-[10px] text-text-muted font-mono uppercase tracking-wider">
-                #{ticket.id.slice(-6)}
-              </p>
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 w-full md:w-auto">
-            {/* Admin Validation Actions */}
+          {/* Notes */}
+          {ticket.catatan && (
+            <div className="bg-bg-canvas/50 dark:bg-black/20 p-3 rounded-xl border border-black/5 dark:border-white/5 text-sm">
+              <div className="flex items-start gap-2">
+                <InformationCircleIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                <p className="text-text-secondary italic">"{ticket.catatan}"</p>
+              </div>
+            </div>
+          )}
+
+          {/* Universal Footer: ID & QR */}
+          <div className="flex items-center justify-between pt-2">
+            <span className="font-mono text-[10px] text-text-muted opacity-60">
+              ID: {ticket.id.slice(0, 8)}...
+            </span>
+            <button
+              onClick={() => setIsQrModalOpen(true)}
+              className="p-2 rounded-xl text-text-muted hover:text-text-main hover:bg-bg-subtle transition-colors"
+              title="Show QR"
+            >
+              <QrCodeIcon className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* ACTION BUTTON GRID */}
+          <div className="grid grid-cols-2 gap-2 mt-2 pt-4 border-t border-border-subtle/50">
+            {/* Pending State for Admin */}
             {isAdmin && isPending && (
-              <div className="flex gap-2">
+              <>
                 <button
                   onClick={() =>
                     handleStatusUpdate(
                       TICKET_STATUS.WAITING,
-                      "Validasi Admin: Diterima. Masuk Antrian."
+                      "Validasi: Diterima"
                     )
                   }
-                  className="flex-1 md:flex-none px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md shadow-blue-200 dark:shadow-none"
+                  className="col-span-1 btn-primary py-2 text-xs flex items-center justify-center gap-2"
                 >
-                  Terima
+                  <CheckBadgeIcon className="w-4 h-4" /> Terima
                 </button>
                 <button
                   onClick={() =>
                     openCancelModal(
                       TICKET_STATUS.CANCELLED,
-                      "Validasi Admin: Ditolak."
+                      "Validasi: Ditolak"
                     )
                   }
-                  className="flex-1 md:flex-none px-4 py-2 bg-white dark:bg-bg-subtle text-rose-600 border border-rose-100 dark:border-rose-900/30 text-sm font-bold rounded-xl hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all"
+                  className="col-span-1 px-3 py-2 rounded-xl bg-bg-subtle hover:bg-red-50 text-text-secondary hover:text-red-600 font-bold text-xs transition-colors flex items-center justify-center gap-2"
                 >
-                  Tolak
+                  <XMarkIcon className="w-4 h-4" /> Tolak
                 </button>
-              </div>
+              </>
             )}
 
-            {/* Admin Payment Actions */}
+            {/* Payment State for Admin */}
             {isAdmin && isPayment && (
               <button
                 onClick={() =>
                   handleStatusUpdate(
                     TICKET_STATUS.COMPLETED,
-                    "Pembayaran diterima. Tiket selesai."
+                    "Pembayaran Lunas"
                   )
                 }
-                className="w-full md:w-auto px-6 py-2 bg-purple-600 text-white text-sm font-bold rounded-xl hover:bg-purple-700 transition-all shadow-lg shadow-purple-200 dark:shadow-none"
+                className="col-span-2 btn-primary py-2.5 text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-200 dark:shadow-none"
+                style={{ background: "var(--color-primary)" }} // Override for stronger look
               >
-                Konfirmasi Bayar
+                <BanknotesIcon className="w-4 h-4" />
+                Konfirmasi Pembayaran
               </button>
             )}
 
-            {/* Admin Edit/Delete Actions */}
-            {isAdmin &&
+            {/* Active State Actions */}
+            {((isAdmin &&
               (ticket.status === TICKET_STATUS.WAITING ||
-                ticket.status === TICKET_STATUS.ACTIVE) && (
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => onEdit(ticket)}
-                    className="flex-1 md:flex-none px-4 py-2 bg-amber-100 text-amber-700 text-sm font-bold rounded-xl hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:hover:bg-amber-900/50 transition-all"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() =>
-                      openCancelModal(
-                        TICKET_STATUS.CANCELLED,
-                        "Tiket dibatalkan oleh Admin."
-                      )
-                    }
-                    className="flex-1 md:flex-none px-4 py-2 bg-rose-100 text-rose-700 text-sm font-bold rounded-xl hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-300 dark:hover:bg-rose-900/50 transition-all"
-                  >
-                    Batalkan
-                  </button>
-                </div>
-              )}
-
-            {/* PIC Actions */}
-            {canPicAct &&
-              (ticket.status === TICKET_STATUS.WAITING ||
-                ticket.status === TICKET_STATUS.ACTIVE) && (
-                <div className="flex gap-2">
+                ticket.status === TICKET_STATUS.ACTIVE)) ||
+              (canPicAct &&
+                (ticket.status === TICKET_STATUS.WAITING ||
+                  ticket.status === TICKET_STATUS.ACTIVE))) && (
+              <>
+                {/* Main Action: PIC Selesai / Admin Edit */}
+                {canPicAct ? (
                   <button
                     onClick={() =>
                       handleStatusUpdate(
                         TICKET_STATUS.PAYMENT,
-                        `Layanan selesai. Menunggu pembayaran.`
+                        "Pekerjaan Selesai"
                       )
                     }
-                    className="flex-1 md:flex-none px-6 py-2 bg-emerald-500 text-white text-sm font-bold rounded-xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-200 dark:shadow-none"
+                    className="col-span-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-200 dark:shadow-none transition-all"
                   >
-                    Selesai
+                    <CheckBadgeIcon className="w-4 h-4" /> Selesai
                   </button>
+                ) : (
                   <button
-                    onClick={() =>
-                      openCancelModal(
-                        TICKET_STATUS.CANCELLED,
-                        "Tiket dibatalkan oleh PIC."
-                      )
-                    }
-                    className="flex-1 md:flex-none px-4 py-2 bg-rose-100 text-rose-700 text-sm font-bold rounded-xl hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-300 dark:hover:bg-rose-900/50 transition-all"
+                    onClick={() => onEdit(ticket)}
+                    className="col-span-1 bg-amber-100 hover:bg-amber-200 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2 transition-all"
                   >
-                    Batalkan
+                    <PencilSquareIcon className="w-4 h-4" /> Edit
                   </button>
-                </div>
-              )}
-          </div>
-        </div>
+                )}
 
-        {/* QR Button Footer */}
-        <div className="mt-6 pt-4 border-t border-border-subtle flex justify-end">
-          <button
-            onClick={() => setIsQrModalOpen(true)}
-            className="flex items-center gap-2 text-text-muted hover:text-text-main transition-colors font-bold text-sm bg-bg-subtle hover:bg-bg-muted px-4 py-2 rounded-xl"
-          >
-            <QrCodeIcon className="w-5 h-5" /> Show QR
-          </button>
+                {/* Secondary Action: Cancel */}
+                <button
+                  onClick={() =>
+                    openCancelModal(
+                      TICKET_STATUS.CANCELLED,
+                      isAdmin ? "Dibatalkan Admin" : "Dibatalkan PIC"
+                    )
+                  }
+                  className="col-span-1 px-3 py-2 rounded-xl bg-bg-subtle hover:bg-rose-50 text-text-secondary hover:text-rose-600 font-bold text-xs transition-colors flex items-center justify-center gap-2"
+                >
+                  <XMarkIcon className="w-4 h-4" /> Batal
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -274,11 +301,11 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
 
       {isQrModalOpen &&
         createPortal(
-          <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-            <div className="bg-bg-surface rounded-3xl p-8 max-w-sm w-full shadow-2xl relative animate-scale-in text-center">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+            <div className="bg-bg-surface rounded-4xl p-8 max-w-sm w-full shadow-2xl relative animate-scale-in text-center border border-white/10">
               <button
                 onClick={() => setIsQrModalOpen(false)}
-                className="absolute top-4 right-4 w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors font-bold text-xl"
+                className="absolute top-4 right-4 w-10 h-10 bg-bg-subtle rounded-full flex items-center justify-center text-text-muted hover:bg-red-50 hover:text-red-500 transition-colors font-bold text-xl"
               >
                 ×
               </button>
@@ -286,23 +313,22 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
               <h3 className="text-2xl font-black text-text-main mb-2">
                 Scan QR Code
               </h3>
-              <p className="text-text-muted mb-6">
-                Pantau status tiket ini secara real-time.
+              <p className="text-text-muted mb-6 text-sm">
+                Arahkan kamera ke QR code ini untuk memantau status.
               </p>
 
-              <div className="bg-white p-4 rounded-2xl border-2 border-gray-100 inline-block mb-6 shadow-none">
+              <div className="bg-white p-4 rounded-3xl border-2 border-gray-100 dark:border-gray-800 inline-block mb-6 shadow-sm">
                 <QRCode
                   value={`${window.location.origin}/monitor/${ticket.id}`}
-                  size={200}
-                  viewBox={`0 0 256 256`}
+                  size={180}
                 />
               </div>
 
-              <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 text-left">
-                <p className="text-xs text-blue-600 font-bold uppercase mb-1">
-                  Link Monitor:
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl border border-blue-100 dark:border-blue-800/50 text-left">
+                <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase mb-1 tracking-wider">
+                  Direct Link
                 </p>
-                <p className="text-sm text-gray-700 font-mono break-all leading-tight">
+                <p className="text-xs text-text-secondary font-mono break-all leading-relaxed opacity-80">
                   {`${window.location.origin}/monitor/${ticket.id}`}
                 </p>
               </div>
