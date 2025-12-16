@@ -38,7 +38,7 @@ export default function UserManagement() {
       const data = await getUsers();
       setUsers(data);
     } catch {
-      toast.error("Gagal mengambil data user");
+      toast.error("Gagal mengambil data pengguna");
     } finally {
       setLoading(false);
     }
@@ -83,7 +83,7 @@ export default function UserManagement() {
           name: formData.name,
           role: formData.role,
         });
-        toast.success("Data user diperbarui!");
+        toast.success("Data pengguna diperbarui!");
       } else {
         await registerUser(
           formData.email,
@@ -91,7 +91,7 @@ export default function UserManagement() {
           formData.name,
           formData.role
         );
-        toast.success("User berhasil dibuat!");
+        toast.success("Pengguna berhasil dibuat!");
       }
       handleCloseModal();
       fetchUsers(); // Refresh list
@@ -121,7 +121,7 @@ export default function UserManagement() {
   const handleDelete = async (uid) => {
     if (
       !window.confirm(
-        "Apakah Anda yakin ingin menghapus akses user ini? (User Auth tidak terhapus)"
+        "Apakah Anda yakin ingin menghapus akses pengguna ini? (User Auth tidak terhapus)"
       )
     )
       return;
@@ -129,9 +129,9 @@ export default function UserManagement() {
     try {
       await deleteUser(uid);
       setUsers(users.filter((u) => u.id !== uid));
-      toast.success("Data user dihapus.");
+      toast.success("Data pengguna dihapus.");
     } catch {
-      toast.error("Gagal menghapus user");
+      toast.error("Gagal menghapus pengguna");
     }
   };
 
@@ -188,7 +188,7 @@ export default function UserManagement() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-text-main">
-              Manajemen User
+              Manajemen Pengguna
             </h1>
             <p className="text-text-muted mt-1">
               Kelola akun akses aplikasi (Admin, PIC, Kiosk)
@@ -198,17 +198,17 @@ export default function UserManagement() {
             onClick={() => setIsModalOpen(true)}
             className="btn-primary w-full md:w-auto flex items-center justify-center gap-2 hover:scale-105"
           >
-            <PlusIcon className="w-6 h-6" /> Tambah User
+            <PlusIcon className="w-6 h-6" /> Tambah Pengguna
           </button>
         </div>
 
         {/* Mobile View (Cards) */}
         <div className="grid grid-cols-1 gap-4 md:hidden">
           {loading ? (
-            <div className="text-center py-8 text-slate-400">Loading...</div>
+            <div className="text-center py-8 text-slate-400">Memuat...</div>
           ) : users.length === 0 ? (
             <div className="text-center py-8 text-text-muted">
-              Belum ada user.
+              Belum ada pengguna.
             </div>
           ) : (
             users.map((user) => (
@@ -284,7 +284,7 @@ export default function UserManagement() {
                       colSpan="5"
                       className="px-6 py-12 text-center text-text-muted italic animate-pulse"
                     >
-                      Loading user data...
+                      Memuat data pengguna...
                     </td>
                   </tr>
                 ) : users.length === 0 ? (
@@ -293,7 +293,7 @@ export default function UserManagement() {
                       colSpan="5"
                       className="px-6 py-12 text-center text-text-muted"
                     >
-                      Belum ada user terdaftar.
+                      Belum ada pengguna terdaftar.
                     </td>
                   </tr>
                 ) : (
@@ -326,14 +326,14 @@ export default function UserManagement() {
                           <button
                             onClick={() => handleEdit(user)}
                             className="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 dark:text-indigo-400 p-2 rounded-xl transition-all hover:scale-105 shadow-sm"
-                            title="Edit User"
+                            title="Edit Pengguna"
                           >
                             <PencilSquareIcon className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(user.id)}
                             className="bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 dark:text-rose-400 p-2 rounded-xl transition-all hover:scale-105 shadow-sm"
-                            title="Hapus User"
+                            title="Hapus Pengguna"
                           >
                             <XMarkIcon className="w-4 h-4" />
                           </button>
@@ -358,7 +358,7 @@ export default function UserManagement() {
               {/* Header */}
               <div className="p-6 border-b border-white/10 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl sticky top-0 z-10 flex justify-between items-center">
                 <h2 className="text-2xl font-black text-text-main tracking-tight">
-                  {editingUser ? "Edit User" : "Tambah Member"}
+                  {editingUser ? "Edit Pengguna" : "Tambah Pengguna"}
                 </h2>
                 <button
                   onClick={handleCloseModal}
@@ -538,7 +538,7 @@ export default function UserManagement() {
                           <span>
                             {editingUser
                               ? "Simpan Perubahan"
-                              : "Buat Akun User"}
+                              : "Buat Akun Pengguna"}
                           </span>
                         </>
                       )}

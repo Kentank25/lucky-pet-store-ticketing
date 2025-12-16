@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { useAuth } from "./context/AuthContext";
+import { useTheme } from "./context/ThemeContext";
 import Layout from "./components/layout/Layout";
 import AdminDashboard from "./features/admin/AdminDashboard";
 import KioskDashboard from "./features/kiosk/KioskDashboard";
@@ -6,12 +8,27 @@ import PicDashboard from "./features/pic/PicDashboard";
 
 import LoginPage from "./pages/LoginPage";
 
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import QueueMonitor from "./pages/QueueMonitor";
 import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   const { role, loading } = useAuth();
+  const { theme } = useTheme();
+  const location = useLocation();
+
+  // Force Light Theme on public pages
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (location.pathname === "/kiosk" || location.pathname === "/login") {
+      root.classList.remove("dark");
+      root.classList.add("light");
+    } else {
+      // Restore user preference
+      root.classList.remove("light", "dark");
+      root.classList.add(theme);
+    }
+  }, [location.pathname, theme]);
 
   if (loading) {
     return (

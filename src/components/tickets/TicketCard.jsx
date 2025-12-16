@@ -74,9 +74,6 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
       <div
         className={`relative p-6 rounded-3xl border transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group ${cardStyles} ${className}`}
       >
-        {/* Decorative Gradient Blob */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-current opacity-[0.03] rounded-bl-4xl pointer-events-none -z-10 group-hover:scale-110 transition-transform duration-500"></div>
-
         <div className="flex flex-col gap-4">
           {/* Header: Name & Service & Source */}
           <div className="flex justify-between items-start gap-4">
@@ -149,7 +146,7 @@ export default function TicketCard({ ticket, onEdit, className = "" }) {
                     .replace(/\D/g, "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[10px] font-bold bg-green-100 text-green-700 px-2 rounded-md hover:bg-green-200 transition-colors ml-auto"
+                  className="text-[10px] font-bold bg-green-100 text-green-700 px-2 rounded-md hover:bg-green-200 transition-colors"
                 >
                   WA
                 </a>

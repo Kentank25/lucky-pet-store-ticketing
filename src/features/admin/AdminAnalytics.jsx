@@ -206,7 +206,7 @@ const AdminAnalytics = () => {
       <div className="flex flex-col items-center justify-center h-96 gap-4">
         <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
         <p className="text-text-muted font-bold animate-pulse">
-          Memuat Data Analytics...
+          Memuat Data Analitik...
         </p>
       </div>
     );
@@ -453,7 +453,7 @@ const AdminAnalytics = () => {
             <span className="p-2 bg-indigo-500/10 rounded-xl text-indigo-600 dark:text-indigo-400">
               <ChartChartIcon className="w-8 h-8" />
             </span>
-            Dashboard Analytics
+            Dashboard Analitik
           </h1>
           <p className="text-text-muted font-medium mt-2 text-lg max-w-2xl">
             Ringkasan performa & statistik operasional secara real-time.
@@ -570,7 +570,7 @@ const AdminAnalytics = () => {
               Sebaran Layanan
             </h3>
             <p className="text-sm text-text-muted mt-1 font-medium">
-              Ratio Grooming vs Klinik
+              Rasio Grooming vs Klinik
             </p>
           </div>
 
@@ -599,7 +599,7 @@ const AdminAnalytics = () => {
                     Grooming
                   </span>
                   <span className="text-xs text-text-muted">
-                    {groomingPercent}% ratio
+                    {groomingPercent}% rasio
                   </span>
                 </div>
               </div>
@@ -619,7 +619,7 @@ const AdminAnalytics = () => {
                     Klinik
                   </span>
                   <span className="text-xs text-text-muted">
-                    {klinikPercent}% ratio
+                    {klinikPercent}% rasio
                   </span>
                 </div>
               </div>

@@ -101,7 +101,7 @@ export default function LogList() {
                           hour: "2-digit",
                           minute: "2-digit",
                         })
-                      : "Just now"}
+                      : "Baru saja"}
                   </span>
                 </div>
 

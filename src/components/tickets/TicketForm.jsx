@@ -331,7 +331,7 @@ export default function TicketForm({
             <label htmlFor="express" className="cursor-pointer select-none">
               <span className="font-bold text-text-main text-sm flex items-center gap-2">
                 <ExclamationTriangleIcon className="w-5 h-5 text-red-500" />{" "}
-                Emergency Ticket (Langsung Aktif)
+                Tiket Darurat (Langsung Aktif)
               </span>
               <span className="block text-xs text-text-muted">
                 Lewati proses validasi (untuk kondisi darurat).
@@ -416,7 +416,7 @@ export default function TicketForm({
               </div>
 
               <p className="text-xs text-text-muted mb-8 max-w-[200px] mx-auto">
-                Scan QR Code ini untuk memantau status antrian Anda secara
+                Pindai Kode QR ini untuk memantau status antrian Anda secara
                 real-time.
               </p>
 

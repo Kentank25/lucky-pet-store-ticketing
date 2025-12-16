@@ -17,7 +17,7 @@ export default function Layout({ children }) {
               />
             </div>
             <div className="flex flex-col justify-center">
-              <h1 className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-bg-surface-inverted to-text-secondary dark:from-white dark:to-slate-400 hidden sm:block tracking-tight leading-none">
+              <h1 className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300 hidden sm:block tracking-tight leading-none">
                 LuckyPetStore
                 <span className="text-primary ml-1.5">Manager</span>
               </h1>

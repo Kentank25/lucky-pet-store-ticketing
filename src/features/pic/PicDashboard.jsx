@@ -103,226 +103,226 @@ export default function PicDashboard() {
     }
   };
 
+  const ThemeIcon = isGrooming ? ScissorsIcon : HeartIcon;
+
   return (
-    <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-8 animate-fade-in pb-24">
-      {/* Hero Header Section */}
+    <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-8 animate-fade-in pb-24 font-sans">
+      {/* HEADER SECTION */}
       <div
-        className={`relative rounded-[2rem] md:rounded-[3rem] p-6 md:p-12 overflow-hidden shadow-2xl transition-all duration-500 ${
+        className={`relative rounded-[2.5rem] p-8 md:p-12 overflow-hidden shadow-2xl transition-all duration-500 glow-secondary group ${
           isGrooming
-            ? "bg-linear-to-br from-blue-600 via-indigo-600 to-purple-700 shadow-blue-200 dark:shadow-none"
-            : "bg-linear-to-br from-rose-500 via-pink-600 to-orange-500 shadow-rose-200 dark:shadow-none"
+            ? "bg-linear-to-br from-indigo-700 via-indigo-800 to-violet-900 shadow-indigo-900/20"
+            : "bg-linear-to-br from-rose-600 via-rose-700 to-pink-800 shadow-rose-500/20"
         }`}
       >
-        {/* Abstract Background Shapes */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-white opacity-10 rounded-full blur-3xl mix-blend-overlay animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-white opacity-10 rounded-full blur-3xl mix-blend-overlay"></div>
+        {/* Dynamic Abstract Shapes */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-[0.05] rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-white opacity-[0.05] rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
 
-        {/* Theme Toggle */}
-        <div className="absolute top-6 right-6 z-20">
-          <ThemeToggle className="bg-white/20! hover:bg-white/30! text-white! border-none shadow-lg backdrop-blur-md" />
-        </div>
-
-        <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <span className="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-xs md:text-sm font-bold tracking-wider uppercase border border-white/10 shadow-lg">
-                Dashboard PIC
-              </span>
-              <span className="text-2xl">
-                {isGrooming ? (
-                  <ScissorsIcon className="w-6 h-6 md:w-8 md:h-8" />
-                ) : (
-                  <HeartIcon className="w-6 h-6 md:w-8 md:h-8" />
-                )}
-              </span>
+        {/* Header Content */}
+        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="glass-panel px-4 py-1.5 rounded-full bg-white/10 border-white/20 text-white text-xs font-bold uppercase tracking-wider shadow-sm backdrop-blur-md">
+                PIC Dashboard
+              </div>
             </div>
-            <h1 className="text-3xl md:text-4xl lg:text-6xl font-black text-white tracking-tight mb-3 drop-shadow-sm">
-              {service} Area
-            </h1>
-            <p className="text-white/90 text-sm md:text-lg font-medium max-w-md leading-relaxed">
-              Selamat bekerja! Kelola antrian pelanggan dengan senyuman.
-            </p>
+            <div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-none drop-shadow-sm flex items-center gap-4">
+                <span>Area {service}</span>
+                <ThemeIcon className="w-10 h-10 md:w-14 md:h-14 opacity-90" />
+              </h1>
+              <p className="text-white text-lg mt-3 font-medium max-w-xl leading-relaxed">
+                Kelola antrian dengan efisien dan berikan pelayanan terbaik.
+              </p>
+            </div>
           </div>
 
-          {/* Stats Cards */}
-          <div className="flex gap-4 w-full lg:w-auto overflow-x-auto no-scrollbar pb-2">
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 md:p-5 rounded-2xl md:rounded-3xl flex flex-col items-center flex-1 min-w-[100px] md:min-w-[120px] shadow-xl hover:bg-white/20 transition-all cursor-default group">
-              <span className="text-2xl md:text-4xl font-black text-white mb-1 group-hover:scale-110 transition-transform">
+          <div className="flex gap-4">
+            <div className="glass-panel p-5 bg-white/10 border-white/10 rounded-3xl flex flex-col items-center justify-center min-w-[110px] backdrop-blur-md shadow-lg">
+              <span className="text-4xl font-black text-white">
                 {completedCount}
               </span>
-              <span className="text-[10px] md:text-xs font-bold text-white/70 uppercase tracking-widest">
+              <span className="text-[10px] font-bold text-white uppercase tracking-widest mt-1">
                 Selesai
               </span>
             </div>
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 md:p-5 rounded-2xl md:rounded-3xl flex flex-col items-center flex-1 min-w-[100px] md:min-w-[120px] shadow-xl hover:bg-white/20 transition-all cursor-default group">
-              <span className="text-2xl md:text-4xl font-black text-white mb-1 group-hover:scale-110 transition-transform">
+            <div className="glass-panel p-5 bg-white/10 border-white/10 rounded-3xl flex flex-col items-center justify-center min-w-[110px] backdrop-blur-md shadow-lg">
+              <span className="text-4xl font-black text-white">
                 {waitingTickets.length}
               </span>
-              <span className="text-[10px] md:text-xs font-bold text-white/70 uppercase tracking-widest">
-                Antrian
+              <span className="text-[10px] font-bold text-white uppercase tracking-widest mt-1">
+                Menunggu
               </span>
             </div>
           </div>
         </div>
+
+        <div className="absolute top-6 right-6">
+          <ThemeToggle className="bg-white/10 hover:bg-white/20 border-white/10 text-white" />
+        </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="grid gap-8">
-        {/* ACTIVE TICKET SECTION */}
-        {activeTickets.length > 0 && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 px-2">
-              <div className="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></div>
-              <h3 className="text-xl font-bold text-text-muted">
-                Sedang Dikerjakan
-              </h3>
-            </div>
-
-            {activeTickets.map((ticket) => (
-              <div
-                key={ticket.id}
-                className="group glass-panel rounded-4xl p-8 md:p-10 relative overflow-hidden transition-all hover:shadow-2xl hover:-translate-y-1"
-              >
-                {/* Decorative Side Bar */}
-                <div
-                  className={`absolute left-0 top-0 bottom-0 w-3 ${
-                    isGrooming ? "bg-blue-500" : "bg-rose-500"
-                  }`}
-                ></div>
-
-                <div className="relative z-10 flex flex-col lg:flex-row gap-8 lg:gap-12">
-                  {/* Left: Info */}
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-6">
-                      <span
-                        className={`inline-block px-5 py-2 rounded-2xl text-sm font-bold mb-4 ${
-                          isGrooming
-                            ? "bg-blue-50 text-blue-600"
-                            : "bg-rose-50 text-rose-600"
-                        }`}
-                      >
-                        {ticket.layanan}
-                      </span>
-                      <div className="text-right">
-                        <div className="text-xs text-text-muted font-bold uppercase tracking-wider mb-1">
-                          Waktu Masuk
-                        </div>
-                        <div className="text-2xl font-black text-text-main font-mono">
-                          {ticket.jam || "-"}
-                        </div>
-                      </div>
-                    </div>
-
-                    <h2 className="text-5xl font-black text-text-main mb-2 tracking-tight">
-                      {ticket.nama}
-                    </h2>
-                    <p className="text-text-muted font-medium text-lg mb-8">
-                      ID: #{ticket.id.slice(-6)}
-                    </p>
-
-                    {ticket.catatan && (
-                      <div className="bg-bg-subtle p-6 rounded-3xl border border-border-subtle relative">
-                        <ChatBubbleLeftRightIcon className="absolute -top-3 -left-2 text-4xl opacity-20 w-8 h-8 text-text-muted" />
-                        <p className="text-text-secondary text-lg italic relative z-10 pl-4">
-                          {ticket.catatan}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Right: Action */}
-                  <div className="lg:w-1/3 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-border-subtle pt-8 lg:pt-0 lg:pl-12">
-                    <div className="mb-6 text-center lg:text-left">
-                      <p className="text-text-muted mb-2">Status Pengerjaan</p>
-                      <div className="h-2 w-full bg-bg-subtle rounded-full overflow-hidden">
-                        <div className="h-full bg-emerald-500 w-2/3 animate-pulse rounded-full"></div>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => handleCompleteTicket(ticket)}
-                      disabled={processingId === ticket.id}
-                      className="w-full py-5 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white rounded-2xl font-bold text-lg shadow-lg shadow-emerald-200 dark:shadow-none transition-all flex items-center justify-center gap-3 group-hover:shadow-emerald-300 disabled:opacity-70 disabled:cursor-not-allowed"
-                    >
-                      {processingId === ticket.id ? (
-                        <>
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          <span>Memproses...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Selesaikan Layanan</span>
-                          <CheckIcon className="h-6 w-6" />
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* TAKE TICKET SECTION */}
-        {activeTickets.length === 0 && waitingTickets.length > 0 && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 px-2">
-              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-              <h3 className="text-xl font-bold text-text-muted">
-                Menunggu Tindakan
-              </h3>
-            </div>
-
-            <div className="bg-bg-surface rounded-[2.5rem] shadow-xl shadow-gray-200/50 dark:shadow-none border border-border-subtle p-10 text-center relative overflow-hidden group">
-              <div
-                className={`absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-500 ${
-                  isGrooming ? "bg-blue-600" : "bg-rose-600"
+      {/* ACTIVE TICKET AREA */}
+      {activeTickets.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 px-1">
+            <div className="relative flex h-3 w-3">
+              <span
+                className={`absolute inline-flex h-full w-full rounded-full opacity-30 ${
+                  isGrooming ? "bg-indigo-400" : "bg-rose-400"
                 }`}
-              ></div>
+              ></span>
+              <span
+                className={`relative inline-flex rounded-full h-3 w-3 ${
+                  isGrooming ? "bg-indigo-500" : "bg-rose-500"
+                }`}
+              ></span>
+            </div>
+            <h2 className="text-lg font-bold text-text-secondary uppercase tracking-widest">
+              Sedang Diproses
+            </h2>
+          </div>
 
-              <div className="relative z-10 max-w-2xl mx-auto">
-                <div className="flex justify-center mb-6">
-                  <TicketIcon className="text-7xl animate-bounce text-text-main w-20 h-20" />
+          {activeTickets.map((ticket) => (
+            <div
+              key={ticket.id}
+              className="glass-panel p-8 md:p-10 rounded-[2.5rem] relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border-t-4 border-t-transparent hover:border-t-emerald-400"
+            >
+              <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 relative z-10">
+                <div className="flex-1 space-y-6">
+                  <div className="flex justify-between items-start">
+                    <span
+                      className={`px-4 py-1.5 rounded-xl text-xs font-black uppercase tracking-widest ${
+                        isGrooming
+                          ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
+                          : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"
+                      }`}
+                    >
+                      {ticket.layanan}
+                    </span>
+                    <div className="text-right">
+                      <p className="text-[10px] text-text-muted font-bold uppercase tracking-wider">
+                        Waktu Mulai
+                      </p>
+                      <p className="text-2xl font-black text-text-main font-mono">
+                        {ticket.jam || "--:--"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-4xl md:text-5xl font-black text-text-main tracking-tight leading-none mb-2">
+                      {ticket.nama}
+                    </h3>
+                    <p className="text-text-muted font-mono text-sm opacity-60">
+                      ID: {ticket.id}
+                    </p>
+                  </div>
+
+                  {ticket.catatan && (
+                    <div className="bg-bg-subtle/50 p-6 rounded-3xl border border-border-subtle flex gap-4 items-start">
+                      <ChatBubbleLeftRightIcon className="w-6 h-6 text-text-muted shrink-0 mt-1" />
+                      <p className="text-text-secondary italic leading-relaxed">
+                        "{ticket.catatan}"
+                      </p>
+                    </div>
+                  )}
                 </div>
-                <h3 className="text-3xl font-black text-text-main mb-3">
-                  Antrian Tersedia
-                </h3>
-                <p className="text-text-muted text-lg mb-10">
-                  Pelanggan{" "}
-                  <span className="font-bold text-text-main">
-                    {waitingTickets[0].nama}
-                  </span>{" "}
-                  sedang menunggu layanan Anda.
-                </p>
 
-                <button
-                  onClick={handleTakeTicket}
-                  className={`mx-auto px-10 py-5 rounded-2xl text-white font-bold text-xl shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-4 ${
-                    isGrooming
-                      ? "bg-blue-600 shadow-blue-200 dark:shadow-none hover:bg-blue-700"
-                      : "bg-rose-600 shadow-rose-200 dark:shadow-none hover:bg-rose-700"
-                  }`}
-                >
-                  <span>Panggil & Ambil Antrian</span>
-                  <ArrowRightIcon className="h-6 w-6" />
-                </button>
+                <div className="lg:w-80 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-border-subtle pt-8 lg:pt-0 lg:pl-10">
+                  <button
+                    onClick={() => handleCompleteTicket(ticket)}
+                    disabled={processingId === ticket.id}
+                    className="w-full py-5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed group-hover:scale-105"
+                  >
+                    {processingId === ticket.id ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>Memproses...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckIcon className="w-6 h-6 stroke-[3px]" />
+                        <span>Selesaikan</span>
+                      </>
+                    )}
+                  </button>
+                  <p className="text-center text-xs text-text-muted mt-4 font-medium">
+                    Klik jika layanan sudah selesai
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          ))}
+        </div>
+      )}
 
-        {/* EMPTY STATE */}
-        {activeTickets.length === 0 && waitingTickets.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 bg-bg-surface/50 backdrop-blur-sm rounded-[3rem] border-2 border-dashed border-border-subtle">
-            <div className="w-24 h-24 bg-bg-subtle rounded-full flex items-center justify-center text-4xl mb-6 animate-pulse">
-              <SparklesIcon className="text-text-muted w-12 h-12" />
-            </div>
-            <h3 className="text-2xl font-bold text-text-muted mb-2">
-              Tidak ada antrian
-            </h3>
-            <p className="text-text-muted">Silakan istirahat sejenak.</p>
+      {/* WAITING LIST SECTION */}
+      {activeTickets.length === 0 && waitingTickets.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 px-1">
+            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+            <h2 className="text-lg font-bold text-text-secondary uppercase tracking-widest">
+              Antrian Berikutnya
+            </h2>
           </div>
-        )}
-      </div>
+
+          <div className="group bg-bg-surface rounded-[2.5rem] p-10 md:p-14 text-center border border-border-subtle shadow-2xl relative overflow-hidden">
+            <div
+              className={`absolute inset-0 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500 ${
+                isGrooming ? "bg-indigo-600" : "bg-rose-600"
+              }`}
+            ></div>
+
+            <div className="relative z-10 max-w-2xl mx-auto space-y-8">
+              <div className="inline-flex p-6 rounded-full bg-bg-subtle mb-4 group-hover:scale-110 transition-transform duration-500">
+                <TicketIcon className="w-16 h-16 text-text-main opacity-80" />
+              </div>
+
+              <div>
+                <h3 className="text-3xl md:text-4xl font-black text-text-main mb-2">
+                  Siap untuk pelanggan berikutnya?
+                </h3>
+                <p className="text-xl text-text-secondary">
+                  <strong className="text-text-main underline decoration-2 decoration-border-main underline-offset-4">
+                    {waitingTickets[0].nama}
+                  </strong>{" "}
+                  sedang menunggu.
+                </p>
+              </div>
+
+              <button
+                onClick={handleTakeTicket}
+                disabled={!!processingId}
+                className={`w-full md:w-auto px-12 py-5 rounded-2xl text-white font-bold text-xl shadow-xl hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3 mx-auto ${
+                  isGrooming
+                    ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/30"
+                    : "bg-rose-600 hover:bg-rose-700 shadow-rose-500/30"
+                }`}
+              >
+                <span>Panggil & Mulai</span>
+                <ArrowRightIcon className="w-6 h-6 stroke-[3px]" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* EMPTY STATE */}
+      {activeTickets.length === 0 && waitingTickets.length === 0 && (
+        <div className="py-24 text-center glass-panel rounded-[3rem] border-dashed border-2 border-border-subtle/50">
+          <div className="w-24 h-24 bg-bg-subtle rounded-full flex items-center justify-center mx-auto mb-6">
+            <SparklesIcon className="w-10 h-10 text-text-muted" />
+          </div>
+          <h3 className="text-2xl font-bold text-text-main mb-2">
+            Semua Beres!
+          </h3>
+          <p className="text-text-secondary max-w-xs mx-auto">
+            Tidak ada antrian saat ini. Silakan beristirahat.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

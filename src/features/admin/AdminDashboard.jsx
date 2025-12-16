@@ -134,8 +134,8 @@ export default function AdminDashboard() {
     <div className="p-1.5 bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl rounded-2xl border border-white/20 dark:border-white/5 shadow-2xl flex items-center gap-1">
       {[
         { id: "dashboard", label: "Dashboard", icon: HomeIcon },
-        { id: "analytics", label: "Analytics", icon: ChartBarIcon },
-        { id: "users", label: "Users", icon: UserGroupIcon },
+        { id: "analytics", label: "Analitik", icon: ChartBarIcon },
+        { id: "users", label: "Pengguna", icon: UserGroupIcon },
       ].map((tab) => (
         <button
           key={tab.id}
