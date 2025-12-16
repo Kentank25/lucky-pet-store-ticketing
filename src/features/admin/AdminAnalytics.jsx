@@ -69,14 +69,10 @@ const AdminAnalytics = () => {
       const monday = new Date(date);
       monday.setDate(diff);
 
-      const days = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"]; // Helper for labels if needed but we use toLocaleDateString
-
       for (let i = 0; i < 7; i++) {
         const current = new Date(monday);
         current.setDate(monday.getDate() + i);
 
-        // Key format must match ticket data or how we parse it.
-        // TicketService returns raw data. We need to match dates.
         const year = current.getFullYear();
         const month = String(current.getMonth() + 1).padStart(2, "0");
         const d = String(current.getDate()).padStart(2, "0");
@@ -84,13 +80,12 @@ const AdminAnalytics = () => {
 
         const label = current.toLocaleDateString("id-ID", {
           weekday: "short",
-          day: "numeric", // e.g. "Sen 15"
+          day: "numeric",
         });
         slots.push({ key, label, completed: 0, cancelled: 0, total: 0 });
       }
       return slots;
     } else if (type === "month") {
-      // Monthly view: 1 - 31
       const year = date.getFullYear();
       const month = date.getMonth();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -104,7 +99,6 @@ const AdminAnalytics = () => {
       }
       return slots;
     } else {
-      // year
       const year = date.getFullYear();
       const monthNames = [
         "Jan",
@@ -122,7 +116,6 @@ const AdminAnalytics = () => {
       ];
 
       for (let i = 0; i < 12; i++) {
-        // Key is just YYYY-MM
         const m = String(i + 1).padStart(2, "0");
         const key = `${year}-${m}`;
         const label = monthNames[i];

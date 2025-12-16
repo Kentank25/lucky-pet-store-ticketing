@@ -2,11 +2,11 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 const ThemeContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
-    // Check local storage or system preference
     if (typeof window !== "undefined") {
       const savedTheme = localStorage.getItem("theme");
       if (savedTheme) {

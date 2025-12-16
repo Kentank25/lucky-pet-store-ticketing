@@ -178,7 +178,7 @@ export default function QueueMonitor() {
                   Layanan
                 </p>
                 <div className="flex items-center gap-2 text-text-secondary font-bold">
-                  {isGrooming ? <ScissorsIcon /> : <HeartIcon />}
+                  {isGrooming}
                   {ticket.layanan}
                 </div>
               </div>
