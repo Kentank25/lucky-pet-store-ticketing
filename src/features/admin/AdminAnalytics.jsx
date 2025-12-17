@@ -205,7 +205,7 @@ const AdminAnalytics = () => {
     return (
       <div className="flex flex-col items-center justify-center h-96 gap-4">
         <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-        <p className="text-text-muted font-bold animate-pulse">
+        <p className="text-slate-500 dark:text-slate-400 font-bold animate-pulse">
           Memuat Data Analitik...
         </p>
       </div>
@@ -455,7 +455,7 @@ const AdminAnalytics = () => {
             </span>
             Dashboard Analitik
           </h1>
-          <p className="text-text-muted font-medium mt-2 text-lg max-w-2xl">
+          <p className="text-slate-500 dark:text-slate-400 font-medium mt-2 text-lg max-w-2xl">
             Ringkasan performa & statistik operasional secara real-time.
           </p>
         </div>
@@ -472,7 +472,7 @@ const AdminAnalytics = () => {
               <option value="month">Bulanan</option>
               <option value="year">Tahunan</option>
             </select>
-            <CalendarDaysIcon className="w-5 h-5 text-text-muted absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none group-hover:text-indigo-500 transition-colors" />
+            <CalendarDaysIcon className="w-5 h-5 text-slate-500 dark:text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none group-hover:text-indigo-500 transition-colors" />
           </div>
 
           <div className="h-8 w-px bg-border-subtle mx-1 hidden sm:block"></div>
@@ -500,7 +500,7 @@ const AdminAnalytics = () => {
 
             <div className="flex justify-between items-start relative z-10">
               <div>
-                <p className="text-sm font-bold text-text-muted uppercase tracking-wider mb-1">
+                <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
                   {card.title}
                 </p>
                 <h3 className="text-4xl font-black text-text-main tracking-tight">
@@ -515,11 +515,11 @@ const AdminAnalytics = () => {
             </div>
             <div className="mt-4 flex items-center gap-2">
               <span
-                className={`text-xs font-bold px-2 py-1 rounded-lg bg-${card.color}-50 dark:bg-${card.color}-900/30 text-${card.color}-700 dark:text-${card.color}-300`}
+                className={`text-xs font-bold px-2 py-1 rounded-lg bg-${card.color}-100 dark:bg-${card.color}-500/30 text-${card.color}-700 dark:text-${card.color}-400`}
               >
                 +0%
               </span>
-              <p className="text-xs text-text-muted font-medium">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                 {card.subtext}
               </p>
             </div>
@@ -539,7 +539,7 @@ const AdminAnalytics = () => {
                 <ChartBarIcon className="w-5 h-5 text-indigo-500" />
                 Timeline Trafik
               </h3>
-              <p className="text-sm text-text-muted mt-1 font-medium">
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
                 Volume tiket berdasarkan{" "}
                 {filterType === "day"
                   ? "jam"
@@ -554,7 +554,7 @@ const AdminAnalytics = () => {
             {stats.chartData.length > 0 ? (
               <Bar ref={chartRef} data={barChartData} options={barOptions} />
             ) : (
-              <div className="flex h-full flex-col items-center justify-center text-text-muted opacity-50">
+              <div className="flex h-full flex-col items-center justify-center text-slate-500 dark:text-slate-400 opacity-50">
                 <ClipboardDocumentListIcon className="w-16 h-16 mb-2" />
                 <p>Belum ada data visual</p>
               </div>
@@ -569,7 +569,7 @@ const AdminAnalytics = () => {
               <PieChartIcon className="w-5 h-5 text-indigo-500" />
               Sebaran Layanan
             </h3>
-            <p className="text-sm text-text-muted mt-1 font-medium">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
               Rasio Grooming vs Klinik
             </p>
           </div>
@@ -581,7 +581,7 @@ const AdminAnalytics = () => {
               <span className="text-5xl font-black text-text-main tracking-tight drop-shadow-sm">
                 {stats.totalServices}
               </span>
-              <span className="text-xs font-bold text-text-muted uppercase tracking-widest mt-1 opacity-70">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1 opacity-70">
                 Total
               </span>
             </div>
@@ -598,7 +598,7 @@ const AdminAnalytics = () => {
                   <span className="text-sm font-bold text-text-main block">
                     Grooming
                   </span>
-                  <span className="text-xs text-text-muted">
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
                     {groomingPercent}% rasio
                   </span>
                 </div>
@@ -618,7 +618,7 @@ const AdminAnalytics = () => {
                   <span className="text-sm font-bold text-text-main block">
                     Klinik
                   </span>
-                  <span className="text-xs text-text-muted">
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
                     {klinikPercent}% rasio
                   </span>
                 </div>
