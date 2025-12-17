@@ -28,7 +28,7 @@ export default function PicDashboard() {
 
   if (loading)
     return (
-      <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-8 animate-fade-in pb-24">
+      <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-8 animate-fade-in pb-24 font-sans bg-slate-50 dark:bg-[#020617] min-h-screen transition-colors duration-500">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
           {[1, 2, 3, 4].map((i) => (
             <TicketSkeleton key={i} />
@@ -106,24 +106,27 @@ export default function PicDashboard() {
   const ThemeIcon = isGrooming ? ScissorsIcon : HeartIcon;
 
   return (
-    <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-8 animate-fade-in pb-24 font-sans">
+    <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-8 animate-fade-in pb-24 font-sans min-h-screen transition-colors duration-500">
+      {/* Background Texture */}
+      <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] pointer-events-none"></div>
+
       {/* HEADER SECTION */}
       <div
         className={`relative rounded-[2.5rem] p-8 md:p-12 overflow-hidden shadow-2xl transition-all duration-500 glow-secondary group ${
           isGrooming
-            ? "bg-linear-to-br from-indigo-700 via-indigo-800 to-violet-900 shadow-indigo-900/20"
-            : "bg-linear-to-br from-rose-600 via-rose-700 to-pink-800 shadow-rose-500/20"
+            ? "bg-linear-to-br from-blue-500 via-indigo-600 to-violet-700 dark:from-indigo-700 dark:via-indigo-800 dark:to-violet-900 shadow-indigo-500/30 dark:shadow-indigo-900/20"
+            : "bg-linear-to-br from-rose-500 via-rose-600 to-pink-700 dark:from-rose-600 dark:via-rose-700 dark:to-pink-800 shadow-rose-500/30 dark:shadow-rose-500/20"
         }`}
       >
         {/* Dynamic Abstract Shapes */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-[0.05] rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-white opacity-[0.05] rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-[0.1] rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-white opacity-[0.1] rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
 
         {/* Header Content */}
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="glass-panel px-4 py-1.5 rounded-full bg-white/10 border-white/20 text-white text-xs font-bold uppercase tracking-wider shadow-sm backdrop-blur-md">
+              <div className="glass-panel px-4 py-1.5 rounded-full bg-white/20 border-white/20 text-white text-xs font-bold uppercase tracking-wider shadow-sm backdrop-blur-md">
                 PIC Dashboard
               </div>
             </div>
@@ -132,26 +135,26 @@ export default function PicDashboard() {
                 <span>Area {service}</span>
                 <ThemeIcon className="w-10 h-10 md:w-14 md:h-14 opacity-90" />
               </h1>
-              <p className="text-white text-lg mt-3 font-medium max-w-xl leading-relaxed">
+              <p className="text-indigo-50 dark:text-indigo-100 text-lg mt-3 font-medium max-w-xl leading-relaxed opacity-90">
                 Kelola antrian dengan efisien dan berikan pelayanan terbaik.
               </p>
             </div>
           </div>
 
           <div className="flex gap-4">
-            <div className="glass-panel p-5 bg-white/10 border-white/10 rounded-3xl flex flex-col items-center justify-center min-w-[110px] backdrop-blur-md shadow-lg">
+            <div className="glass-panel p-5 bg-white/10 border-white/20 rounded-3xl flex flex-col items-center justify-center min-w-[110px] backdrop-blur-md shadow-lg hover:bg-white/20 transition-colors">
               <span className="text-4xl font-black text-white">
                 {completedCount}
               </span>
-              <span className="text-[10px] font-bold text-white uppercase tracking-widest mt-1">
+              <span className="text-[10px] font-bold text-white uppercase tracking-widest mt-1 opacity-90">
                 Selesai
               </span>
             </div>
-            <div className="glass-panel p-5 bg-white/10 border-white/10 rounded-3xl flex flex-col items-center justify-center min-w-[110px] backdrop-blur-md shadow-lg">
+            <div className="glass-panel p-5 bg-white/10 border-white/20 rounded-3xl flex flex-col items-center justify-center min-w-[110px] backdrop-blur-md shadow-lg hover:bg-white/20 transition-colors">
               <span className="text-4xl font-black text-white">
                 {waitingTickets.length}
               </span>
-              <span className="text-[10px] font-bold text-white uppercase tracking-widest mt-1">
+              <span className="text-[10px] font-bold text-white uppercase tracking-widest mt-1 opacity-90">
                 Menunggu
               </span>
             </div>
