@@ -84,8 +84,8 @@ export default function TicketCard({
     <>
       <div
         onClick={onSelect ? onSelect : undefined}
-        className={`relative p-6 rounded-3xl border transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group ${cardStyles} ${selectionStyles} ${className} ${
-          onSelect ? "cursor-pointer" : ""
+        className={`relative p-6 rounded-3xl border transition-all duration-300 group ${cardStyles} ${selectionStyles} ${className} ${
+          onSelect ? "cursor-pointer active:scale-[0.98]" : "hover-lift"
         }`}
       >
         <div className="flex gap-4 items-stretch">
@@ -251,7 +251,7 @@ export default function TicketCard({
                         "Validasi: Ditolak"
                       )
                     }
-                    className="col-span-1 px-3 py-2 rounded-xl bg-bg-subtle hover:bg-red-50 text-text-secondary hover:text-red-600 font-bold text-xs transition-colors flex items-center justify-center gap-2"
+                    className="col-span-1 px-3 py-2 rounded-xl bg-bg-subtle hover:bg-red-50 text-text-secondary hover:text-red-600 font-bold text-xs transition-all hover-lift active-press flex items-center justify-center gap-2"
                   >
                     <XMarkIcon className="w-4 h-4" /> Tolak
                   </button>
@@ -268,7 +268,7 @@ export default function TicketCard({
                     )
                   }
                   className="col-span-2 btn-primary py-2.5 text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-200 dark:shadow-none"
-                  style={{ background: "var(--color-primary)" }} // Override for stronger look
+                  style={{ background: "var(--color-primary)" }} // Override for solid brand color if preferred over gradient
                 >
                   <BanknotesIcon className="w-4 h-4" />
                   Konfirmasi Pembayaran
@@ -292,14 +292,14 @@ export default function TicketCard({
                           "Pekerjaan Selesai"
                         )
                       }
-                      className="col-span-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-200 dark:shadow-none transition-all"
+                      className="col-span-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-200 dark:shadow-none transition-all hover-lift active-press"
                     >
                       <CheckBadgeIcon className="w-4 h-4" /> Selesai
                     </button>
                   ) : (
                     <button
                       onClick={() => onEdit(ticket)}
-                      className="col-span-1 bg-amber-100 hover:bg-amber-200 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2 transition-all"
+                      className="col-span-1 bg-amber-100 hover:bg-amber-200 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2 transition-all hover-lift active-press"
                     >
                       <PencilSquareIcon className="w-4 h-4" /> Edit
                     </button>
@@ -313,7 +313,7 @@ export default function TicketCard({
                         isAdmin ? "Dibatalkan Admin" : "Dibatalkan PIC"
                       )
                     }
-                    className="col-span-1 px-3 py-2 rounded-xl bg-bg-subtle hover:bg-rose-50 text-text-secondary hover:text-rose-600 font-bold text-xs transition-colors flex items-center justify-center gap-2"
+                    className="col-span-1 px-3 py-2 rounded-xl bg-bg-subtle hover:bg-rose-50 text-text-secondary hover:text-rose-600 font-bold text-xs transition-all hover-lift active-press flex items-center justify-center gap-2"
                   >
                     <XMarkIcon className="w-4 h-4" /> Batal
                   </button>

@@ -140,7 +140,7 @@ export default function AdminDashboard() {
         <button
           key={tab.id}
           onClick={() => setActiveTab(tab.id)}
-          className={`px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all duration-300 relative overflow-hidden group ${
+          className={`px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all duration-300 relative overflow-hidden group active-press ${
             activeTab === tab.id
               ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30"
               : "text-text-secondary hover:text-text-main hover:bg-white/50 dark:hover:bg-white/5"
@@ -260,7 +260,7 @@ export default function AdminDashboard() {
                         onClick={() =>
                           handleConfirmPayments(Array.from(selectedPaymentIds))
                         }
-                        className="btn-primary py-2 px-4 shadow-lg shadow-indigo-200 dark:shadow-indigo-900/20 text-sm"
+                        className="btn-primary py-2 px-4 shadow-lg shadow-indigo-200 dark:shadow-indigo-900/20 text-sm active-press hover-lift"
                       >
                         Konfirmasi ({selectedPaymentIds.size})
                       </button>
@@ -269,7 +269,7 @@ export default function AdminDashboard() {
                       onClick={() =>
                         handleConfirmPayments(paymentTickets.map((t) => t.id))
                       }
-                      className="px-4 py-2 bg-white text-indigo-600 border border-indigo-100 dark:bg-white/5 dark:text-indigo-300 dark:border-white/10 text-sm font-bold rounded-xl hover:bg-indigo-50 dark:hover:bg-white/10 transition-all"
+                      className="px-4 py-2 bg-white text-indigo-600 border border-indigo-100 dark:bg-white/5 dark:text-indigo-300 dark:border-white/10 text-sm font-bold rounded-xl hover:bg-indigo-50 dark:hover:bg-white/10 transition-all active-press hover-lift"
                     >
                       Semua
                     </button>
