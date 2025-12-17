@@ -126,7 +126,7 @@ export default function PicDashboard() {
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="glass-panel px-4 py-1.5 rounded-full bg-white/20 border-white/20 text-white text-xs font-bold uppercase tracking-wider shadow-sm backdrop-blur-md">
+              <div className="px-4 py-1.5 rounded-full bg-white/20 border border-white/20 text-white text-xs font-bold uppercase tracking-wider shadow-sm backdrop-blur-md">
                 PIC Dashboard
               </div>
             </div>
@@ -142,7 +142,7 @@ export default function PicDashboard() {
           </div>
 
           <div className="flex gap-4">
-            <div className="glass-panel p-5 bg-white/10 border-white/20 rounded-3xl flex flex-col items-center justify-center min-w-[110px] backdrop-blur-md shadow-lg hover:bg-white/20 transition-colors">
+            <div className="p-5 bg-white/10 border border-white/20 rounded-3xl flex flex-col items-center justify-center min-w-[110px] backdrop-blur-md shadow-lg hover:bg-white/20 transition-colors">
               <span className="text-4xl font-black text-white">
                 {completedCount}
               </span>
@@ -150,7 +150,7 @@ export default function PicDashboard() {
                 Selesai
               </span>
             </div>
-            <div className="glass-panel p-5 bg-white/10 border-white/20 rounded-3xl flex flex-col items-center justify-center min-w-[110px] backdrop-blur-md shadow-lg hover:bg-white/20 transition-colors">
+            <div className="p-5 bg-white/10 border border-white/20 rounded-3xl flex flex-col items-center justify-center min-w-[110px] backdrop-blur-md shadow-lg hover:bg-white/20 transition-colors">
               <span className="text-4xl font-black text-white">
                 {waitingTickets.length}
               </span>
@@ -190,7 +190,7 @@ export default function PicDashboard() {
           {activeTickets.map((ticket) => (
             <div
               key={ticket.id}
-              className="glass-panel p-8 md:p-10 rounded-[2.5rem] relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border-t-4 border-t-transparent hover:border-t-emerald-400"
+              className="bg-bg-surface p-8 md:p-10 rounded-[2.5rem] relative overflow-hidden group shadow-xl hover:shadow-2xl transition-all duration-300 border border-border-subtle border-t-4 border-t-transparent hover:border-t-emerald-400"
             >
               <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 relative z-10">
                 <div className="flex-1 space-y-6">
