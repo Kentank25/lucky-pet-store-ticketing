@@ -15,9 +15,7 @@ export const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Initialize Auth Listener
   useEffect(() => {
-    // Safety timeout to prevent infinite loading
     const timer = setTimeout(() => {
       setLoading(false);
     }, 2000);
@@ -29,7 +27,6 @@ export const AuthProvider = ({ children }) => {
           if (userDoc.exists()) {
             const userData = userDoc.data();
             setRole(userData.role);
-            // Merge auth user with firestore data
             setUser({ ...currentUser, ...userData });
           } else {
             console.warn(

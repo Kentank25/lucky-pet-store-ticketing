@@ -17,14 +17,12 @@ function App() {
   const { theme } = useTheme();
   const location = useLocation();
 
-  // Force Light Theme on public pages
   useEffect(() => {
     const root = window.document.documentElement;
     if (location.pathname === "/kiosk" || location.pathname === "/login") {
       root.classList.remove("dark");
       root.classList.add("light");
     } else {
-      // Restore user preference
       root.classList.remove("light", "dark");
       root.classList.add(theme);
     }
@@ -33,7 +31,6 @@ function App() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-        {/* Abstract Background Shapes for Loading State */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[100px] animate-pulse-soft"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[100px] animate-pulse-soft delay-1000"></div>
 
