@@ -12,11 +12,11 @@ export const ThemeProvider = ({ children }) => {
       if (savedTheme) {
         return savedTheme;
       }
-      return window.matchMedia("(prefers-color-scheme: dark)").matches
+      return window.matchMedia("(prefers-color-scheme: light)").matches
         ? "dark"
         : "light";
     }
-    return "light";
+    return "dark";
   });
 
   useEffect(() => {
