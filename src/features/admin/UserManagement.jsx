@@ -202,7 +202,6 @@ export default function UserManagement() {
           </button>
         </div>
 
-        {/* Mobile View (Cards) */}
         <div className="grid grid-cols-1 gap-4 md:hidden">
           {loading ? (
             <div className="text-center py-8 text-slate-400">Memuat...</div>
@@ -254,10 +253,9 @@ export default function UserManagement() {
           )}
         </div>
 
-        {/* Desktop View (Table) */}
         <div className="hidden md:block glass-panel rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/5">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse ">
               <thead>
                 <tr className="border-b border-white/10 bg-white/5 dark:bg-white/5 backdrop-blur-md">
                   <th className="px-6 py-5 text-xs font-black text-text-secondary uppercase tracking-widest first:pl-8">

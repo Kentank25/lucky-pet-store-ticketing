@@ -486,14 +486,12 @@ const AdminAnalytics = () => {
         </div>
       </div>
 
-      {/* 4-Column Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {summaryCards.map((card, idx) => (
           <div
             key={idx}
             className={`glass-panel p-6 rounded-4xl border border-white/40 dark:border-white/5 shadow-xl shadow-${card.color}-900/5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group`}
           >
-            {/* Background Blob */}
             <div
               className={`absolute -right-6 -top-6 w-24 h-24 bg-${card.color}-500/10 rounded-full blur-2xl group-hover:bg-${card.color}-500/20 transition-all duration-500`}
             ></div>
@@ -530,9 +528,6 @@ const AdminAnalytics = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Chart Section */}
         <div className="lg:col-span-2 glass-panel p-8 rounded-[2.5rem] border border-white/40 dark:border-white/5 relative overflow-hidden">
-          {/* Decor */}
-          <div className="absolute top-0 right-0 w-full h-1 bg-linear-to-r from-transparent via-indigo-500/20 to-transparent"></div>
-
           <div className="mb-8 flex justify-between items-end">
             <div>
               <h3 className="text-xl font-bold text-text-main flex items-center gap-2">
