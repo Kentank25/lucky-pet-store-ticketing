@@ -5,6 +5,7 @@ import { TICKET_STATUS, SERVICE_TYPE } from "../../constants";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import CancellationModal from "../modals/CancellationModal";
+import ConfirmationModal from "../modals/ConfirmationModal";
 import QRCode from "react-qr-code";
 
 import {
@@ -30,18 +31,40 @@ export default function TicketCard({
 }) {
   const { role } = useAuth();
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: () => {},
+    isDanger: false,
+    confirmText: "Konfirmasi",
+  });
+
+  const closeConfirmModal = () => {
+    setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+  };
+
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [cancelData, setCancelData] = useState(null);
 
-  const handleStatusUpdate = async (newStatus, message) => {
-    if (!confirm("Apakah Anda yakin?")) return;
-    try {
-      await updateTicketStatus(ticket.id, newStatus, message, ticket);
-      toast.success("Status tiket diperbarui");
-    } catch (error) {
-      toast.error("Gagal memperbarui status");
-      console.error(error);
-    }
+  const handleStatusUpdate = (newStatus, message) => {
+    setConfirmModal({
+      isOpen: true,
+      title: "Update Status Tiket",
+      message: "Apakah Anda yakin ingin memperbarui status tiket ini?",
+      confirmText: "Ya, Update",
+      isDanger: false,
+      onConfirm: async () => {
+        closeConfirmModal();
+        try {
+          await updateTicketStatus(ticket.id, newStatus, message, ticket);
+          toast.success("Status tiket diperbarui");
+        } catch (error) {
+          toast.error("Gagal memperbarui status");
+          console.error(error);
+        }
+      },
+    });
   };
 
   const openCancelModal = (status, defaultMsg) => {
@@ -368,6 +391,15 @@ export default function TicketCard({
           </div>,
           document.body
         )}
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        onClose={closeConfirmModal}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText={confirmModal.confirmText}
+        isDanger={confirmModal.isDanger}
+      />
     </>
   );
 }

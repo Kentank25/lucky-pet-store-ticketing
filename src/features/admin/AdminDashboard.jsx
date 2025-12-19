@@ -8,6 +8,7 @@ import {
   ChartBarIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
+import ConfirmationModal from "../../components/modals/ConfirmationModal";
 import { createPortal } from "react-dom";
 import TicketForm from "../../components/tickets/TicketForm";
 import TicketList from "../../components/tickets/TicketList";
@@ -36,6 +37,18 @@ export default function AdminDashboard() {
     Klinik: true,
   });
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: () => {},
+    isDanger: false,
+    confirmText: "Konfirmasi",
+  });
+
+  const closeConfirmModal = () => {
+    setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+  };
 
   const pendingTickets = tickets
     .filter((t) => t.status === TICKET_STATUS.PENDING)
@@ -101,33 +114,41 @@ export default function AdminDashboard() {
     setSelectedPaymentIds(newSelected);
   };
 
-  const handleConfirmPayments = async (idsToConfirm) => {
+  const handleConfirmPayments = (idsToConfirm) => {
     if (idsToConfirm.length === 0) return;
-    if (!confirm(`Konfirmasi pembayaran untuk ${idsToConfirm.length} tiket?`))
-      return;
 
-    const toastId = toast.loading("Memproses pembayaran...");
-    try {
-      await Promise.all(
-        idsToConfirm.map((id) => {
-          const ticket = tickets.find((t) => t.id === id);
-          return updateTicketStatus(
-            id,
-            TICKET_STATUS.COMPLETED,
-            "Pembayaran diterima (Bulk Action). Tiket selesai.",
-            ticket
+    setConfirmModal({
+      isOpen: true,
+      title: "Konfirmasi Pembayaran",
+      message: `Konfirmasi pembayaran untuk ${idsToConfirm.length} tiket?`,
+      confirmText: "Ya, Konfirmasi",
+      isDanger: false,
+      onConfirm: async () => {
+        closeConfirmModal();
+        const toastId = toast.loading("Memproses pembayaran...");
+        try {
+          await Promise.all(
+            idsToConfirm.map((id) => {
+              const ticket = tickets.find((t) => t.id === id);
+              return updateTicketStatus(
+                id,
+                TICKET_STATUS.COMPLETED,
+                "Pembayaran diterima (Bulk Action). Tiket selesai.",
+                ticket
+              );
+            })
           );
-        })
-      );
-      toast.success("Pembayaran berhasil dikonfirmasi!", { id: toastId });
+          toast.success("Pembayaran berhasil dikonfirmasi!", { id: toastId });
 
-      const newSelected = new Set(selectedPaymentIds);
-      idsToConfirm.forEach((id) => newSelected.delete(id));
-      setSelectedPaymentIds(newSelected);
-    } catch (error) {
-      console.error(error);
-      toast.error("Gagal memproses beberapa pembayaran.", { id: toastId });
-    }
+          const newSelected = new Set(selectedPaymentIds);
+          idsToConfirm.forEach((id) => newSelected.delete(id));
+          setSelectedPaymentIds(newSelected);
+        } catch (error) {
+          console.error(error);
+          toast.error("Gagal memproses beberapa pembayaran.", { id: toastId });
+        }
+      },
+    });
   };
 
   const headerActions = (
@@ -317,6 +338,15 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        onClose={closeConfirmModal}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText={confirmModal.confirmText}
+        isDanger={confirmModal.isDanger}
+      />
     </div>
   );
 }

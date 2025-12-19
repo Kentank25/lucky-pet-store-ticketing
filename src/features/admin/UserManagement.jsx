@@ -13,6 +13,7 @@ import {
   XMarkIcon,
   PencilSquareIcon,
 } from "@heroicons/react/24/outline";
+import ConfirmationModal from "../../components/modals/ConfirmationModal";
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -28,6 +29,18 @@ export default function UserManagement() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: () => {},
+    isDanger: false,
+    confirmText: "Konfirmasi",
+  });
+
+  const closeConfirmModal = () => {
+    setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+  };
 
   useEffect(() => {
     fetchUsers();
@@ -118,21 +131,25 @@ export default function UserManagement() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (uid) => {
-    if (
-      !window.confirm(
-        "Apakah Anda yakin ingin menghapus akses pengguna ini? (User Auth tidak terhapus)"
-      )
-    )
-      return;
-
-    try {
-      await deleteUser(uid);
-      setUsers(users.filter((u) => u.id !== uid));
-      toast.success("Data pengguna dihapus.");
-    } catch {
-      toast.error("Gagal menghapus pengguna");
-    }
+  const handleDelete = (uid) => {
+    setConfirmModal({
+      isOpen: true,
+      title: "Hapus Pengguna",
+      message:
+        "Apakah Anda yakin ingin menghapus akses pengguna ini? (User Auth tidak terhapus)",
+      confirmText: "Hapus",
+      isDanger: true,
+      onConfirm: async () => {
+        closeConfirmModal();
+        try {
+          await deleteUser(uid);
+          setUsers(users.filter((u) => u.id !== uid));
+          toast.success("Data pengguna dihapus.");
+        } catch {
+          toast.error("Gagal menghapus pengguna");
+        }
+      },
+    });
   };
 
   const getRoleBadge = (role) => {
@@ -548,6 +565,15 @@ export default function UserManagement() {
           </div>,
           document.body
         )}
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        onClose={closeConfirmModal}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText={confirmModal.confirmText}
+        isDanger={confirmModal.isDanger}
+      />
     </>
   );
 }
