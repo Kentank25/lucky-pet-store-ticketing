@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { COLLECTION_NAME } from "../services/ticketService";
+import { useTheme } from "../context/ThemeContext";
 import { TICKET_STATUS, SERVICE_TYPE } from "../constants";
 import {
   ClockIcon,
@@ -19,6 +20,11 @@ export default function QueueMonitor() {
   const { id } = useParams();
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    setTheme("light");
+  }, [setTheme]);
 
   useEffect(() => {
     if (!id) return;
@@ -227,7 +233,7 @@ export default function QueueMonitor() {
           <div className="bg-slate-50/50 dark:bg-slate-900/20 px-8 py-6 flex justify-between items-center border-t border-white/20 dark:border-white/5 backdrop-blur-sm">
             <div className="text-left">
               <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-1">
-                Dibuat Pada
+                Jam Booking
               </p>
               <p className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1 transition-colors">
                 <ClockIcon className="w-4 h-4 text-slate-400" />
@@ -236,11 +242,11 @@ export default function QueueMonitor() {
             </div>
             <div className="text-right">
               <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-1">
-                Estimasi
+                Tanggal Booking
               </p>
               <p className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center justify-end gap-1 transition-colors">
                 <CalendarIcon className="w-4 h-4 text-slate-400" />
-                Hari Ini
+                {ticket.tanggalRilis || "-"}
               </p>
             </div>
           </div>

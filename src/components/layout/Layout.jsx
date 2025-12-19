@@ -29,8 +29,6 @@ export default function Layout({ children }) {
               )}
             </div>
           </div>
-
-          {/* Portal Target for Dashboard Actions */}
           <div
             id="header-actions"
             className="flex-1 flex justify-end px-4"
