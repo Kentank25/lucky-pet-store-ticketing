@@ -60,10 +60,8 @@ export default function UserManagement() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // Skip password validation for edit mode
     let validationResult;
     if (editingUser) {
-      // Manual simple validation for edit
       validationResult = {
         success: formData.name.length >= 2,
         error: {
@@ -106,8 +104,8 @@ export default function UserManagement() {
         );
         toast.success("Pengguna berhasil dibuat!");
       }
-      handleCloseModal();
-      fetchUsers(); // Refresh list
+
+      fetchUsers();
     } catch (error) {
       console.error(error);
       const msg =
@@ -125,7 +123,7 @@ export default function UserManagement() {
     setFormData({
       name: user.name,
       email: user.email,
-      password: "", // Password not validated in edit
+      password: "",
       role: user.role,
     });
     setIsModalOpen(true);
@@ -363,14 +361,10 @@ export default function UserManagement() {
         </div>
       </div>
 
-      {/* Modal Add User */}
       {isModalOpen &&
         createPortal(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-            {/* Modal Content */}
             <div className="bg-bg-surface rounded-4xl w-full max-w-lg shadow-2xl relative animate-scale-in flex flex-col max-h-[90vh] overflow-hidden">
-              {/* Header */}
-              {/* Header */}
               <div className="p-6 border-b border-white/10 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl sticky top-0 z-10 flex justify-between items-center">
                 <h2 className="text-2xl font-black text-text-main tracking-tight">
                   {editingUser ? "Edit Pengguna" : "Tambah Pengguna"}
@@ -383,7 +377,6 @@ export default function UserManagement() {
                 </button>
               </div>
 
-              {/* Scrollable Form Body */}
               <div className="p-6 overflow-y-auto custom-scrollbar bg-bg-canvas/50">
                 <form onSubmit={handleRegister} className="space-y-6">
                   <div>

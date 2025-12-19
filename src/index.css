@@ -4,31 +4,25 @@
 
 :root {
 
-  /* Backgrounds */
-  --color-bg-canvas: #f8fafc; /* slate-50 - Brighter Canvas */
-  --color-bg-surface: #ffffff; /* white - Crisp Surface */
-  --color-bg-subtle: #f1f5f9; /* slate-100 - Subtle offsets */
-  --color-bg-muted: #e2e8f0; /* slate-200 - Inputs/Disabled */
+  --color-bg-canvas: #f8fafc; 
+  --color-bg-surface: #ffffff; 
+  --color-bg-subtle: #f1f5f9; 
+  --color-bg-muted: #e2e8f0; 
 
-  /* Text */
-  --color-text-main: #0f172a; /* slate-900 - High Contrast */
-  --color-text-secondary: #475569; /* slate-600 - Readable Secondary */
-  --color-text-muted: #94a3b8; /* slate-400 - Muted */
-  --color-text-inverted: #ffffff; /* white */
+  --color-text-main: #0f172a; 
+  --color-text-secondary: #475569; 
+  --color-text-muted: #94a3b8; 
+  --color-text-inverted: #ffffff; 
 
-  /* Borders */
-  --color-border-subtle: #e2e8f0; /* slate-200 */
-  --color-border-main: #cbd5e1; /* slate-300 */
+  --color-border-subtle: #e2e8f0; 
+  --color-border-main: #cbd5e1; 
 
-  /* Primary Brand (Indigo -> Violet Shift for Premium feel) */
-  --color-primary: #6366f1; /* Indigo 500 */
-  --color-primary-soft: #e0e7ff; /* Indigo 100 */
-  --color-primary-hover: #4338ca; /* Indigo 700 */
+  --color-primary: #6366f1; 
+  --color-primary-soft: #e0e7ff; 
+  --color-primary-hover: #4338ca; 
 
-  /* Secondary Brand (Rose) */
-  --color-secondary: #f43f5e; /* Rose 500 */
+  --color-secondary: #f43f5e; 
 
-  /* Glassmorphism */
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.5);
   --glass-shadow: 0 8px 32px -4px rgba(99, 102, 241, 0.1),
@@ -37,22 +31,18 @@
 
 .dark {
 
-  /* Backgrounds: Deep rich slate/navy instead of flat black */
-  --color-bg-canvas: #020617; /* slate-950 */
-  --color-bg-surface: #0f172a; /* slate-900 */
-  --color-bg-subtle: #1e293b; /* slate-800 */
-  --color-bg-muted: #334155; /* slate-700 */
+  --color-bg-canvas: #020617; 
+  --color-bg-surface: #0f172a; 
+  --color-bg-subtle: #1e293b; 
+  --color-bg-muted: #334155; 
 
-  /* Text */
-  --color-text-main: #f8fafc; /* slate-50 */
-  --color-text-secondary: #cbd5e1; /* slate-300 */
-  --color-text-muted: #64748b; /* slate-500 */
+  --color-text-main: #f8fafc; 
+  --color-text-secondary: #cbd5e1; 
+  --color-text-muted: #64748b; 
 
-  /* Borders */
-  --color-border-subtle: #1e293b; /* slate-800 */
-  --color-border-main: #334155; /* slate-700 */
+  --color-border-subtle: #1e293b; 
+  --color-border-main: #334155;
 
-  /* Glassmorphism - Darker & More Opaque */
   --glass-bg: rgba(15, 23, 42, 0.6);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.5),
@@ -75,7 +65,6 @@ body {
 }
 
 @layer utilities {
-  /* Glassmorphism Utility */
   .glass-panel {
     background: var(--glass-bg);
     backdrop-filter: blur(24px) saturate(180%);

@@ -128,9 +128,7 @@ export default function TicketCard({
             </div>
           )}
 
-          {/* Main Card Content */}
           <div className="flex flex-col gap-4 w-full">
-            {/* Header: Name & Service & Source */}
             <div className="flex justify-between items-start gap-4">
               <div>
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -155,7 +153,6 @@ export default function TicketCard({
                 </h3>
               </div>
 
-              {/* Status Badge */}
               <div
                 className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 shadow-sm ${
                   isPending
@@ -189,7 +186,6 @@ export default function TicketCard({
               </div>
             </div>
 
-            {/* Details: WhatsApp, Date, Time */}
             <div className="flex flex-col gap-2 text-sm text-text-secondary font-medium pl-1 border-l-2 border-border-subtle">
               {ticket.telepon && (
                 <div className="flex items-center gap-2">
@@ -225,7 +221,6 @@ export default function TicketCard({
               </div>
             </div>
 
-            {/* Notes */}
             {ticket.catatan && (
               <div className="bg-bg-canvas/50 dark:bg-black/20 p-3 rounded-xl border border-black/5 dark:border-white/5 text-sm">
                 <div className="flex items-start gap-2">
@@ -237,7 +232,6 @@ export default function TicketCard({
               </div>
             )}
 
-            {/* Universal Footer: ID & QR */}
             <div className="flex items-center justify-between pt-2">
               <span className="font-mono text-[10px] text-text-muted opacity-60">
                 ID: {ticket.id.slice(0, 8)}...
@@ -251,9 +245,7 @@ export default function TicketCard({
               </button>
             </div>
 
-            {/* ACTION BUTTON GRID */}
             <div className="grid grid-cols-2 gap-2 mt-2 pt-4 border-t border-border-subtle/50">
-              {/* Pending State for Admin */}
               {isAdmin && isPending && (
                 <>
                   <button
@@ -281,7 +273,6 @@ export default function TicketCard({
                 </>
               )}
 
-              {/* Payment State for Admin */}
               {isAdmin && isPayment && (
                 <button
                   onClick={() =>
@@ -291,14 +282,13 @@ export default function TicketCard({
                     )
                   }
                   className="col-span-2 btn-primary py-2.5 text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-200 dark:shadow-none"
-                  style={{ background: "var(--color-primary)" }} // Override for solid brand color if preferred over gradient
+                  style={{ background: "var(--color-primary)" }}
                 >
                   <BanknotesIcon className="w-4 h-4" />
                   Konfirmasi Pembayaran
                 </button>
               )}
 
-              {/* Active State Actions */}
               {((isAdmin &&
                 (ticket.status === TICKET_STATUS.WAITING ||
                   ticket.status === TICKET_STATUS.ACTIVE)) ||
@@ -306,7 +296,6 @@ export default function TicketCard({
                   (ticket.status === TICKET_STATUS.WAITING ||
                     ticket.status === TICKET_STATUS.ACTIVE))) && (
                 <>
-                  {/* Main Action: PIC Selesai / Admin Edit */}
                   {canPicAct ? (
                     <button
                       onClick={() =>
@@ -328,7 +317,6 @@ export default function TicketCard({
                     </button>
                   )}
 
-                  {/* Secondary Action: Cancel */}
                   <button
                     onClick={() =>
                       openCancelModal(

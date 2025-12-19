@@ -27,7 +27,6 @@ export default function PicDashboard() {
 
   const [processingId, setProcessingId] = useState(null);
 
-  // Confirmation Modal State
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
     title: "",
@@ -52,12 +51,10 @@ export default function PicDashboard() {
       </div>
     );
 
-  // Filter tickets
   const activeTickets = tickets.filter(
     (t) => t.status === TICKET_STATUS.ACTIVE && t.layanan === service
   );
 
-  // Get waiting tickets, sorted by date/time
   const waitingTickets = tickets
     .filter((t) => t.status === TICKET_STATUS.WAITING && t.layanan === service)
     .sort((a, b) => {
@@ -65,7 +62,7 @@ export default function PicDashboard() {
       const timeB = b.jam || "00:00";
       const dateA = new Date(`${a.tanggalRilis}T${timeA}`);
       const dateB = new Date(`${b.tanggalRilis}T${timeB}`);
-      return dateA - dateB; // Ascending
+      return dateA - dateB;
     });
 
   const completedCount = tickets.filter(
@@ -76,7 +73,6 @@ export default function PicDashboard() {
   ).length;
 
   const handleTakeTicket = (ticket) => {
-    // Modified to accept ticket or use waitingTickets[0]
     const targetTicket = ticket || waitingTickets[0];
     if (!targetTicket) return;
 
@@ -140,10 +136,8 @@ export default function PicDashboard() {
   return (
     <>
       <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-8 animate-fade-in pb-24 font-sans min-h-screen transition-colors duration-500">
-        {/* Background Texture */}
         <div className="fixed inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] pointer-events-none"></div>
 
-        {/* HEADER SECTION */}
         <div
           className={`relative rounded-[2.5rem] p-8 md:p-12 overflow-hidden shadow-2xl transition-all duration-500 glow-secondary group ${
             isGrooming
@@ -151,11 +145,9 @@ export default function PicDashboard() {
               : "bg-linear-to-br from-rose-500 via-rose-600 to-pink-700 dark:from-rose-600 dark:via-rose-700 dark:to-pink-800 shadow-rose-500/30 dark:shadow-rose-500/20"
           }`}
         >
-          {/* Dynamic Abstract Shapes */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-[0.1] rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-white opacity-[0.1] rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
 
-          {/* Header Content */}
           <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -199,7 +191,6 @@ export default function PicDashboard() {
           </div>
         </div>
 
-        {/* ACTIVE TICKET AREA */}
         {activeTickets.length > 0 && (
           <div className="space-y-4">
             <div className="flex items-center gap-3 px-1">
@@ -294,7 +285,6 @@ export default function PicDashboard() {
           </div>
         )}
 
-        {/* WAITING LIST SECTION */}
         {activeTickets.length === 0 && waitingTickets.length > 0 && (
           <div className="space-y-4">
             <div className="flex items-center gap-3 px-1">
@@ -345,7 +335,6 @@ export default function PicDashboard() {
           </div>
         )}
 
-        {/* EMPTY STATE */}
         {activeTickets.length === 0 && waitingTickets.length === 0 && (
           <div className="py-24 text-center glass-panel rounded-[3rem] border-dashed border-2 border-border-subtle/50">
             <div className="w-24 h-24 bg-bg-subtle rounded-full flex items-center justify-center mx-auto mb-6">

@@ -132,13 +132,13 @@ export default function TicketForm({
 
     if (service === SERVICE_TYPE.KLINIK) {
       startHour = 9;
-      endHour = 18; // 09:00 - 18:00
+      endHour = 18;
       for (let i = startHour; i < endHour; i++) {
         slots.push(`${i.toString().padStart(2, "0")}:00`);
       }
     } else {
       startHour = 9;
-      endHour = 15; // 09:00 - 15:00 (Grooming)
+      endHour = 15;
       for (let i = startHour; i < endHour; i++) {
         slots.push(`${i.toString().padStart(2, "0")}:00`);
         slots.push(`${i.toString().padStart(2, "0")}:30`);
@@ -156,8 +156,6 @@ export default function TicketForm({
       className={`relative ${className}`}
       noValidate
     >
-      {/* Header is handled by parent or hidden if not needed */}
-
       <div className="space-y-5 max-w-md mx-auto">
         <div>
           <label className={labelClass}>Nama Pelanggan / Hewan</label>
@@ -201,7 +199,6 @@ export default function TicketForm({
 
         <div>
           <label className={labelClass}>Layanan</label>
-          {/* Unified Service Selection (Card Style) */}
           <div className="flex gap-4">
             {[
               {
@@ -375,7 +372,6 @@ export default function TicketForm({
         </div>
       </div>
 
-      {/* Success Modal for Kiosk/Guest */}
       {successData &&
         createPortal(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">

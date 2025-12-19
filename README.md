@@ -2,7 +2,7 @@
 
 Sistem manajemen antrian dan ticketing modern untuk Lucky Pet Shop, dibangun untuk tugas akhir mata kuliah Web Programming.
 
-## 🚀 Fitur Utama
+## Fitur Utama
 
 ### 1. **Multi-Role Dashboard**
 
@@ -41,7 +41,7 @@ Sistem manajemen antrian dan ticketing modern untuk Lucky Pet Shop, dibangun unt
 
 ---
 
-## 📦 Cara Install & Jalankan
+## Cara Install & Jalankan
 
 1. **Clone Repository**
 
@@ -63,15 +63,6 @@ Sistem manajemen antrian dan ticketing modern untuk Lucky Pet Shop, dibangun unt
    Buka `http://localhost:5173` di browser.
 
 ---
-
-## 🔐 Akun Demo (Untuk Penguji)
-
-| Role                                | Email                    | Password   |
-| ----------------------------------- | ------------------------ | ---------- |
-| **Admin**                           | `admin@lucky.com`        | `admin123` |
-| **PIC Grooming**                    | `pic.grooming@lucky.com` | `pic123`   |
-| **PIC Klinik**                      | `pic.klinik@lucky.com`   | `pic123`   |
-| **Kiosk Mode** (Khusus Tablet Toko) | `kiosk@lucky.com`        | `kiosk123` |
 
 > **Catatan**:
 >

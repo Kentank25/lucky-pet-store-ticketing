@@ -81,7 +81,6 @@ export default function QueueMonitor() {
 
   const isGrooming = ticket.layanan === SERVICE_TYPE.GROOMING;
 
-  // Status Steps for the Stepper visualization
   const steps = [
     { status: TICKET_STATUS.PENDING, label: "Pending" },
     { status: TICKET_STATUS.WAITING, label: "Antrian" },
@@ -95,7 +94,6 @@ export default function QueueMonitor() {
 
   return (
     <div className="min-h-screen p-4 md:p-8 flex items-center justify-center bg-slate-50 dark:bg-[#020617] relative overflow-hidden transition-colors duration-500">
-      {/* Aurora Background Decor */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-400/30 dark:bg-indigo-600/30 rounded-full blur-[120px] animate-pulse-soft transition-colors duration-700"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-400/30 dark:bg-rose-600/20 rounded-full blur-[120px] animate-float transition-colors duration-700"></div>
@@ -114,9 +112,7 @@ export default function QueueMonitor() {
           Kembali
         </Link>
 
-        {/* Status Card */}
         <div className="bg-white/60 dark:bg-white/5 backdrop-blur-3xl rounded-[2.5rem] p-0 overflow-hidden shadow-2xl shadow-indigo-100/50 dark:shadow-black/50 border border-white/40 dark:border-white/10 transition-all duration-500">
-          {/* Header Section */}
           <div className="relative p-8 pb-10 text-center bg-linear-to-b from-white/50 to-transparent dark:from-white/5">
             <div className="inline-flex mb-6 p-1 rounded-2xl bg-white/50 dark:bg-slate-950/30 backdrop-blur-md border border-white/20 shadow-inner">
               <span
@@ -143,14 +139,11 @@ export default function QueueMonitor() {
             </p>
           </div>
 
-          {/* Stepper Visualization */}
           {!isCancelled && (
             <div className="px-8 mb-8">
               <div className="flex justify-between items-center relative">
-                {/* Progress Bar Background */}
                 <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-200 dark:bg-white/10 rounded-full -z-10"></div>
 
-                {/* Active Progress Bar */}
                 <div
                   className="absolute top-1/2 left-0 h-1 bg-indigo-500 dark:bg-indigo-400 rounded-full -z-10 transition-all duration-500"
                   style={{
@@ -196,7 +189,6 @@ export default function QueueMonitor() {
             </div>
           )}
 
-          {/* Current Status Box */}
           <div className="px-6 pb-6">
             <div
               className={`rounded-3xl p-6 text-center border-2 transition-all duration-500 ${
@@ -232,7 +224,6 @@ export default function QueueMonitor() {
             </div>
           </div>
 
-          {/* Footer Info */}
           <div className="bg-slate-50/50 dark:bg-slate-900/20 px-8 py-6 flex justify-between items-center border-t border-white/20 dark:border-white/5 backdrop-blur-sm">
             <div className="text-left">
               <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-1">

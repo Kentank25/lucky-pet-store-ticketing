@@ -188,11 +188,9 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Header Tabs Portal */}
       {document.getElementById("header-actions") &&
         createPortal(headerActions, document.getElementById("header-actions"))}
 
-      {/* Main Content */}
       {activeTab === "analytics" ? (
         <div className="space-y-8 animate-fade-in">
           <AdminAnalytics />
@@ -214,7 +212,6 @@ export default function AdminDashboard() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in">
-          {/* Left Column: Form */}
           <div className="lg:col-span-4 space-y-6">
             <div className="glass-panel p-6 sm:p-8 rounded-4xl sticky top-24">
               <h3 className="text-xl font-black text-text-main mb-6 flex items-center gap-2">
@@ -231,9 +228,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Right Column: Queues */}
           <div className="lg:col-span-8 space-y-8">
-            {/* 1. Validation Queue */}
             {pendingTickets.length > 0 && (
               <div className="glass-panel p-6 sm:p-8 rounded-4xl border-l-4 border-amber-400 bg-amber-50/10 dark:bg-amber-900/5">
                 <h3 className="text-2xl font-black text-text-main mb-6 flex items-center gap-3">
@@ -263,7 +258,6 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {/* 2. Payment Queue */}
             {paymentTickets.length > 0 && (
               <div className="glass-panel p-6 sm:p-8 rounded-4xl border-l-4 border-indigo-400 bg-indigo-50/10 dark:bg-indigo-900/5">
                 <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
@@ -320,7 +314,6 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {/* 3. Active Queue */}
             <div className="glass-panel p-6 sm:p-8 rounded-4xl border-l-4 border-emerald-400">
               <h3 className="text-2xl font-black text-text-main mb-6 flex items-center gap-3">
                 <span className="w-3 h-3 rounded-full bg-emerald-400"></span>

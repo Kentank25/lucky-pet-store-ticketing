@@ -12,11 +12,8 @@ export const ThemeProvider = ({ children }) => {
       if (savedTheme) {
         return savedTheme;
       }
-      return window.matchMedia("(prefers-color-scheme: light)").matches
-        ? "dark"
-        : "light";
     }
-    return "dark";
+    return "light";
   });
 
   useEffect(() => {
@@ -31,7 +28,7 @@ export const ThemeProvider = ({ children }) => {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );

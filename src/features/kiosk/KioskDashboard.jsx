@@ -1,10 +1,17 @@
+import { useEffect } from "react";
 import TicketForm from "../../components/tickets/TicketForm";
+import { useTheme } from "../../context/ThemeContext";
 import { ScissorsIcon, HeartIcon } from "@heroicons/react/24/outline";
 
 export default function KioskDashboard() {
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    setTheme("light");
+  }, [setTheme]);
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 md:p-8 animate-fade-in relative overflow-hidden bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white transition-colors duration-500">
-      {/* Aurora Background Effects */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-400/30 dark:bg-indigo-600/30 rounded-full blur-[120px] animate-pulse-soft transition-colors duration-700"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-400/30 dark:bg-rose-600/20 rounded-full blur-[120px] animate-float transition-colors duration-700"></div>
@@ -13,10 +20,8 @@ export default function KioskDashboard() {
       </div>
 
       <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch relative z-10">
-        {/* Left Column: Branding */}
         <div className="relative group h-full">
           <div className="h-full flex flex-col justify-center bg-white/60 dark:bg-white/5 backdrop-blur-3xl rounded-[2.5rem] p-8 md:p-14 border border-white/40 dark:border-white/10 shadow-2xl shadow-indigo-100/50 dark:shadow-black/50 relative overflow-hidden transform transition-all duration-500 hover:scale-[1.01] group-hover:border-white/60 dark:group-hover:border-white/20">
-            {/* Internal Glow */}
             <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
             <div className="relative z-10 flex flex-col justify-center h-full">
@@ -68,7 +73,6 @@ export default function KioskDashboard() {
           </div>
         </div>
 
-        {/* Right Column: Ticket Form */}
         <div className="h-full flex flex-col justify-center bg-white/60 dark:bg-white/5 backdrop-blur-3xl p-6 md:p-10 rounded-[2.5rem] relative border border-white/40 dark:border-white/10 shadow-2xl shadow-indigo-100/50 dark:shadow-black/50">
           <div className="text-center mb-6 md:mb-8">
             <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 transition-colors">

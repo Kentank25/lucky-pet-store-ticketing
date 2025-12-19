@@ -192,8 +192,6 @@ const AdminAnalytics = () => {
 
     fetchData();
   }, [filterType, selectedDate]);
-
-  // Create Gradients for Chart
   const createGradient = (ctx, area, colorStart, colorEnd) => {
     const gradient = ctx.createLinearGradient(0, area.bottom, 0, area.top);
     gradient.addColorStop(0, colorStart);
@@ -446,7 +444,6 @@ const AdminAnalytics = () => {
 
   return (
     <div className="space-y-8 animate-fade-in py-4">
-      {/* Header Section */}
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6">
         <div>
           <h1 className="text-3xl font-black text-text-main tracking-tight flex items-center gap-3">
@@ -526,7 +523,6 @@ const AdminAnalytics = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Chart Section */}
         <div className="lg:col-span-2 glass-panel p-8 rounded-[2.5rem] border border-white/40 dark:border-white/5 relative overflow-hidden">
           <div className="mb-8 flex justify-between items-end">
             <div>
@@ -557,7 +553,6 @@ const AdminAnalytics = () => {
           </div>
         </div>
 
-        {/* Distribution Section */}
         <div className="glass-panel p-8 rounded-[2.5rem] border border-white/40 dark:border-white/5 flex flex-col items-center justify-between relative overflow-hidden">
           <div className="w-full text-left relative z-10 mb-4">
             <h3 className="text-xl font-bold text-text-main flex items-center gap-2">
@@ -571,7 +566,7 @@ const AdminAnalytics = () => {
 
           <div className="relative w-full aspect-square max-h-64 mx-auto z-10 my-4">
             <Doughnut data={doughnutData} options={doughnutOptions} />
-            {/* Center Text */}
+
             <div className="absolute inset-0 m-auto w-fit h-fit flex flex-col items-center justify-center pointer-events-none">
               <span className="text-5xl font-black text-text-main tracking-tight drop-shadow-sm">
                 {stats.totalServices}
@@ -583,7 +578,6 @@ const AdminAnalytics = () => {
           </div>
 
           <div className="w-full space-y-3 z-10 mt-auto">
-            {/* Grooming Legend */}
             <div className="flex justify-between items-center p-4 bg-white/50 dark:bg-white/5 border border-white/10 rounded-2xl hover:bg-white/80 dark:hover:bg-white/10 transition-colors">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm">
@@ -603,7 +597,6 @@ const AdminAnalytics = () => {
               </span>
             </div>
 
-            {/* Klinik Legend */}
             <div className="flex justify-between items-center p-4 bg-white/50 dark:bg-white/5 border border-white/10 rounded-2xl hover:bg-white/80 dark:hover:bg-white/10 transition-colors">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400 shadow-sm">
