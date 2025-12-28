@@ -14,13 +14,21 @@ import {
   ArrowLeftIcon,
   ScissorsIcon,
   HeartIcon,
+  UserGroupIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/outline";
+import { subscribeToTickets } from "../services/ticketService";
 
 export default function QueueMonitor() {
   const { id } = useParams();
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const { setTheme } = useTheme();
+  const [queueStat, setQueueStat] = useState({
+    activeTicket: null,
+    peopleAhead: 0,
+    totalInQueue: 0,
+  });
 
   useEffect(() => {
     setTheme("light");
@@ -40,6 +48,58 @@ export default function QueueMonitor() {
 
     return () => unsub();
   }, [id]);
+
+  useEffect(() => {
+    if (!ticket || !ticket.layanan) return;
+
+    // Subscribe to all tickets to calculate queue position
+    const unsubQueue = subscribeToTickets((allTickets) => {
+      // 1. Filter tickets for the same service and valid dates (optional, assuming subscribeToTickets handles order)
+      // We only care about tickets that are NOT Completed or Cancelled for "Ahead" calculation
+      // Or maybe we do care about Completed if we want to show "Today's Queue"?
+      // Let's focus on "Waiting" and "Active".
+
+      const activeAndWaiting = allTickets.filter(
+        (t) =>
+          t.layanan === ticket.layanan &&
+          [
+            TICKET_STATUS.PENDING,
+            TICKET_STATUS.WAITING,
+            TICKET_STATUS.ACTIVE,
+            TICKET_STATUS.PAYMENT,
+          ].includes(t.status)
+      );
+
+      // Sort by time (ascending) - Oldest first
+      // Assuming 'tanggalRilis' and 'jam' can be sorted or they are created in order.
+      // Firebase IDs are not strictly ordered by time, so we rely on sorting if `subscribeToTickets` provides it.
+      // `subscribeToTickets` sorts by tanggalRilis desc, jam desc.
+      // We need Ascending for queue order.
+      activeAndWaiting.sort((a, b) => {
+        if (a.tanggalRilis !== b.tanggalRilis)
+          return a.tanggalRilis.localeCompare(b.tanggalRilis);
+        return a.jam.localeCompare(b.jam);
+      });
+
+      // Find currently serving (Active or Payment)
+      const currentActive = activeAndWaiting.find((t) =>
+        [TICKET_STATUS.ACTIVE, TICKET_STATUS.PAYMENT].includes(t.status)
+      );
+
+      // Calculate people ahead
+      // Filter list to find my index
+      const myIndex = activeAndWaiting.findIndex((t) => t.id === ticket.id);
+      const aheadCount = myIndex >= 0 ? myIndex : 0;
+
+      setQueueStat({
+        activeTicket: currentActive || null,
+        peopleAhead: aheadCount,
+        totalInQueue: activeAndWaiting.length,
+      });
+    });
+
+    return () => unsubQueue();
+  }, [ticket]);
 
   if (loading) {
     return (
@@ -195,7 +255,8 @@ export default function QueueMonitor() {
             </div>
           )}
 
-          <div className="px-6 pb-6">
+          <div className="px-6 pb-6 space-y-4">
+            {/* Status Card */}
             <div
               className={`rounded-3xl p-6 text-center border-2 transition-all duration-500 ${
                 isCancelled
@@ -216,7 +277,7 @@ export default function QueueMonitor() {
               ) : (
                 <>
                   <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 transition-colors">
-                    Status Saat Ini
+                    Status Tiket Anda
                   </p>
                   <div className="text-3xl font-black text-indigo-600 dark:text-indigo-400 mb-2 animate-pulse-soft transition-colors">
                     {steps.find((s) => s.status === ticket.status)?.label ||
@@ -228,6 +289,53 @@ export default function QueueMonitor() {
                 </>
               )}
             </div>
+
+            {/* Queue Info Cards - Only show if not cancelled and active */}
+            {!isCancelled && ticket.status !== TICKET_STATUS.COMPLETED && (
+              <div className="grid grid-cols-2 gap-4">
+                {/* Currently Serving */}
+                <div className="bg-indigo-50/50 dark:bg-indigo-900/10 p-4 rounded-3xl border border-indigo-100 dark:border-indigo-500/20 text-center">
+                  <div className="w-8 h-8 mx-auto bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center mb-2">
+                    <SparklesIcon className="w-5 h-5" />
+                  </div>
+                  <p className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
+                    Sedang Dilayani
+                  </p>
+                  <p className="font-bold text-slate-900 dark:text-white truncate">
+                    {queueStat.activeTicket
+                      ? queueStat.activeTicket.nama
+                      : "Menunggu..."}
+                  </p>
+                </div>
+
+                {/* People Ahead */}
+                <div
+                  className={`p-4 rounded-3xl border text-center ${
+                    queueStat.peopleAhead === 0
+                      ? "bg-green-50/50 dark:bg-green-900/10 border-green-100 dark:border-green-500/20"
+                      : "bg-orange-50/50 dark:bg-orange-900/10 border-orange-100 dark:border-orange-500/20"
+                  }`}
+                >
+                  <div
+                    className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center mb-2 ${
+                      queueStat.peopleAhead === 0
+                        ? "bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400"
+                        : "bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400"
+                    }`}
+                  >
+                    <UserGroupIcon className="w-5 h-5" />
+                  </div>
+                  <p className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
+                    Antrian Di Depan
+                  </p>
+                  <p className="font-bold text-slate-900 dark:text-white">
+                    {queueStat.peopleAhead === 0
+                      ? "Giliran Anda!"
+                      : `${queueStat.peopleAhead} Orang`}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="bg-slate-50/50 dark:bg-slate-900/20 px-8 py-6 flex justify-between items-center border-t border-white/20 dark:border-white/5 backdrop-blur-sm">
