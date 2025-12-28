@@ -11,6 +11,8 @@ import {
   HeartIcon,
   ArrowRightIcon,
   ExclamationTriangleIcon,
+  ArrowDownTrayIcon,
+  ClipboardDocumentCheckIcon,
 } from "@heroicons/react/24/outline";
 
 export default function TicketForm({
@@ -149,6 +151,36 @@ export default function TicketForm({
 
   const timeSlots = generateTimeSlots(formData.layanan);
   const labelClass = "block text-sm font-semibold text-text-muted mb-2 ml-1";
+
+  const handleCopyLink = () => {
+    const link = `${window.location.origin}/monitor/${successData.id}`;
+    navigator.clipboard.writeText(link);
+    toast.success("Link berhasil disalin!");
+  };
+
+  const handleDownloadQR = () => {
+    const svg = document.getElementById("ticket-qr-code");
+    if (!svg) return;
+
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      const pngFile = canvas.toDataURL("image/png");
+      const downloadLink = document.createElement("a");
+      downloadLink.download = `Ticket-${successData.nama}.png`;
+      downloadLink.href = pngFile;
+      downloadLink.click();
+      toast.success("QR Code berhasil disimpan!");
+    };
+
+    img.src = "data:image/svg+xml;base64," + btoa(svgData);
+  };
 
   return (
     <form
@@ -406,9 +438,27 @@ export default function TicketForm({
 
               <div className="bg-white p-4 rounded-2xl border-2 border-dashed border-border-subtle inline-block mb-6">
                 <QRCode
+                  id="ticket-qr-code"
                   value={`${window.location.origin}/monitor/${successData.id}`}
                   size={180}
                 />
+              </div>
+
+              <div className="flex gap-3 justify-center mb-6">
+                <button
+                  onClick={handleCopyLink}
+                  className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-100 transition-colors font-bold text-sm"
+                >
+                  <ClipboardDocumentCheckIcon className="w-5 h-5" />
+                  Salin Link
+                </button>
+                <button
+                  onClick={handleDownloadQR}
+                  className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-100 transition-colors font-bold text-sm"
+                >
+                  <ArrowDownTrayIcon className="w-5 h-5" />
+                  Simpan QR
+                </button>
               </div>
 
               <p className="text-xs text-text-muted mb-8 max-w-[200px] mx-auto">
