@@ -62,39 +62,34 @@ export default function QueueMonitor() {
       const activeAndWaiting = allTickets.filter(
         (t) =>
           t.layanan === ticket.layanan &&
-          [
-            TICKET_STATUS.PENDING,
-            TICKET_STATUS.WAITING,
-            TICKET_STATUS.ACTIVE,
-            TICKET_STATUS.PAYMENT,
-          ].includes(t.status)
+          [TICKET_STATUS.WAITING, TICKET_STATUS.ACTIVE].includes(t.status)
       );
 
       // Sort by time (ascending) - Oldest first
-      // Assuming 'tanggalRilis' and 'jam' can be sorted or they are created in order.
-      // Firebase IDs are not strictly ordered by time, so we rely on sorting if `subscribeToTickets` provides it.
-      // `subscribeToTickets` sorts by tanggalRilis desc, jam desc.
-      // We need Ascending for queue order.
       activeAndWaiting.sort((a, b) => {
         if (a.tanggalRilis !== b.tanggalRilis)
           return a.tanggalRilis.localeCompare(b.tanggalRilis);
         return a.jam.localeCompare(b.jam);
       });
 
-      // Find currently serving (Active or Payment)
-      const currentActive = activeAndWaiting.find((t) =>
-        [TICKET_STATUS.ACTIVE, TICKET_STATUS.PAYMENT].includes(t.status)
+      // Find currently serving (Active only)
+      const currentActive = activeAndWaiting.find(
+        (t) => t.status === TICKET_STATUS.ACTIVE
       );
 
       // Calculate people ahead
       // Filter list to find my index
       const myIndex = activeAndWaiting.findIndex((t) => t.id === ticket.id);
-      const aheadCount = myIndex >= 0 ? myIndex : 0;
+
+      // If I am not in the list (e.g. Pending), I shouldn't see "0 people ahead" as "Your Turn".
+      // We will handle this in UI rendering.
+      const aheadCount = myIndex >= 0 ? myIndex : activeAndWaiting.length;
 
       setQueueStat({
         activeTicket: currentActive || null,
         peopleAhead: aheadCount,
         totalInQueue: activeAndWaiting.length,
+        isInQueue: myIndex >= 0,
       });
     });
 
@@ -207,11 +202,11 @@ export default function QueueMonitor() {
 
           {!isCancelled && (
             <div className="px-8 mb-8">
-              <div className="flex justify-between items-center relative">
-                <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-200 dark:bg-white/10 rounded-full -z-10"></div>
+              <div className="flex justify-between items-start relative">
+                <div className="absolute top-4 left-0 w-full h-1 bg-slate-200 dark:bg-white/10 rounded-full -z-10 -translate-y-1/2"></div>
 
                 <div
-                  className="absolute top-1/2 left-0 h-1 bg-indigo-500 dark:bg-indigo-400 rounded-full -z-10 transition-all duration-500"
+                  className="absolute top-4 left-0 h-1 bg-indigo-500 dark:bg-indigo-400 rounded-full -z-10 transition-all duration-500 -translate-y-1/2"
                   style={{
                     width: `${(currentStepIndex / (steps.length - 1)) * 100}%`,
                   }}
@@ -311,25 +306,37 @@ export default function QueueMonitor() {
                 {/* People Ahead */}
                 <div
                   className={`p-4 rounded-3xl border text-center ${
-                    queueStat.peopleAhead === 0
+                    ticket.status === TICKET_STATUS.PENDING
+                      ? "bg-slate-50 dark:bg-slate-900/10 border-slate-200 dark:border-slate-700"
+                      : queueStat.peopleAhead === 0
                       ? "bg-green-50/50 dark:bg-green-900/10 border-green-100 dark:border-green-500/20"
                       : "bg-orange-50/50 dark:bg-orange-900/10 border-orange-100 dark:border-orange-500/20"
                   }`}
                 >
                   <div
                     className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center mb-2 ${
-                      queueStat.peopleAhead === 0
+                      ticket.status === TICKET_STATUS.PENDING
+                        ? "bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
+                        : queueStat.peopleAhead === 0
                         ? "bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400"
                         : "bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400"
                     }`}
                   >
-                    <UserGroupIcon className="w-5 h-5" />
+                    {ticket.status === TICKET_STATUS.PENDING ? (
+                      <ClockIcon className="w-5 h-5" />
+                    ) : (
+                      <UserGroupIcon className="w-5 h-5" />
+                    )}
                   </div>
                   <p className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
-                    Antrian Di Depan
+                    {ticket.status === TICKET_STATUS.PENDING
+                      ? "Status Antrian"
+                      : "Antrian Di Depan"}
                   </p>
                   <p className="font-bold text-slate-900 dark:text-white">
-                    {queueStat.peopleAhead === 0
+                    {ticket.status === TICKET_STATUS.PENDING
+                      ? "Menunggu Validasi"
+                      : queueStat.peopleAhead === 0
                       ? "Giliran Anda!"
                       : `${queueStat.peopleAhead} Orang`}
                   </p>
