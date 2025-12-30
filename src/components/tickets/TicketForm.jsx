@@ -13,7 +13,9 @@ import {
   ExclamationTriangleIcon,
   ArrowDownTrayIcon,
   ClipboardDocumentCheckIcon,
+  ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
+import { sendWhatsAppMessage } from "../../services/whatsappService";
 
 export default function TicketForm({
   ticketToEdit,
@@ -106,6 +108,7 @@ export default function TicketForm({
           setSuccessData({
             id: newTicketId,
             nama: cleanedFormData.nama,
+            telepon: cleanedFormData.telepon,
           });
         } else {
           toast.success("Tiket berhasil dibuat");
@@ -180,6 +183,27 @@ export default function TicketForm({
     };
 
     img.src = "data:image/svg+xml;base64," + btoa(svgData);
+  };
+
+  const handleSendWhatsApp = async () => {
+    if (!successData?.id || !successData?.telepon) {
+      toast.error("Data tidak lengkap untuk mengirim WhatsApp");
+      return;
+    }
+
+    const toastId = toast.loading("Mengirim WhatsApp...");
+    try {
+      const link = `${window.location.origin}/monitor/${successData.id}`;
+      const message = `Halo ${successData.nama},\n\nTerima kasih telah mengambil antrian di Lucky Pet Store.\n\nBerikut adalah link untuk memantau antrian Anda:\n${link}\n\nMohon simpan link ini. Terima kasih!`;
+
+      await sendWhatsAppMessage(successData.telepon, message);
+      toast.success("Pesan WhatsApp berhasil dikirim!", { id: toastId });
+    } catch (error) {
+      console.error(error);
+      toast.error("Gagal mengirim WhatsApp. Pastikan server WAHA aktif.", {
+        id: toastId,
+      });
+    }
   };
 
   return (
@@ -451,6 +475,13 @@ export default function TicketForm({
                 >
                   <ClipboardDocumentCheckIcon className="w-5 h-5" />
                   Salin Link
+                </button>
+                <button
+                  onClick={handleSendWhatsApp}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 rounded-xl hover:bg-green-100 transition-colors font-bold text-sm"
+                >
+                  <ChatBubbleLeftRightIcon className="w-5 h-5" />
+                  Kirim WA
                 </button>
                 <button
                   onClick={handleDownloadQR}
