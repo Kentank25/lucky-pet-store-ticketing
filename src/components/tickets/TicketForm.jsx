@@ -15,7 +15,7 @@ import {
   ClipboardDocumentCheckIcon,
   ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
-import { sendWhatsAppMessage } from "../../services/whatsappService";
+// import { sendWhatsAppMessage } from "../../services/whatsappService";
 
 export default function TicketForm({
   ticketToEdit,
@@ -185,25 +185,32 @@ export default function TicketForm({
     img.src = "data:image/svg+xml;base64," + btoa(svgData);
   };
 
-  const handleSendWhatsApp = async () => {
+  const handleSendWhatsApp = () => {
     if (!successData?.id || !successData?.telepon) {
       toast.error("Data tidak lengkap untuk mengirim WhatsApp");
       return;
     }
 
-    const toastId = toast.loading("Mengirim WhatsApp...");
-    try {
-      const link = `${window.location.origin}/monitor/${successData.id}`;
-      const message = `Halo ${successData.nama},\n\nTerima kasih telah mengambil antrian di Lucky Pet Store.\n\nBerikut adalah link untuk memantau antrian Anda:\n${link}\n\nMohon simpan link ini. Terima kasih!`;
+    const { nama, telepon, id } = successData;
+    const link = `${window.location.origin}/monitor/${id}`;
 
-      await sendWhatsAppMessage(successData.telepon, message);
-      toast.success("Pesan WhatsApp berhasil dikirim!", { id: toastId });
-    } catch (error) {
-      console.error(error);
-      toast.error("Gagal mengirim WhatsApp. Pastikan server WAHA aktif.", {
-        id: toastId,
-      });
+    // Format pesan
+    const message = `Halo ${nama},\n\nTerima kasih telah mengambil antrian di Lucky Pet Store.\n\nBerikut adalah link untuk memantau antrian Anda:\n${link}\n\nMohon simpan link ini. Terima kasih!`;
+
+    // Format nomor HP (pastikan depannya 62, hapus 0 di depan)
+    let formattedPhone = telepon.replace(/\D/g, "");
+    if (formattedPhone.startsWith("0")) {
+      formattedPhone = "62" + formattedPhone.slice(1);
     }
+
+    // Bangun URL wa.me
+    const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(
+      message
+    )}`;
+
+    // Buka di tab baru
+    window.open(url, "_blank");
+    toast.success("Membuka WhatsApp...");
   };
 
   return (
@@ -238,7 +245,16 @@ export default function TicketForm({
             inputMode="numeric"
             value={formData.telepon || ""}
             onChange={(e) => {
-              const val = e.target.value.replace(/\D/g, "");
+              let val = e.target.value.replace(/\D/g, "");
+
+              // Auto-correct 62 to 0
+              if (val.startsWith("62")) {
+                val = "0" + val.slice(2);
+              }
+
+              // Limit length
+              if (val.length > 14) return;
+
               setFormData({ ...formData, telepon: val });
             }}
             className={`input-minimal tracking-wider ${

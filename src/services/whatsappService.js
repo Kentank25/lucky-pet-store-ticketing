@@ -25,12 +25,40 @@ export const formatPhoneNumber = (phoneNumber) => {
  * @param {string} message - The text message to send.
  * @returns {Promise<any>} The API response.
  */
+import { db } from "./firebase";
+import { doc, getDoc } from "firebase/firestore";
+
+/**
+ * Helper to get the API URL (Dynamic from DB or Static from Config)
+ */
+const getApiUrl = async () => {
+  try {
+    // 1. Coba ambil dari Firestore dynamic config
+    const configRef = doc(db, "config", "waha");
+    const configSnap = await getDoc(configRef);
+
+    if (configSnap.exists() && configSnap.data().apiUrl) {
+      console.log("Using dynamic WAHA URL:", configSnap.data().apiUrl);
+      return configSnap.data().apiUrl;
+    }
+  } catch (err) {
+    console.warn("Failed to fetch dynamic config, using fallback.");
+  }
+
+  // 2. Fallback ke yang ada di code/.env
+  return WAHA_CONFIG.API_URL;
+};
+
 export const sendWhatsAppMessage = async (phoneNumber, message) => {
   try {
     const formattedNumber = formatPhoneNumber(phoneNumber);
     const chatId = `${formattedNumber}@c.us`;
 
-    const response = await fetch(`${WAHA_CONFIG.API_URL}/api/sendText`, {
+    // Get URL dynamically
+    const apiUrl = await getApiUrl();
+    console.log(`Sending to: ${apiUrl}`);
+
+    const response = await fetch(`${apiUrl}/api/sendText`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

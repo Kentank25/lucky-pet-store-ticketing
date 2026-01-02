@@ -5,12 +5,6 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    proxy: {
-      "/waha": {
-        target: "http://127.0.0.1:3000",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/waha/, ""),
-      },
-    },
+    proxy: {},
   },
 });

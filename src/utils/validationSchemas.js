@@ -3,7 +3,11 @@ import { SERVICE_TYPE } from "../constants";
 
 export const ticketSchema = z.object({
   nama: z.string().min(1, "Nama pemilik wajib diisi"),
-  kontak: z.string().min(10, "Nomor kontak minimal 10 digit").max(15, "Nomor kontak maksimal 15 digit").regex(/^[0-9]+$/, "Kontak hanya boleh berisi angka"),
+  kontak: z
+    .string()
+    .min(10, "Nomor minimal 10 digit")
+    .max(14, "Nomor maksimal 14 digit")
+    .regex(/^08[0-9]+$/, "Nomor harus diawali 08"),
   layanan: z.enum([SERVICE_TYPE.GROOMING, SERVICE_TYPE.KLINIK], {
     errorMap: () => ({ message: "Pilih layanan yang valid" }),
   }),
@@ -11,7 +15,6 @@ export const ticketSchema = z.object({
   jam: z.string().min(1, "Waktu/Jam wajib dipilih"),
   tanggalRilis: z.string().min(1, "Tanggal wajib diisi"),
 });
-
 
 export const userSchema = z.object({
   name: z.string().min(3, "Nama lengkap minimal 3 karakter"),
@@ -22,12 +25,14 @@ export const userSchema = z.object({
   }),
 });
 
-
 export const cancelSchema = z.object({
   reason: z.string().min(1, "Alasan pembatalan wajib dipilih"),
 });
 
 export const loginSchema = z.object({
-  email: z.string().email("Format email tidak valid").min(1, "Email wajib diisi"),
+  email: z
+    .string()
+    .email("Format email tidak valid")
+    .min(1, "Email wajib diisi"),
   password: z.string().min(1, "Password wajib diisi"),
 });
