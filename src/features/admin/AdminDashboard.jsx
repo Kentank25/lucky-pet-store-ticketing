@@ -193,7 +193,7 @@ export default function AdminDashboard() {
 
       {activeTab === "analytics" ? (
         <div className="space-y-8 animate-fade-in">
-          <AdminAnalytics />
+          <AdminAnalytics tickets={tickets} />
           <div className="glass-panel p-6 rounded-3xl">
             <h3 className="text-xl font-bold text-text-main mb-4 flex items-center gap-2">
               <span className="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-300 w-8 h-8 rounded-lg flex items-center justify-center">

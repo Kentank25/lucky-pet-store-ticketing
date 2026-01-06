@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import {
+  ExclamationTriangleIcon,
+  ChevronDownIcon,
+} from "@heroicons/react/24/outline";
 
 const CANCELLATION_REASONS = [
   "Pelanggan Tidak Hadir (No Show)",
   "Permintaan Pelanggan",
   "Toko Tutup / Penuh",
   "Kesalahan Input",
+  "Dibatalkan oleh PIC",
   "Lainnya",
 ];
 
@@ -30,7 +34,7 @@ export default function CancellationModal({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in p-4">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in p-4 text-left">
       <div className="bg-bg-surface rounded-4xl w-full max-w-sm shadow-2xl dark:shadow-none border border-border-subtle overflow-hidden scale-100 animate-scale-in">
         <div className="p-6 bg-rose-50 dark:bg-rose-900/20 border-b border-rose-100 dark:border-rose-900/30">
           <h3 className="text-xl font-bold text-rose-800 dark:text-rose-200 flex items-center gap-2">
@@ -47,20 +51,25 @@ export default function CancellationModal({
 
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-bold text-text-muted mb-2">
+            <label className="block text-sm font-bold text-text-muted mb-2 ">
               Alasan Pembatalan
             </label>
-            <select
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-border-main bg-bg-subtle focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none transition-all text-text-main"
-            >
-              {CANCELLATION_REASONS.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                className="w-full px-4 py-3 pr-10 rounded-xl border border-border-main bg-bg-subtle focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none transition-all appearance-none text-text-main"
+              >
+                {CANCELLATION_REASONS.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-text-muted">
+                <ChevronDownIcon className="w-5 h-5" />
+              </div>
+            </div>
           </div>
 
           {reason === "Lainnya" && (
@@ -94,7 +103,7 @@ export default function CancellationModal({
             }
             className="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-lg shadow-rose-200 dark:shadow-none transition-all disabled:opacity-50 disabled:shadow-none"
           >
-            {isSubmitting ? "Memproses..." : "Konfirmasi Pembatalan"}
+            {isSubmitting ? "Memproses..." : "Konfirmasi"}
           </button>
         </div>
       </div>

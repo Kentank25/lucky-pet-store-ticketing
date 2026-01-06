@@ -7,6 +7,7 @@ import {
   CheckIcon,
   ArrowRightIcon,
   SparklesIcon,
+  XCircleIcon,
 } from "@heroicons/react/24/outline";
 import { useAuth } from "../../context/AuthContext";
 import { updateTicketStatus } from "../../services/ticketService";
@@ -16,6 +17,7 @@ import TicketSkeleton from "../../components/tickets/TicketSkeleton";
 import { useState } from "react";
 import ThemeToggle from "../../components/common/ThemeToggle";
 import ConfirmationModal from "../../components/modals/ConfirmationModal";
+import CancellationModal from "../../components/modals/CancellationModal";
 
 export default function PicDashboard() {
   const { tickets, loading } = useTickets();
@@ -38,6 +40,15 @@ export default function PicDashboard() {
 
   const closeConfirmModal = () => {
     setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  const [cancellationModal, setCancellationModal] = useState({
+    isOpen: false,
+    ticket: null,
+  });
+
+  const closeCancellationModal = () => {
+    setCancellationModal({ isOpen: false, ticket: null });
   };
 
   if (loading)
@@ -129,6 +140,36 @@ export default function PicDashboard() {
         }
       },
     });
+  };
+
+  const handleCancelTicket = (ticket) => {
+    setCancellationModal({
+      isOpen: true,
+      ticket: ticket,
+    });
+  };
+
+  const processCancellation = async (reason) => {
+    const ticket = cancellationModal.ticket;
+    if (!ticket) return;
+
+    closeCancellationModal();
+    setProcessingId(ticket.id);
+
+    try {
+      await updateTicketStatus(
+        ticket.id,
+        TICKET_STATUS.CANCELLED,
+        `Dibatalkan oleh PIC. Alasan: ${reason}`,
+        ticket
+      );
+      toast.success("Tiket berhasil dibatalkan.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Gagal membatalkan tiket.");
+    } finally {
+      setProcessingId(null);
+    }
   };
 
   const ThemeIcon = isGrooming ? ScissorsIcon : HeartIcon;
@@ -261,7 +302,7 @@ export default function PicDashboard() {
                     <button
                       onClick={() => handleCompleteTicket(ticket)}
                       disabled={processingId === ticket.id}
-                      className="w-full py-5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed group-hover:scale-105"
+                      className="w-full py-5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed group-hover:scale-105 mb-3"
                     >
                       {processingId === ticket.id ? (
                         <>
@@ -274,6 +315,14 @@ export default function PicDashboard() {
                           <span>Selesaikan</span>
                         </>
                       )}
+                    </button>
+                    <button
+                      onClick={() => handleCancelTicket(ticket)}
+                      disabled={processingId === ticket.id}
+                      className="w-full py-4 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-2xl font-bold text-lg border-2 border-rose-100 hover:border-rose-200 transition-all flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed hover:-translate-y-0.5 active:scale-95"
+                    >
+                      <XCircleIcon className="w-6 h-6" />
+                      <span>Batalkan</span>
                     </button>
                     <p className="text-center text-xs text-text-muted mt-4 font-medium">
                       Klik jika layanan sudah selesai
@@ -318,18 +367,29 @@ export default function PicDashboard() {
                   </p>
                 </div>
 
-                <button
-                  onClick={() => handleTakeTicket(waitingTickets[0])}
-                  disabled={!!processingId}
-                  className={`w-full md:w-auto px-12 py-5 rounded-2xl text-white font-bold text-xl shadow-xl hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3 mx-auto ${
-                    isGrooming
-                      ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/30"
-                      : "bg-rose-600 hover:bg-rose-700 shadow-rose-500/30"
-                  }`}
-                >
-                  <span>Panggil & Mulai</span>
-                  <ArrowRightIcon className="w-6 h-6 stroke-[3px]" />
-                </button>
+                <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
+                  <button
+                    onClick={() => handleTakeTicket(waitingTickets[0])}
+                    disabled={!!processingId}
+                    className={`w-full md:w-auto px-12 py-5 rounded-2xl text-white font-bold text-xl shadow-xl hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3 ${
+                      isGrooming
+                        ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/30"
+                        : "bg-rose-600 hover:bg-rose-700 shadow-rose-500/30"
+                    }`}
+                  >
+                    <span>Panggil & Mulai</span>
+                    <ArrowRightIcon className="w-6 h-6 stroke-[3px]" />
+                  </button>
+
+                  <button
+                    onClick={() => handleCancelTicket(waitingTickets[0])}
+                    disabled={!!processingId}
+                    className="w-full md:w-auto px-8 py-5 rounded-2xl text-rose-600 font-bold text-lg border-2 border-transparent hover:bg-rose-50 hover:border-rose-100 transition-all flex items-center justify-center gap-2"
+                  >
+                    <XCircleIcon className="w-6 h-6" />
+                    <span>Batalkan</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -357,6 +417,12 @@ export default function PicDashboard() {
         message={confirmModal.message}
         confirmText={confirmModal.confirmText}
         isDanger={confirmModal.isDanger}
+      />
+      <CancellationModal
+        isOpen={cancellationModal.isOpen}
+        onClose={closeCancellationModal}
+        onConfirm={processCancellation}
+        ticketName={cancellationModal.ticket?.nama || ""}
       />
     </>
   );

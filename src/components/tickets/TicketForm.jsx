@@ -15,7 +15,6 @@ import {
   ClipboardDocumentCheckIcon,
   ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
-// import { sendWhatsAppMessage } from "../../services/whatsappService";
 
 export default function TicketForm({
   ticketToEdit,

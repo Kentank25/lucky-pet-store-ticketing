@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { useTheme } from "../../context/ThemeContext";
-import { getChartData } from "../../services/ticketService";
 import {
   ClipboardDocumentListIcon,
   CheckCircleIcon,
@@ -23,6 +22,7 @@ import {
   Filler,
 } from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
+import { TICKET_STATUS, SERVICE_TYPE } from "../../constants";
 
 ChartJS.register(
   CategoryScale,
@@ -35,9 +35,9 @@ ChartJS.register(
   Filler
 );
 
-const AdminAnalytics = () => {
+const AdminAnalytics = ({ tickets = [] }) => {
   const { theme } = useTheme();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [filterType, setFilterType] = useState("day");
   const [selectedDate, setSelectedDate] = useState(
     new Date().toLocaleDateString("en-CA")
@@ -132,27 +132,53 @@ const AdminAnalytics = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const processData = () => {
       setLoading(true);
       try {
-        const rawData = await getChartData(filterType, selectedDate);
+        // Filter tickets based on selectedDate and filterType
+        const filteredTickets = tickets.filter((ticket) => {
+          if (!ticket.tanggalRilis) return false;
+
+          if (filterType === "day") {
+            return ticket.tanggalRilis === selectedDate;
+          } else if (filterType === "week") {
+            // Basic week logic matching generateTimeSlots
+            const d = new Date(selectedDate);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday
+            const monday = new Date(d);
+            monday.setDate(diff);
+            monday.setHours(0, 0, 0, 0);
+
+            const nextMonday = new Date(monday);
+            nextMonday.setDate(monday.getDate() + 7);
+
+            const tDate = new Date(ticket.tanggalRilis);
+            return tDate >= monday && tDate < nextMonday;
+          } else if (filterType === "month") {
+            return ticket.tanggalRilis.startsWith(selectedDate.substring(0, 7));
+          } else if (filterType === "year") {
+            return ticket.tanggalRilis.startsWith(selectedDate.substring(0, 4));
+          }
+          return false;
+        });
 
         let completed = 0;
         let cancelled = 0;
         let grooming = 0;
         let klinik = 0;
 
-        rawData.forEach((ticket) => {
-          if (ticket.status === "COMPLETED") completed++;
-          if (ticket.status === "CANCELLED") cancelled++;
-          if (ticket.layanan === "Grooming") grooming++;
-          if (ticket.layanan === "Klinik") klinik++;
+        filteredTickets.forEach((ticket) => {
+          if (ticket.status === TICKET_STATUS.COMPLETED) completed++;
+          if (ticket.status === TICKET_STATUS.CANCELLED) cancelled++;
+          if (ticket.layanan === SERVICE_TYPE.GROOMING) grooming++;
+          if (ticket.layanan === SERVICE_TYPE.KLINIK) klinik++;
         });
 
         const slots = generateTimeSlots(filterType, selectedDate);
         const slotMap = new Map(slots.map((s) => [s.key, s]));
 
-        rawData.forEach((ticket) => {
+        filteredTickets.forEach((ticket) => {
           let key = null;
           if (filterType === "day") {
             if (ticket.jam) {
@@ -161,7 +187,7 @@ const AdminAnalytics = () => {
             }
           } else if (filterType === "year") {
             if (ticket.tanggalRilis) {
-              key = ticket.tanggalRilis.substring(0, 7);
+              key = ticket.tanggalRilis.substring(0, 7); // YYYY-MM
             }
           } else {
             key = ticket.tanggalRilis;
@@ -170,8 +196,8 @@ const AdminAnalytics = () => {
           if (key && slotMap.has(key)) {
             const slot = slotMap.get(key);
             slot.total++;
-            if (ticket.status === "COMPLETED") slot.completed++;
-            if (ticket.status === "CANCELLED") slot.cancelled++;
+            if (ticket.status === TICKET_STATUS.COMPLETED) slot.completed++;
+            if (ticket.status === TICKET_STATUS.CANCELLED) slot.cancelled++;
           }
         });
 
@@ -184,14 +210,14 @@ const AdminAnalytics = () => {
           chartData: slots,
         });
       } catch (error) {
-        console.error("Error fetching analytics:", error);
+        console.error("Error processing analytics:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, [filterType, selectedDate]);
+    processData();
+  }, [filterType, selectedDate, tickets]);
   const createGradient = (ctx, area, colorStart, colorEnd) => {
     const gradient = ctx.createLinearGradient(0, area.bottom, 0, area.top);
     gradient.addColorStop(0, colorStart);
