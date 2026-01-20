@@ -64,13 +64,19 @@ Sistem manajemen antrian dan ticketing modern untuk Lucky Pet Shop, dibangun unt
 
 ---
 
+## 🔐 Akun Demo
+
+Gunakan akun berikut untuk mencoba fitur dashboard:
+
+| Role             | Email                       | Password         |
+| ---------------- | --------------------------- | ---------------- |
+| **Admin**        | `admin@example.com`         | `adminPass123`   |
+| **PIC Grooming** | `pic_grooming1@example.com` | `picGrooming123` |
+| **PIC Klinik**   | `pic_klinik1@example.com`   | `picKlinik123`   |
+
+---
+
 > **Catatan**:
 >
 > - Halaman Kiosk Publik tersedia di `/kiosk` (tanpa login).
 > - Halaman Monitor Antrian tersedia via Scan QR atau link `/monitor/:id`.
-
----
-
-## 👨‍💻 Developer
-
-Dibuat oleh **Keane** - Semester 3 Web Programming.
