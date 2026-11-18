@@ -6,37 +6,37 @@ export default function Layout({ children }) {
 
   return (
     <div className="min-h-screen font-sans text-text-main selection:bg-primary selection:text-white flex flex-col">
-      <header className="fixed top-0 inset-x-0 glass-panel z-50 transition-all duration-300 border-none rounded-none border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-linear-to-tr from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30 flex items-center justify-center animate-float overflow-hidden border border-white/20">
+      <header className="sticky top-0 z-50 border-b border-border-subtle bg-bg-surface shadow-sm">
+        <div className="mx-auto grid min-h-16 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 px-3 py-2 md:min-h-20 md:grid-cols-[minmax(0,1fr)_auto_auto] md:px-8">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            <div className="w-10 h-10 shrink-0 bg-linear-to-tr from-indigo-500 to-purple-500 rounded-xl shadow-lg shadow-indigo-500/30 flex items-center justify-center overflow-hidden border border-white/20">
               <img
                 src="/Lucky Pet Store Logo (Black).png"
                 alt="Logo"
                 className="w-full h-full object-cover p-0.5 opacity-90 invert dark:invert-0"
               />
             </div>
-            <div className="flex flex-col justify-center">
-              <h1 className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300 hidden sm:block tracking-tight leading-none">
+            <div className="flex min-w-0 flex-col justify-center">
+              <p className="truncate text-sm font-bold tracking-tight text-text-main lg:text-xl">
                 LuckyPetStore
                 <span className="text-primary ml-1.5">Manager</span>
-              </h1>
+              </p>
               {user && (
                 <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  {user.name}
+                  <span className="truncate text-text-secondary">{user.name}</span>
                 </span>
               )}
             </div>
           </div>
           <div
             id="header-actions"
-            className="flex-1 flex justify-end px-4"
+            className="col-span-2 row-start-2 min-w-0 empty:hidden md:col-span-1 md:col-start-2 md:row-start-1"
           ></div>
 
           <button
             onClick={logout}
-            className="flex items-center gap-2 px-4 py-2 bg-rose-50/50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-xl transition-all duration-300 group hover:shadow-lg hover:shadow-rose-500/20 active:scale-95 border border-transparent hover:border-rose-200 dark:hover:border-rose-800"
+            className="col-start-2 row-start-1 flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-xl bg-rose-50 px-2 text-rose-600 hover:bg-rose-100 sm:px-4 md:col-start-3 dark:bg-rose-500/10 dark:text-rose-400"
             title="Keluar Aplikasi"
           >
             <span className="font-bold text-sm hidden sm:inline">Keluar</span>
@@ -45,7 +45,7 @@ export default function Layout({ children }) {
         </div>
       </header>
 
-      <main className="container-padded py-8 sm:py-12 mt-20 flex-1 relative z-10">
+      <main className="container-padded w-full min-w-0 flex-1 py-5 sm:py-8">
         {children}
       </main>
     </div>

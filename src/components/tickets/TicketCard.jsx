@@ -106,16 +106,13 @@ export default function TicketCard({
   return (
     <>
       <div
-        onClick={onSelect ? onSelect : undefined}
-        className={`relative p-6 rounded-3xl border transition-all duration-300 group ${cardStyles} ${selectionStyles} ${className} ${
-          onSelect ? "cursor-pointer active:scale-[0.98]" : "hover-lift"
-        }`}
+        className={`relative min-w-0 rounded-2xl border p-3 sm:p-4 ${cardStyles} ${selectionStyles} ${className}`}
       >
-        <div className="flex gap-4 items-stretch">
+        <div className="flex flex-col items-stretch gap-2 md:flex-row md:gap-3">
           {onSelect && (
-            <div className="flex items-center shrink-0 border-r border-gray-100 dark:border-white/5 pr-4">
-              <div
-                className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${
+            <button type="button" onClick={onSelect} aria-label={`Pilih tiket ${ticket.nama}`} aria-pressed={isSelected} className="flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 self-start rounded-lg px-2 hover:bg-bg-subtle md:px-0">
+              <span
+                className={`flex h-5 w-5 items-center justify-center rounded-md border-2 ${
                   isSelected
                     ? "bg-indigo-500 border-indigo-500 scale-110 shadow-lg shadow-indigo-500/30"
                     : "border-gray-300 dark:border-gray-600 group-hover:border-indigo-400 bg-white dark:bg-slate-800"
@@ -124,13 +121,14 @@ export default function TicketCard({
                 {isSelected && (
                   <CheckIcon className="w-4 h-4 text-white stroke-[3px]" />
                 )}
-              </div>
-            </div>
+              </span>
+              <span className="text-xs font-semibold text-text-secondary md:sr-only">Pilih tiket</span>
+            </button>
           )}
 
-          <div className="flex flex-col gap-4 w-full">
-            <div className="flex justify-between items-start gap-4">
-              <div>
+          <div className="flex min-w-0 flex-1 flex-col gap-3">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div className="min-w-0">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span
                     className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg ${
@@ -148,7 +146,7 @@ export default function TicketCard({
                     </span>
                   )}
                 </div>
-                <h3 className="font-extrabold text-text-main text-lg leading-tight line-clamp-2">
+                <h3 className="wrap-anywhere text-lg leading-tight font-extrabold text-text-main">
                   {ticket.nama}
                 </h3>
               </div>
@@ -163,15 +161,6 @@ export default function TicketCard({
                 }`}
               >
                 <span className="relative flex h-2 w-2">
-                  <span
-                    className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                      isPending
-                        ? "bg-amber-500"
-                        : isPayment
-                        ? "bg-indigo-500"
-                        : "bg-emerald-500"
-                    }`}
-                  ></span>
                   <span
                     className={`relative inline-flex rounded-full h-2 w-2 ${
                       isPending
@@ -188,7 +177,7 @@ export default function TicketCard({
 
             <div className="flex flex-col gap-2 text-sm text-text-secondary font-medium pl-1 border-l-2 border-border-subtle">
               {ticket.telepon && (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <PhoneIcon className="w-4 h-4 text-text-muted" />
                   <span>{ticket.telepon}</span>
                   <a
@@ -225,7 +214,7 @@ export default function TicketCard({
               <div className="bg-bg-canvas/50 dark:bg-black/20 p-3 rounded-xl border border-black/5 dark:border-white/5 text-sm">
                 <div className="flex items-start gap-2">
                   <InformationCircleIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
-                  <p className="text-text-secondary italic">
+                  <p className="min-w-0 wrap-anywhere text-text-secondary italic">
                     "{ticket.catatan}"
                   </p>
                 </div>
@@ -238,8 +227,8 @@ export default function TicketCard({
               </span>
               <button
                 onClick={() => setIsQrModalOpen(true)}
-                className="p-2 rounded-xl text-text-muted hover:text-text-main hover:bg-bg-subtle transition-colors"
-                title="Show QR"
+                className="grid h-11 w-11 place-items-center rounded-xl text-text-secondary hover:bg-bg-subtle"
+                aria-label="Tampilkan kode QR"
               >
                 <QrCodeIcon className="w-5 h-5" />
               </button>
@@ -281,10 +270,10 @@ export default function TicketCard({
                       "Pembayaran Lunas"
                     )
                   }
-                  className="col-span-2 btn-primary py-2.5 text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-200 dark:shadow-none"
+                  className="col-span-2 btn-primary min-h-11 px-2 py-2 text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-200 dark:shadow-none"
                   style={{ background: "var(--color-primary)" }}
                 >
-                  <BanknotesIcon className="w-4 h-4" />
+                  <BanknotesIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
                   Konfirmasi Pembayaran
                 </button>
               )}

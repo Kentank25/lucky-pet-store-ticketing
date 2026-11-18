@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { QRCode } from "react-qr-code";
+import toast from "react-hot-toast";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { COLLECTION_NAME } from "../services/ticketService";
@@ -16,13 +18,19 @@ import {
   HeartIcon,
   UserGroupIcon,
   SparklesIcon,
+  ClipboardDocumentCheckIcon,
+  ChatBubbleLeftRightIcon,
+  ArrowDownTrayIcon,
 } from "@heroicons/react/24/outline";
+import { compareQueueTickets } from "../utils/roomQueue";
 import { subscribeToTickets } from "../services/ticketService";
 
 export default function QueueMonitor() {
   const { id } = useParams();
+  const monitorUrl = `${window.location.origin}/monitor/${id}`;
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState("status");
   const { setTheme } = useTheme();
   const [queueStat, setQueueStat] = useState({
     activeTicket: null,
@@ -59,31 +67,17 @@ export default function QueueMonitor() {
       // Or maybe we do care about Completed if we want to show "Today's Queue"?
       // Let's focus on "Waiting" and "Active".
 
-      const activeAndWaiting = allTickets.filter(
-        (t) =>
-          t.layanan === ticket.layanan &&
-          [TICKET_STATUS.WAITING, TICKET_STATUS.ACTIVE].includes(t.status)
-      );
-
-      // Sort by time (ascending) - Oldest first
-      activeAndWaiting.sort((a, b) => {
-        if (a.tanggalRilis !== b.tanggalRilis)
-          return a.tanggalRilis.localeCompare(b.tanggalRilis);
-        return a.jam.localeCompare(b.jam);
-      });
-
-      // Find currently serving (Active only)
-      const currentActive = activeAndWaiting.find(
-        (t) => t.status === TICKET_STATUS.ACTIVE
-      );
-
-      // Calculate people ahead
-      // Filter list to find my index
-      const myIndex = activeAndWaiting.findIndex((t) => t.id === ticket.id);
-
-      // If I am not in the list (e.g. Pending), I shouldn't see "0 people ahead" as "Your Turn".
-      // We will handle this in UI rendering.
-      const aheadCount = myIndex >= 0 ? myIndex : activeAndWaiting.length;
+      const activeAndWaiting = allTickets.filter((item) =>
+        item.layanan === ticket.layanan &&
+        item.tanggalRilis === ticket.tanggalRilis &&
+        (!ticket.roomId || item.roomId === ticket.roomId) &&
+        [TICKET_STATUS.WAITING, TICKET_STATUS.ACTIVE].includes(item.status)
+      ).sort(compareQueueTickets);
+      const currentActive = activeAndWaiting.find((item) => item.status === TICKET_STATUS.ACTIVE);
+      const myIndex = activeAndWaiting.findIndex((item) => item.id === ticket.id);
+      const aheadCount = myIndex < 0 ? 0 : activeAndWaiting.slice(0, myIndex)
+        .filter((item) => item.status === TICKET_STATUS.WAITING).length +
+        activeAndWaiting.filter((item) => item.status === TICKET_STATUS.ACTIVE && item.id !== ticket.id).length;
 
       setQueueStat({
         activeTicket: currentActive || null,
@@ -153,8 +147,52 @@ export default function QueueMonitor() {
   const currentStepIndex = steps.findIndex((s) => s.status === ticket.status);
   const isCancelled = ticket.status === TICKET_STATUS.CANCELLED;
 
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(monitorUrl);
+      toast.success("Link berhasil disalin!");
+    } catch {
+      toast.error("Link gagal disalin.");
+    }
+  };
+
+  const sendWhatsApp = () => {
+    if (!ticket.telepon) {
+      toast.error("Nomor telepon tiket tidak tersedia.");
+      return;
+    }
+    const digits = ticket.telepon.replace(/\D/g, "");
+    const phone = digits.startsWith("0") ? `62${digits.slice(1)}` : digits;
+    const message = `Halo ${ticket.nama}, berikut link untuk memantau antrean Anda di Lucky Pet Store: ${monitorUrl}`;
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+  };
+
+  const downloadQR = () => {
+    const svg = document.getElementById("monitor-qr-code");
+    if (!svg) return;
+    const blob = new Blob([new XMLSerializer().serializeToString(svg)], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const image = new Image();
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = image.width;
+      canvas.height = image.height;
+      canvas.getContext("2d").drawImage(image, 0, 0);
+      URL.revokeObjectURL(url);
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/png");
+      link.download = `Tiket-${ticket.id}.png`;
+      link.click();
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(url);
+      toast.error("QR gagal disimpan.");
+    };
+    image.src = url;
+  };
+
   return (
-    <div className="min-h-screen p-4 md:p-8 flex items-center justify-center bg-slate-50 dark:bg-[#020617] relative overflow-hidden transition-colors duration-500">
+    <div className="monitor-screen h-dvh overflow-hidden px-3 py-2 sm:p-5 flex items-center justify-center bg-slate-50 dark:bg-[#020617] relative transition-colors duration-500">
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-400/30 dark:bg-indigo-600/30 rounded-full blur-[120px] animate-pulse-soft transition-colors duration-700"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-400/30 dark:bg-rose-600/20 rounded-full blur-[120px] animate-float transition-colors duration-700"></div>
@@ -162,10 +200,10 @@ export default function QueueMonitor() {
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] dark:opacity-[0.03]"></div>
       </div>
 
-      <div className="max-w-md w-full animate-scale-in relative z-10">
+      <div className="monitor-layout max-w-md w-full h-full min-h-0 min-w-0 animate-scale-in relative z-10 flex flex-col">
         <Link
-          to="/"
-          className="inline-flex items-center text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold mb-6 transition-all hover:-translate-x-1"
+          to="/kiosk"
+          className="inline-flex shrink-0 items-center text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold mb-2 transition-all hover:-translate-x-1"
         >
           <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
             <ArrowLeftIcon className="w-4 h-4" />
@@ -173,8 +211,13 @@ export default function QueueMonitor() {
           Kembali
         </Link>
 
-        <div className="bg-white/60 dark:bg-white/5 backdrop-blur-3xl rounded-[2.5rem] p-0 overflow-hidden shadow-2xl shadow-indigo-100/50 dark:shadow-black/50 border border-white/40 dark:border-white/10 transition-all duration-500">
-          <div className="relative p-8 pb-10 text-center bg-linear-to-b from-white/50 to-transparent dark:from-white/5">
+        <nav aria-label="Tampilan tiket" className="mb-2 grid shrink-0 grid-cols-2 gap-2">
+          <button type="button" onClick={() => setView("status")} className={view === "status" ? "btn-primary" : "btn-secondary"}>Status</button>
+          <button type="button" onClick={() => setView("share")} className={view === "share" ? "btn-primary" : "btn-secondary"}>Simpan & Bagikan</button>
+        </nav>
+
+        {view === "status" && <div className="monitor-status min-h-0 flex-1 bg-white/60 dark:bg-white/5 backdrop-blur-3xl rounded-3xl p-0 overflow-hidden shadow-2xl shadow-indigo-100/50 dark:shadow-black/50 border border-white/40 dark:border-white/10 transition-all duration-500">
+          <div className="relative p-5 sm:p-8 pb-8 text-center bg-linear-to-b from-white/50 to-transparent dark:from-white/5">
             <div className="inline-flex mb-6 p-1 rounded-2xl bg-white/50 dark:bg-slate-950/30 backdrop-blur-md border border-white/20 shadow-inner">
               <span
                 className={`px-4 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 ${
@@ -192,10 +235,10 @@ export default function QueueMonitor() {
               </span>
             </div>
 
-            <h2 className="text-4xl font-black text-slate-900 dark:text-white mb-2 tracking-tight transition-colors">
+            <h2 className="line-clamp-2 break-words text-2xl sm:text-4xl font-black text-slate-900 dark:text-white mb-2 tracking-tight transition-colors" title={ticket.nama}>
               {ticket.nama}
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 font-medium font-mono text-sm tracking-widest opacity-80 transition-colors">
+            <p className="truncate text-slate-500 dark:text-slate-400 font-medium font-mono text-sm tracking-widest opacity-80 transition-colors" title={ticket.id}>
               ID: {ticket.id}
             </p>
           </div>
@@ -250,7 +293,7 @@ export default function QueueMonitor() {
             </div>
           )}
 
-          <div className="px-6 pb-6 space-y-4">
+          <div className="px-4 sm:px-6 pb-6 space-y-4">
             {/* Status Card */}
             <div
               className={`rounded-3xl p-6 text-center border-2 transition-all duration-500 ${
@@ -285,9 +328,18 @@ export default function QueueMonitor() {
               )}
             </div>
 
+            {ticket.doctorName && <p className="text-center text-sm font-bold text-slate-600 dark:text-slate-300">
+              {ticket.doctorName}
+            </p>}
+            {ticket.groomerName && <p className="text-center text-sm font-bold text-slate-600 dark:text-slate-300">
+              {ticket.groomerName}
+            </p>}
+            {ticket.roomId && <p className="text-center text-sm text-slate-500 dark:text-slate-400">
+              Ruang {ticket.roomId.replace("-", " ")}
+            </p>}
             {/* Queue Info Cards - Only show if not cancelled and active */}
-            {!isCancelled && ticket.status !== TICKET_STATUS.COMPLETED && (
-              <div className="grid grid-cols-2 gap-4">
+            {!isCancelled && ticket.status !== TICKET_STATUS.COMPLETED && !!ticket.roomId && (
+              <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-3 sm:gap-4">
                 {/* Currently Serving */}
                 <div className="bg-indigo-50/50 dark:bg-indigo-900/10 p-4 rounded-3xl border border-indigo-100 dark:border-indigo-500/20 text-center">
                   <div className="w-8 h-8 mx-auto bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center mb-2">
@@ -345,7 +397,7 @@ export default function QueueMonitor() {
             )}
           </div>
 
-          <div className="bg-slate-50/50 dark:bg-slate-900/20 px-8 py-6 flex justify-between items-center border-t border-white/20 dark:border-white/5 backdrop-blur-sm">
+          <div className="bg-slate-50/50 dark:bg-slate-900/20 px-4 sm:px-8 py-6 flex justify-between gap-3 items-center border-t border-white/20 dark:border-white/5 backdrop-blur-sm">
             <div className="text-left">
               <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-1">
                 Jam Booking
@@ -365,11 +417,26 @@ export default function QueueMonitor() {
               </p>
             </div>
           </div>
-        </div>
+        </div>}
 
-        <p className="text-center text-slate-400 dark:text-slate-600 text-xs mt-6 font-medium transition-colors">
-          Lucky Pet Store Management System &copy; 2025
-        </p>
+        {view === "share" && <section aria-label="Simpan dan bagikan tiket" className="monitor-share min-h-0 flex-1 rounded-3xl border border-white/60 bg-white/80 p-4 text-center shadow-xl shadow-indigo-100/40 backdrop-blur-xl sm:p-6">
+          <p className="mb-4 text-sm font-semibold text-slate-600">Simpan link ini untuk memantau antrean Anda.</p>
+          <div className="inline-block rounded-2xl bg-white p-3">
+            <QRCode id="monitor-qr-code" value={monitorUrl} size={160} />
+          </div>
+          <div className="mt-4 grid grid-cols-1 gap-2 min-[360px]:grid-cols-3">
+            <button type="button" onClick={copyLink} className="btn-secondary flex min-h-11 items-center justify-center gap-1 px-2 text-sm">
+              <ClipboardDocumentCheckIcon className="h-5 w-5" /> Salin Link
+            </button>
+            <button type="button" onClick={sendWhatsApp} className="btn-secondary flex min-h-11 items-center justify-center gap-1 px-2 text-sm">
+              <ChatBubbleLeftRightIcon className="h-5 w-5" /> Kirim WA
+            </button>
+            <button type="button" onClick={downloadQR} className="btn-secondary flex min-h-11 items-center justify-center gap-1 px-2 text-sm">
+              <ArrowDownTrayIcon className="h-5 w-5" /> Simpan QR
+            </button>
+          </div>
+        </section>}
+
       </div>
     </div>
   );

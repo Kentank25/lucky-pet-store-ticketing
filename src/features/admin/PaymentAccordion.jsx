@@ -23,11 +23,10 @@ export default function PaymentAccordion({
       icon={icon}
       isOpen={isOpen}
       onToggle={onToggle}
-      subtitle="Menunggu pembayaran"
       colorClass="indigo"
       headerExtras={
-        <div onClick={(e) => e.stopPropagation()}>
-          <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-text-secondary hover:text-indigo-600 transition-colors">
+        items.length > 0 && (
+          <label className="flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-2 text-sm font-bold text-text-secondary hover:bg-bg-subtle">
             <input
               type="checkbox"
               className="rounded-lg border-gray-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4 transition-all"
@@ -36,7 +35,7 @@ export default function PaymentAccordion({
             />
             Pilih Semua
           </label>
-        </div>
+        )
       }
     >
       <div className="space-y-4">

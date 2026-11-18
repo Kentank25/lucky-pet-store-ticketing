@@ -64,6 +64,21 @@ body {
   background-attachment: fixed;
 }
 
+@media (max-height: 740px) {
+  .monitor-status > div:first-child { padding: 0.75rem 1rem 0.5rem; }
+  .monitor-status > div:first-child > div:first-child { margin-bottom: 0.5rem; }
+  .monitor-status > div:first-child h2 { font-size: 1.35rem; line-height: 1.5rem; }
+  .monitor-status > div:nth-child(2) { margin-bottom: 0.5rem; padding: 0 1rem; }
+  .monitor-status > div:nth-child(3) { padding: 0 0.75rem 0.5rem; gap: 0.35rem; }
+  .monitor-status > div:nth-child(3) > div:first-child { padding: 0.65rem; }
+  .monitor-status > div:nth-child(3) > div:first-child svg { width: 1.75rem; height: 1.75rem; margin-bottom: 0.25rem; }
+  .monitor-status > div:nth-child(3) > div:first-child p:last-child { display: none; }
+  .monitor-status > div:nth-child(3) > div:last-child > div { padding: 0.5rem; }
+  .monitor-status > div:last-child { padding: 0.5rem 1rem; }
+  .monitor-share > p { margin-bottom: 0.5rem; }
+  .monitor-share svg { max-width: min(34dvh, 160px); height: auto; }
+}
+
 @layer utilities {
   .glass-panel {
     background: var(--glass-bg);

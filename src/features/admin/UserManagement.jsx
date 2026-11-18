@@ -335,7 +335,7 @@ export default function UserManagement() {
                           : "-"}
                       </td>
                       <td className="px-6 py-4 text-right last:pr-8">
-                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleEdit(user)}
                             className="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 dark:text-indigo-400 p-2 rounded-xl transition-all hover:scale-105 shadow-sm"

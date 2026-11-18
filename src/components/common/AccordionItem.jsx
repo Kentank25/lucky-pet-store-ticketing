@@ -1,4 +1,5 @@
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { useId } from "react";
 
 export default function AccordionItem({
   title,
@@ -11,77 +12,58 @@ export default function AccordionItem({
   headerExtras,
   subtitle,
 }) {
+  const panelId = useId();
   return (
-    <div
-      className={`glass-panel mb-4 transition-all duration-500 rounded-3xl overflow-hidden group hover:shadow-xl ${
-        isOpen
-          ? `shadow-lg shadow-${colorClass}-100/50 dark:shadow-none ring-1 ring-${colorClass}-500/20`
-          : "hover:bg-white/40 dark:hover:bg-white/5"
-      }`}
-    >
-      <div
-        className="p-5 flex items-center justify-between cursor-pointer select-none transition-colors"
-        onClick={onToggle}
-      >
-        <div className="flex items-center gap-4">
-          <div
-            className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all duration-300 shadow-inner group-hover:scale-110 ${
-              isOpen
-                ? `bg-${colorClass}-500 text-white shadow-${colorClass}-200`
-                : `bg-${colorClass}-50 text-${colorClass}-600 dark:bg-${colorClass}-900/20 dark:text-${colorClass}-400`
+    <div className="min-w-0 rounded-2xl border border-border-subtle bg-bg-surface">
+      <div className="flex flex-wrap items-center gap-x-3 px-3 py-2 sm:px-4">
+        <button
+          type="button"
+          aria-expanded={isOpen}
+          aria-controls={panelId}
+          onClick={onToggle}
+          className="flex min-h-11 min-w-0 flex-[1_1_12rem] items-center gap-2 rounded-xl text-left sm:gap-3"
+        >
+          <span
+            aria-hidden="true"
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+              colorClass === "amber"
+                ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
+                : "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
             }`}
           >
             {icon}
-          </div>
-          <div className="text-left">
-            <h4
-              className={`font-black text-lg transition-colors flex items-center gap-2 ${
-                isOpen
-                  ? "text-text-main"
-                  : "text-text-secondary group-hover:text-text-main"
-              }`}
+          </span>
+          <span className="min-w-0 flex-1 text-left">
+            <span
+              className="flex flex-wrap items-center gap-2 text-base font-bold text-text-main sm:text-lg"
             >
               {title}
               {count !== undefined && (
                 <span
-                  className={`text-xs font-bold px-2 py-0.5 rounded-full border bg-${colorClass}-100 text-${colorClass}-600 dark:bg-${colorClass}-900/30 dark:text-${colorClass}-400 border-${colorClass}-200 dark:border-${colorClass}-800`}
+                  className="rounded-full bg-bg-subtle px-2 py-0.5 text-xs font-bold text-text-secondary"
                 >
                   {count}
                 </span>
               )}
-            </h4>
+            </span>
             {subtitle && (
-              <p className="text-xs text-text-secondary font-medium mt-0.5">
+              <span className="mt-0.5 block text-xs font-medium text-text-secondary">
                 {subtitle}
-              </p>
+              </span>
             )}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          {headerExtras}
-          <div
-            className={`w-10 h-10 flex items-center justify-center rounded-full bg-white/50 dark:bg-black/20 text-text-muted transform transition-transform duration-500 border border-white/10 ${
-              isOpen
-                ? `rotate-180 bg-white dark:bg-white/10 shadow-sm text-${colorClass}-500`
-                : "group-hover:bg-white/80 dark:group-hover:bg-white/10"
-            }`}
+          </span>
+          <span
+            aria-hidden="true"
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-text-secondary motion-safe:transition-transform ${isOpen ? "rotate-180" : ""}`}
           >
             <ChevronDownIcon className="h-5 w-5" />
-          </div>
-        </div>
+          </span>
+        </button>
+        {headerExtras}
       </div>
 
-      <div
-        className={`grid transition-all duration-500 ease-in-out ${
-          isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-        }`}
-      >
-        <div className="overflow-hidden">
-          <div className="p-5 pt-0 border-t border-dashed border-border-subtle/50 mt-2">
-            <div className="pt-4">{children}</div>
-          </div>
-        </div>
+      <div id={panelId} hidden={!isOpen} className="border-t border-border-subtle px-3 py-3 sm:p-4">
+        {isOpen && children}
       </div>
     </div>
   );

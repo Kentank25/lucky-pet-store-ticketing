@@ -469,10 +469,10 @@ const AdminAnalytics = ({ tickets = [] }) => {
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in py-4">
+    <div className="min-w-0 space-y-5 sm:space-y-8">
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6">
         <div>
-          <h1 className="text-3xl font-black text-text-main tracking-tight flex items-center gap-3">
+          <h1 className="flex items-center gap-3 text-xl font-black tracking-tight text-text-main sm:text-3xl">
             <span className="p-2 bg-indigo-500/10 rounded-xl text-indigo-600 dark:text-indigo-400">
               <ChartChartIcon className="w-8 h-8" />
             </span>
@@ -483,12 +483,13 @@ const AdminAnalytics = ({ tickets = [] }) => {
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-3 bg-white dark:bg-slate-800/50 p-2 rounded-2xl shadow-sm border border-border-subtle items-center w-full xl:w-auto backdrop-blur-sm">
-          <div className="relative group">
+        <div className="grid w-full min-w-0 gap-2 rounded-2xl border border-border-subtle bg-bg-surface p-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center">
+          <div className="relative group min-w-0">
             <select
               value={filterType}
+              aria-label="Periode analitik"
               onChange={(e) => setFilterType(e.target.value)}
-              className="appearance-none pl-4 pr-10 py-2.5 bg-bg-subtle border-transparent focus:border-indigo-500 focus:bg-bg-surface rounded-xl text-sm font-bold text-text-secondary outline-none transition-all cursor-pointer hover:bg-bg-muted"
+              className="min-h-11 w-full cursor-pointer appearance-none rounded-xl bg-bg-subtle py-2.5 pr-10 pl-4 text-sm font-bold text-text-secondary hover:bg-bg-muted focus-visible:outline-2 focus-visible:outline-primary"
             >
               <option value="day">Harian</option>
               <option value="week">Mingguan</option>
@@ -502,9 +503,10 @@ const AdminAnalytics = ({ tickets = [] }) => {
 
           <input
             type="date"
+            aria-label="Tanggal analitik"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="px-4 py-2.5 bg-bg-subtle border-transparent focus:border-indigo-500 focus:bg-bg-surface rounded-xl text-sm font-bold text-text-secondary outline-none transition-all cursor-pointer hover:bg-bg-muted"
+            className="min-h-11 w-full min-w-0 rounded-xl bg-bg-subtle px-4 py-2.5 text-sm font-bold text-text-secondary hover:bg-bg-muted focus-visible:outline-2 focus-visible:outline-primary sm:w-auto"
           />
         </div>
       </div>

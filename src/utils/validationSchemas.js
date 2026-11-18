@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { SERVICE_TYPE } from "../constants";
+import { getRoom } from "./roomQueue";
 
 export const ticketSchema = z.object({
-  nama: z.string().min(1, "Nama pemilik wajib diisi"),
+  nama: z.string().min(1, "Nama pemilik wajib diisi").max(200, "Nama maksimal 200 karakter"),
   kontak: z
     .string()
     .min(10, "Nomor minimal 10 digit")
@@ -13,7 +14,12 @@ export const ticketSchema = z.object({
   }),
   catatan: z.string().max(200, "Catatan maksimal 200 karakter").optional(),
   jam: z.string().min(1, "Waktu/Jam wajib dipilih"),
-  tanggalRilis: z.string().min(1, "Tanggal wajib diisi"),
+  tanggalRilis: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Pilih tanggal yang valid"),
+  roomId: z.string(),
+}).refine(({ roomId, layanan }) =>
+  !!getRoom(roomId, layanan), {
+  path: ["roomId"],
+  message: "Pilih ruang yang sesuai layanan",
 });
 
 export const userSchema = z.object({

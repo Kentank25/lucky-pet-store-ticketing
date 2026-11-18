@@ -3,21 +3,18 @@ import {
   query,
   where,
   onSnapshot,
-  addDoc,
-  updateDoc,
-  doc,
   getCountFromServer,
   getDocs,
   orderBy,
-  arrayUnion,
 } from "firebase/firestore";
-import { db } from "./firebase";
-import { createLog } from "./logService";
+import { auth, db } from "./firebase";
+import { createTicketOperations, TICKETS } from "./ticketOperations";
 import { TICKET_STATUS, SERVICE_TYPE } from "../constants";
 
-export const COLLECTION_NAME = "petshop-app/v1/tickets";
+export const COLLECTION_NAME = TICKETS;
+const ticketOperations = createTicketOperations(db, () => auth.currentUser?.uid ?? null);
 
-export const subscribeToTickets = (callback) => {
+export const subscribeToTickets = (callback, onError) => {
   const q = query(
     collection(db, COLLECTION_NAME),
     where("status", "in", Object.values(TICKET_STATUS)),
@@ -31,80 +28,14 @@ export const subscribeToTickets = (callback) => {
       ...doc.data(),
     }));
     callback(tickets);
-  });
+  }, onError);
 };
 
-export const addTicket = async (ticketData, role, customStatus = null) => {
-  const initialStatus = customStatus || TICKET_STATUS.PENDING;
-  const logMsg = customStatus
-    ? `Tiket dibuat via Emergency (Admin). Status langsung: ${customStatus}.`
-    : role === "kiosk"
-    ? `Tiket dibuat via Kiosk (${ticketData.layanan}). Menunggu validasi.`
-    : role === "guest"
-    ? `Tiket dibuat oleh Tamu/Public (${ticketData.layanan}). Menunggu validasi Admin.`
-    : `Tiket dibuat oleh Admin (${ticketData.layanan}). Menunggu validasi.`;
+export const addTicket = (ticketData, { source, express }) =>
+  ticketOperations.create(ticketData, { source, express });
 
-  const isKiosk = role === "kiosk" || role === "guest";
-
-  const newTicket = {
-    ...ticketData,
-    tanggalSelesai: "",
-    status: initialStatus,
-    source: isKiosk ? "kiosk" : "admin",
-    log: [
-      {
-        timestamp: new Date().toISOString(),
-        message: logMsg,
-      },
-    ],
-  };
-
-  const docRef = await addDoc(collection(db, COLLECTION_NAME), newTicket);
-  await createLog(docRef.id, newTicket.nama, newTicket.layanan, logMsg);
-  return docRef.id;
-};
-
-export const updateTicketStatus = async (id, status, message, ticketData) => {
-  const ticketRef = doc(db, COLLECTION_NAME, id);
-
-  const newLogEntry = {
-    timestamp: new Date().toISOString(),
-    message,
-  };
-
-  const updates = {
-    status,
-    log: arrayUnion(newLogEntry),
-  };
-
-  if (status === TICKET_STATUS.COMPLETED) {
-    updates.tanggalSelesai = new Date().toISOString();
-  }
-
-  await updateDoc(ticketRef, updates);
-
-  await createLog(
-    id,
-    ticketData?.nama || "Unknown",
-    ticketData?.layanan || "Unknown",
-    message
-  );
-};
-
-export const updateTicketDetails = async (id, updates, ticketData) => {
-  const ticketRef = doc(db, COLLECTION_NAME, id);
-
-  await updateDoc(ticketRef, {
-    ...updates,
-    log: [
-      ...(ticketData.log || []),
-      {
-        timestamp: new Date().toISOString(),
-        message: "Detail tiket diperbarui oleh Admin.",
-      },
-    ],
-  });
-};
+export const updateTicketStatus = ticketOperations.transition;
+export const updateTicketDetails = ticketOperations.edit;
 
 export const getAnalyticsStats = async () => {
   const coll = collection(db, COLLECTION_NAME);

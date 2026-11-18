@@ -7,6 +7,7 @@ export default function TicketList({
   filterStatus,
   filterService,
   cardClassName,
+  gridClassName = "",
 }) {
   let filteredTickets = tickets;
 
@@ -31,19 +32,14 @@ export default function TicketList({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6">
-      {filteredTickets.map((ticket, index) => (
-        <div
+    <div className={`grid grid-cols-1 items-start gap-3 sm:gap-4 ${gridClassName}`}>
+      {filteredTickets.map((ticket) => (
+        <TicketCard
           key={ticket.id}
-          style={{ animationDelay: `${index * 100}ms` }}
-          className="animate-fade-in"
-        >
-          <TicketCard
-            ticket={ticket}
-            onEdit={onEdit}
-            className={`${cardClassName} !animate-none`}
-          />
-        </div>
+          ticket={ticket}
+          onEdit={onEdit}
+          className={cardClassName}
+        />
       ))}
     </div>
   );

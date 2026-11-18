@@ -1,0 +1,38 @@
+.room-display { min-height: 100vh; padding: clamp(20px, 3vw, 48px); background: #f5f7fa; color: #172b4d; font-family: "Outfit", sans-serif; }
+.room-display-header, .room-display-brand, .room-display-footer, .room-footer-actions { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.room-display-header { padding-bottom: 24px; border-bottom: 1px solid #ced7e3; }
+.room-display-brand { justify-content: flex-start; }
+.room-display-brand img { width: 64px; height: 64px; object-fit: contain; }
+.room-display-brand p { margin: 0 0 4px; color: #475569; font-size: 16px; }
+.room-display-brand h1 { font-size: clamp(24px, 2.6vw, 40px); font-weight: 700; margin: 0; line-height: 1.2; }
+.room-display-clock { display: flex; flex-direction: column; text-align: right; gap: 8px; color: #475569; font-size: 14px; }
+.room-display-clock strong { font-size: 36px; color: #172b4d; font-variant-numeric: tabular-nums; line-height: 1; }
+.room-display-clock strong span { font-size: 14px; }
+.room-connection { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: #475569; padding: 20px 0; font-size: 14px; }
+.room-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #64748b; }
+.room-connection.connected .room-status-dot { background: #15803d; }
+.room-connection.offline, .room-connection.cached { color: #854d0e; }
+.room-connection.error { color: #b91c1c; }
+.room-connection button { min-height: 44px; padding: 8px 16px; border: 1px solid currentColor; border-radius: 8px; cursor: pointer; }
+.room-display-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.room-display-card { background: #fff; border: 1px solid #ced7e3; border-top: 5px solid #2563eb; border-radius: 12px; padding: clamp(20px, 2vw, 32px); }
+.room-display-card.clinic { border-top-color: #be185d; }
+.room-display-card h2 { font-size: clamp(26px, 2.6vw, 40px); font-weight: 700; margin: 0 0 8px; line-height: 1.15; }
+.room-state { color: #475569; font-size: 14px; min-height: 40px; }
+.room-current, .room-next { display: flex; flex-direction: column; gap: 8px; padding: 22px 0; border-bottom: 1px solid #e2e8f0; }
+.room-current span, .room-next span { font-size: 14px; color: #475569; }
+.room-current strong { font-size: clamp(36px, 3.8vw, 62px); line-height: 1.15; font-weight: 700; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.room-next strong { font-size: clamp(20px, 2.4vw, 34px); line-height: 1.2; font-weight: 600; overflow-wrap: anywhere; }
+.room-queue-count { display: flex; align-items: baseline; gap: 12px; padding-top: 22px; }
+.room-queue-count strong { font-size: 40px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.room-queue-count span { font-size: 14px; color: #475569; }
+.room-unassigned { margin-top: 20px; padding: 16px; color: #854d0e; background: #fef9c3; border-radius: 8px; }
+.room-display-footer { padding-top: 24px; margin-top: 28px; border-top: 1px solid #ced7e3; color: #475569; font-size: 14px; }
+.room-display-footer small { display: block; margin-top: 8px; font-size: 12px; }
+.room-footer-actions { flex-shrink: 0; gap: 12px; }
+.room-footer-actions a, .room-footer-actions button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 12px 16px; border: 1px solid #ced7e3; border-radius: 8px; color: #172b4d; background: white; text-decoration: none; cursor: pointer; }
+.room-footer-actions svg { width: 22px; height: 22px; }
+.room-display a:focus-visible, .room-display button:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+@media (min-width: 1900px) { .room-display { padding-inline: max(48px, calc((100vw - 1800px) / 2)); } }
+@media (max-width: 1100px) { .room-display-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .room-display-header, .room-display-footer { flex-direction: column; align-items: flex-start; } .room-display-clock { text-align: left; } .room-display-brand img { width: 44px; height: 44px; } .room-display-grid { grid-template-columns: 1fr; } .room-state { min-height: 0; } }
