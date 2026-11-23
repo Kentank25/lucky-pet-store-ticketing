@@ -63,12 +63,11 @@ export default function UserManagement() {
     let validationResult;
     if (editingUser) {
       validationResult = {
-        success: formData.name.length >= 2,
+        success: formData.name.trim().length >= 2,
         error: {
           flatten: () => ({ fieldErrors: { name: ["Nama terlalu pendek"] } }),
         },
       };
-      if (formData.name.length < 2) validationResult.success = false;
     } else {
       validationResult = userSchema.safeParse(formData);
     }
@@ -91,7 +90,7 @@ export default function UserManagement() {
     try {
       if (editingUser) {
         await updateUser(editingUser.id, {
-          name: formData.name,
+          name: formData.name.trim(),
           role: formData.role,
         });
         toast.success("Data pengguna diperbarui!");
@@ -99,12 +98,13 @@ export default function UserManagement() {
         await registerUser(
           formData.email,
           formData.password,
-          formData.name,
+          formData.name.trim(),
           formData.role
         );
         toast.success("Pengguna berhasil dibuat!");
       }
 
+      handleCloseModal();
       fetchUsers();
     } catch (error) {
       console.error(error);
@@ -394,6 +394,8 @@ export default function UserManagement() {
                           onChange={(e) =>
                             setFormData({ ...formData, name: e.target.value })
                           }
+                          aria-invalid={!!errors.name}
+                          aria-describedby={errors.name ? "user-name-error" : undefined}
                           className={`input-minimal ${
                             errors.name
                               ? "border-red-500 focus:border-red-500 ring-red-100"
@@ -402,7 +404,7 @@ export default function UserManagement() {
                           placeholder="Nama Lengkap"
                         />
                         {errors.name && (
-                          <p className="text-red-500 text-xs mt-1 font-bold ml-1">
+                          <p id="user-name-error" role="alert" className="text-red-500 text-xs mt-1 font-bold ml-1">
                             {errors.name}
                           </p>
                         )}
@@ -418,6 +420,8 @@ export default function UserManagement() {
                           onChange={(e) =>
                             setFormData({ ...formData, email: e.target.value })
                           }
+                          aria-invalid={!!errors.email}
+                          aria-describedby={errors.email ? "user-email-error" : undefined}
                           className={`input-minimal ${
                             errors.email
                               ? "border-red-500 focus:border-red-500 ring-red-100"
@@ -431,7 +435,7 @@ export default function UserManagement() {
                           disabled={!!editingUser}
                         />
                         {errors.email && (
-                          <p className="text-red-500 text-xs mt-1 font-bold ml-1">
+                          <p id="user-email-error" role="alert" className="text-red-500 text-xs mt-1 font-bold ml-1">
                             {errors.email}
                           </p>
                         )}
@@ -452,6 +456,8 @@ export default function UserManagement() {
                                 password: e.target.value,
                               })
                             }
+                            aria-invalid={!!errors.password}
+                            aria-describedby={errors.password ? "user-password-error" : undefined}
                             className={`input-minimal ${
                               errors.password
                                 ? "border-red-500 focus:border-red-500 ring-red-100"
@@ -460,7 +466,7 @@ export default function UserManagement() {
                             placeholder="Password (Min. 6 karakter)"
                           />
                           {errors.password && (
-                            <p className="text-red-500 text-xs mt-1 font-bold ml-1">
+                            <p id="user-password-error" role="alert" className="text-red-500 text-xs mt-1 font-bold ml-1">
                               {errors.password}
                             </p>
                           )}

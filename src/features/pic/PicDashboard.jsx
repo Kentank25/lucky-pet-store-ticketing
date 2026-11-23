@@ -3,11 +3,11 @@ import {
   ScissorsIcon,
   HeartIcon,
   ChatBubbleLeftRightIcon,
-  TicketIcon,
   CheckIcon,
   ArrowRightIcon,
   SparklesIcon,
   XCircleIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 import { useAuth } from "../../context/AuthContext";
 import { updateTicketStatus } from "../../services/ticketService";
@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 import { TICKET_STATUS, SERVICE_TYPE } from "../../constants";
 import TicketSkeleton from "../../components/tickets/TicketSkeleton";
 import { useState } from "react";
+import { SERVICE_ROOMS, compareQueueTickets, getRoom } from "../../utils/roomQueue";
 import ThemeToggle from "../../components/common/ThemeToggle";
 import ConfirmationModal from "../../components/modals/ConfirmationModal";
 import CancellationModal from "../../components/modals/CancellationModal";
@@ -62,19 +63,18 @@ export default function PicDashboard() {
       </div>
     );
 
+  const serviceRooms = SERVICE_ROOMS.filter((r) => r.service === service);
   const activeTickets = tickets.filter(
     (t) => t.status === TICKET_STATUS.ACTIVE && t.layanan === service
   );
 
   const waitingTickets = tickets
     .filter((t) => t.status === TICKET_STATUS.WAITING && t.layanan === service)
-    .sort((a, b) => {
-      const timeA = a.jam || "00:00";
-      const timeB = b.jam || "00:00";
-      const dateA = new Date(`${a.tanggalRilis}T${timeA}`);
-      const dateB = new Date(`${b.tanggalRilis}T${timeB}`);
-      return dateA - dateB;
-    });
+    .sort(compareQueueTickets);
+
+  const unassignedTickets = [...activeTickets, ...waitingTickets].filter(
+    (t) => !getRoom(t.roomId, service)
+  );
 
   const completedCount = tickets.filter(
     (t) =>
@@ -232,182 +232,117 @@ export default function PicDashboard() {
           </div>
         </div>
 
-        {activeTickets.length > 0 && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 px-1">
-              <div className="relative flex h-3 w-3">
-                <span
-                  className={`absolute inline-flex h-full w-full rounded-full opacity-30 ${
-                    isGrooming ? "bg-indigo-400" : "bg-rose-400"
-                  }`}
-                ></span>
-                <span
-                  className={`relative inline-flex rounded-full h-3 w-3 ${
-                    isGrooming ? "bg-indigo-500" : "bg-rose-500"
-                  }`}
-                ></span>
-              </div>
-              <h2 className="text-lg font-bold text-text-secondary uppercase tracking-widest">
-                Sedang Diproses
-              </h2>
+        {unassignedTickets.length > 0 && (
+          <section role="alert" className="rounded-3xl border-2 border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 p-6 space-y-4">
+            <div className="flex items-start gap-3">
+              <ExclamationTriangleIcon className="w-6 h-6 text-amber-700 dark:text-amber-300 shrink-0" aria-hidden="true" />
+              <p className="text-amber-900 dark:text-amber-100 font-semibold">
+                {unassignedTickets.length} tiket belum memiliki ruang yang valid. Admin harus menetapkan ruang agar tiket dapat dipanggil.
+              </p>
             </div>
-
-            {activeTickets.map((ticket) => (
-              <div
-                key={ticket.id}
-                className="bg-bg-surface p-8 md:p-10 rounded-[2.5rem] relative overflow-hidden group shadow-xl hover:shadow-2xl transition-all duration-300 border border-border-subtle border-t-4 border-t-transparent hover:border-t-emerald-400"
-              >
-                <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 relative z-10">
-                  <div className="flex-1 space-y-6">
-                    <div className="flex justify-between items-start">
-                      <span
-                        className={`px-4 py-1.5 rounded-xl text-xs font-black uppercase tracking-widest ${
-                          isGrooming
-                            ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
-                            : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"
-                        }`}
-                      >
-                        {ticket.layanan}
-                      </span>
-                      <div className="text-right">
-                        <p className="text-[10px] text-text-muted font-bold uppercase tracking-wider">
-                          Waktu Mulai
-                        </p>
-                        <p className="text-2xl font-black text-text-main font-mono">
-                          {ticket.jam || "--:--"}
-                        </p>
-                      </div>
+            <ul className="space-y-2">
+              {unassignedTickets.map((t) => (
+                <li key={t.id} className="flex flex-wrap items-center justify-between gap-3 bg-bg-surface rounded-2xl p-4 border border-border-subtle">
+                  <div>
+                    <p className="font-bold text-text-main">{t.queueNumber || t.id.slice(0, 6)} - {t.nama}</p>
+                    <p className="text-sm text-text-secondary">{t.status} - {t.jam || "--:--"}</p>
+                  </div>
+                  {t.status === TICKET_STATUS.ACTIVE && (
+                    <div className="flex gap-2">
+                      <button type="button" onClick={() => handleCompleteTicket(t)} disabled={processingId === t.id} className="px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold disabled:opacity-70 disabled:cursor-not-allowed">Selesaikan</button>
+                      <button type="button" onClick={() => handleCancelTicket(t)} disabled={processingId === t.id} className="px-4 py-2 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 font-bold disabled:opacity-70 disabled:cursor-not-allowed">Batalkan</button>
                     </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {serviceRooms.map((room) => {
+            const active = activeTickets.find((t) => t.roomId === room.id);
+            const queue = waitingTickets.filter((t) => t.roomId === room.id);
+            const next = queue[0];
+            const rest = queue.slice(1);
+            const busy = !!active;
+            const staff = (t) => t.doctorName || t.groomerName || "-";
+            return (
+              <section key={room.id} aria-label={room.name} className="bg-bg-surface rounded-[2rem] p-6 md:p-8 border border-border-subtle shadow-xl space-y-6">
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <h2 className="text-2xl font-black text-text-main">{room.name}</h2>
+                  <div className="flex items-center gap-2">
+                    <span role="status" aria-atomic="true" className={`px-3 py-1 rounded-full text-xs font-bold ${busy ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200" : "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100"}`}>
+                      {busy ? "Sedang Melayani" : "Ruang Tersedia"}
+                    </span>
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200">
+                      {queue.length} menunggu
+                    </span>
+                  </div>
+                </div>
+
+                {active ? (
+                  <div className="space-y-4">
                     <div>
-                      <h3 className="text-4xl md:text-5xl font-black text-text-main tracking-tight leading-none mb-2">
-                        {ticket.nama}
-                      </h3>
-                      <p className="text-text-muted font-mono text-sm opacity-60">
-                        ID: {ticket.id}
-                      </p>
+                      <p className="text-sm font-bold text-text-secondary">{active.queueNumber || active.id.slice(0, 6)}</p>
+                      <h3 className="text-3xl font-black text-text-main">{active.nama}</h3>
+                      <p className="text-text-secondary">Petugas: {staff(active)} - Jam {active.jam || "--:--"}</p>
                     </div>
-
-                    {ticket.catatan && (
-                      <div className="bg-bg-subtle/50 p-6 rounded-3xl border border-border-subtle flex gap-4 items-start">
-                        <ChatBubbleLeftRightIcon className="w-6 h-6 text-text-muted shrink-0 mt-1" />
-                        <p className="text-text-secondary italic leading-relaxed">
-                          "{ticket.catatan}"
-                        </p>
+                    {active.catatan && (
+                      <div className="bg-bg-subtle/50 p-4 rounded-2xl border border-border-subtle flex gap-3 items-start">
+                        <ChatBubbleLeftRightIcon className="w-5 h-5 text-text-muted shrink-0 mt-0.5" aria-hidden="true" />
+                        <p className="text-text-secondary italic">"{active.catatan}"</p>
                       </div>
                     )}
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <button type="button" onClick={() => handleCompleteTicket(active)} disabled={processingId === active.id} className="flex-1 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+                        {processingId === active.id ? (<><span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /><span>Memproses...</span></>) : (<><CheckIcon className="w-5 h-5" aria-hidden="true" /><span>Selesaikan</span></>)}
+                      </button>
+                      <button type="button" onClick={() => handleCancelTicket(active)} disabled={processingId === active.id} className="flex-1 py-4 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-2xl font-bold border-2 border-rose-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+                        <XCircleIcon className="w-5 h-5" aria-hidden="true" /><span>Batalkan</span>
+                      </button>
+                    </div>
                   </div>
-
-                  <div className="lg:w-80 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-border-subtle pt-8 lg:pt-0 lg:pl-10">
-                    <button
-                      onClick={() => handleCompleteTicket(ticket)}
-                      disabled={processingId === ticket.id}
-                      className="w-full py-5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed group-hover:scale-105 mb-3"
-                    >
-                      {processingId === ticket.id ? (
-                        <>
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          <span>Memproses...</span>
-                        </>
-                      ) : (
-                        <>
-                          <CheckIcon className="w-6 h-6 stroke-[3px]" />
-                          <span>Selesaikan</span>
-                        </>
-                      )}
-                    </button>
-                    <button
-                      onClick={() => handleCancelTicket(ticket)}
-                      disabled={processingId === ticket.id}
-                      className="w-full py-4 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-2xl font-bold text-lg border-2 border-rose-100 hover:border-rose-200 transition-all flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed hover:-translate-y-0.5 active:scale-95"
-                    >
-                      <XCircleIcon className="w-6 h-6" />
-                      <span>Batalkan</span>
-                    </button>
-                    <p className="text-center text-xs text-text-muted mt-4 font-medium">
-                      Klik jika layanan sudah selesai
-                    </p>
+                ) : next ? (
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-sm font-bold text-text-secondary">Berikutnya - {next.queueNumber || next.id.slice(0, 6)}</p>
+                      <h3 className="text-3xl font-black text-text-main">{next.nama}</h3>
+                      <p className="text-text-secondary">Petugas: {staff(next)} - Jam {next.jam || "--:--"}</p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <button type="button" onClick={() => handleTakeTicket(next)} disabled={processingId === next.id} className={`flex-1 py-4 rounded-2xl text-white font-bold flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed ${isGrooming ? "bg-indigo-700 hover:bg-indigo-800" : "bg-rose-700 hover:bg-rose-800"}`}>
+                        {processingId === next.id ? (<><span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /><span>Memproses...</span></>) : (<><span>Panggil &amp; Mulai</span><ArrowRightIcon className="w-5 h-5" aria-hidden="true" /></>)}
+                      </button>
+                      <button type="button" onClick={() => handleCancelTicket(next)} disabled={processingId === next.id} className="flex-1 py-4 rounded-2xl text-rose-700 font-bold border-2 border-rose-200 hover:bg-rose-50 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+                        <XCircleIcon className="w-5 h-5" aria-hidden="true" /><span>Batalkan</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+                ) : (
+                  <div className="py-8 text-center text-text-secondary">
+                    <SparklesIcon className="w-8 h-8 mx-auto mb-2 text-text-muted" aria-hidden="true" />
+                    <p>Belum ada antrean untuk ruang ini</p>
+                  </div>
+                )}
 
-        {activeTickets.length === 0 && waitingTickets.length > 0 && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 px-1">
-              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-              <h2 className="text-lg font-bold text-text-secondary uppercase tracking-widest">
-                Antrian Berikutnya
-              </h2>
-            </div>
-
-            <div className="group bg-bg-surface rounded-[2.5rem] p-10 md:p-14 text-center border border-border-subtle shadow-2xl relative overflow-hidden">
-              <div
-                className={`absolute inset-0 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500 ${
-                  isGrooming ? "bg-indigo-600" : "bg-rose-600"
-                }`}
-              ></div>
-
-              <div className="relative z-10 max-w-2xl mx-auto space-y-8">
-                <div className="inline-flex p-6 rounded-full bg-bg-subtle mb-4 group-hover:scale-110 transition-transform duration-500">
-                  <TicketIcon className="w-16 h-16 text-text-main opacity-80" />
-                </div>
-
-                <div>
-                  <h3 className="text-3xl md:text-4xl font-black text-text-main mb-2">
-                    Siap untuk pelanggan berikutnya?
-                  </h3>
-                  <p className="text-xl text-text-secondary">
-                    <strong className="text-text-main underline decoration-2 decoration-border-main underline-offset-4">
-                      {waitingTickets[0].nama}
-                    </strong>{" "}
-                    sedang menunggu.
-                  </p>
-                </div>
-
-                <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
-                  <button
-                    onClick={() => handleTakeTicket(waitingTickets[0])}
-                    disabled={!!processingId}
-                    className={`w-full md:w-auto px-12 py-5 rounded-2xl text-white font-bold text-xl shadow-xl hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3 ${
-                      isGrooming
-                        ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/30"
-                        : "bg-rose-600 hover:bg-rose-700 shadow-rose-500/30"
-                    }`}
-                  >
-                    <span>Panggil & Mulai</span>
-                    <ArrowRightIcon className="w-6 h-6 stroke-[3px]" />
-                  </button>
-
-                  <button
-                    onClick={() => handleCancelTicket(waitingTickets[0])}
-                    disabled={!!processingId}
-                    className="w-full md:w-auto px-8 py-5 rounded-2xl text-rose-600 font-bold text-lg border-2 border-transparent hover:bg-rose-50 hover:border-rose-100 transition-all flex items-center justify-center gap-2"
-                  >
-                    <XCircleIcon className="w-6 h-6" />
-                    <span>Batalkan</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTickets.length === 0 && waitingTickets.length === 0 && (
-          <div className="py-24 text-center glass-panel rounded-[3rem] border-dashed border-2 border-border-subtle/50">
-            <div className="w-24 h-24 bg-bg-subtle rounded-full flex items-center justify-center mx-auto mb-6">
-              <SparklesIcon className="w-10 h-10 text-text-muted" />
-            </div>
-            <h3 className="text-2xl font-bold text-text-main mb-2">
-              Semua Beres!
-            </h3>
-            <p className="text-text-secondary max-w-xs mx-auto">
-              Tidak ada antrian saat ini. Silakan beristirahat.
-            </p>
-          </div>
-        )}
+                {rest.length > 0 && (
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-2">Antrean Selanjutnya</h4>
+                    <ul className="space-y-2">
+                      {rest.map((t) => (
+                        <li key={t.id} className="flex justify-between gap-2 text-sm bg-bg-subtle/50 rounded-xl px-3 py-2 border border-border-subtle text-text-main">
+                          <span className="font-bold">{t.queueNumber || t.id.slice(0, 6)} - {t.nama}</span>
+                          <span className="text-text-secondary">{t.jam || "--:--"} - {staff(t)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </section>
+            );
+          })}
+        </div>
       </div>
       <ConfirmationModal
         isOpen={confirmModal.isOpen}

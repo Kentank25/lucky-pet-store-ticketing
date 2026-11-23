@@ -10,6 +10,15 @@ Sistem manajemen antrian dan ticketing modern untuk Lucky Pet Shop, dibangun unt
 - **PIC (Grooming & Klinik)**: Dashboard khusus untuk memproses layanan yang sedang berjalan.
 - **Kiosk (Self-Service)**: Mode layar sentuh untuk pelanggan mengambil nomor antrian sendiri.
 - **Queue Monitor**: Halaman publik untuk memantau status antrian secara real-time.
+- **Layar Antrean Ruang (/display)**: Halaman publik (tanpa login) berisi komponen RoomQueueDisplay untuk ditampilkan di TV/monitor: nomor yang sedang dilayani, jumlah menunggu, dan antrean berikutnya per ruang.
+
+### 1b. **Multi-Ruang & Pilihan Petugas**
+
+- Ruang layanan: **Grooming 1**, **Grooming 2** (layanan Grooming) dan **Dokter 1**, **Dokter 2** (layanan Klinik); ID: `grooming-1`, `grooming-2`, `dokter-1`, `dokter-2`.
+- Setiap tiket menyimpan `roomId` dan nomor antrean per layanan per hari (`queueSequence`/`queueNumber`, format `G-001` untuk Grooming, `K-001` untuk Klinik; tanggal mengikuti Asia/Jakarta). Nomor dialokasikan lewat counter atomik.
+- Pelanggan/admin dapat memilih dokter (Klinik) atau groomer (Grooming); tiket menyimpan `doctorId`/`doctorName` atau `groomerId`/`groomerName`. Petugas terikat ke ruang tetap (Dokter 1 = `dokter-1`, Groomer 1 = `grooming-1`, dst.).
+- Satu ruang hanya dapat melayani satu tiket `aktif` pada satu waktu (kunci `room-states` ditegakkan di Firestore rules).
+- Tiket lama tanpa `roomId`/nomor antrean dihitung sebagai *belum ditetapkan* di layar ruang.
 
 ### 2. **Real-Time Updates** (Firebase)
 
@@ -80,3 +89,4 @@ Gunakan akun berikut untuk mencoba fitur dashboard:
 >
 > - Halaman Kiosk Publik tersedia di `/kiosk` (tanpa login).
 > - Halaman Monitor Antrian tersedia via Scan QR atau link `/monitor/:id`.
+> - Layar antrean per ruang tersedia di `/display` (publik, tanpa login).

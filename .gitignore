@@ -24,3 +24,4 @@ test.result/
 *.njsproj
 *.sln
 *.sw?
+.agents

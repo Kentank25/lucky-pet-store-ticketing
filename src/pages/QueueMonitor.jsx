@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { COLLECTION_NAME } from "../services/ticketService";
-import { useTheme } from "../context/ThemeContext";
 import { TICKET_STATUS, SERVICE_TYPE } from "../constants";
 import {
   ClockIcon,
@@ -31,16 +30,11 @@ export default function QueueMonitor() {
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState("status");
-  const { setTheme } = useTheme();
   const [queueStat, setQueueStat] = useState({
     activeTicket: null,
     peopleAhead: 0,
     totalInQueue: 0,
   });
-
-  useEffect(() => {
-    setTheme("light");
-  }, [setTheme]);
 
   useEffect(() => {
     if (!id) return;
@@ -57,8 +51,13 @@ export default function QueueMonitor() {
     return () => unsub();
   }, [id]);
 
+  const ticketId = ticket?.id;
+  const ticketLayanan = ticket?.layanan;
+  const ticketTanggal = ticket?.tanggalRilis;
+  const ticketRoomId = ticket?.roomId;
+
   useEffect(() => {
-    if (!ticket || !ticket.layanan) return;
+    if (!ticketId || !ticketLayanan) return;
 
     // Subscribe to all tickets to calculate queue position
     const unsubQueue = subscribeToTickets((allTickets) => {
@@ -68,16 +67,16 @@ export default function QueueMonitor() {
       // Let's focus on "Waiting" and "Active".
 
       const activeAndWaiting = allTickets.filter((item) =>
-        item.layanan === ticket.layanan &&
-        item.tanggalRilis === ticket.tanggalRilis &&
-        (!ticket.roomId || item.roomId === ticket.roomId) &&
+        item.layanan === ticketLayanan &&
+        item.tanggalRilis === ticketTanggal &&
+        (!ticketRoomId || item.roomId === ticketRoomId) &&
         [TICKET_STATUS.WAITING, TICKET_STATUS.ACTIVE].includes(item.status)
       ).sort(compareQueueTickets);
       const currentActive = activeAndWaiting.find((item) => item.status === TICKET_STATUS.ACTIVE);
-      const myIndex = activeAndWaiting.findIndex((item) => item.id === ticket.id);
+      const myIndex = activeAndWaiting.findIndex((item) => item.id === ticketId);
       const aheadCount = myIndex < 0 ? 0 : activeAndWaiting.slice(0, myIndex)
         .filter((item) => item.status === TICKET_STATUS.WAITING).length +
-        activeAndWaiting.filter((item) => item.status === TICKET_STATUS.ACTIVE && item.id !== ticket.id).length;
+        activeAndWaiting.filter((item) => item.status === TICKET_STATUS.ACTIVE && item.id !== ticketId).length;
 
       setQueueStat({
         activeTicket: currentActive || null,
@@ -88,7 +87,7 @@ export default function QueueMonitor() {
     });
 
     return () => unsubQueue();
-  }, [ticket]);
+  }, [ticketId, ticketLayanan, ticketTanggal, ticketRoomId]);
 
   if (loading) {
     return (

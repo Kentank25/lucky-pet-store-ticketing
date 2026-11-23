@@ -11,15 +11,22 @@ import LoginPage from "./pages/LoginPage";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import QueueMonitor from "./pages/QueueMonitor";
 import NotFoundPage from "./pages/NotFoundPage";
+import RoomQueueDisplay from "./pages/RoomQueueDisplay";
 
 function App() {
-  const { role, loading } = useAuth();
+  const { user, role, loading, logout } = useAuth();
   const { theme } = useTheme();
   const location = useLocation();
 
   useEffect(() => {
     const root = window.document.documentElement;
-    if (location.pathname === "/kiosk" || location.pathname === "/login") {
+    const p = location.pathname;
+    if (
+      p === "/kiosk" ||
+      p === "/login" ||
+      p === "/display" ||
+      p.startsWith("/monitor/")
+    ) {
       root.classList.remove("dark");
       root.classList.add("light");
     } else {
@@ -61,6 +68,7 @@ function App() {
     <Routes>
       <Route path="/kiosk" element={<KioskDashboard />} />
       <Route path="/monitor/:id" element={<QueueMonitor />} />
+      <Route path="/display" element={<RoomQueueDisplay />} />
 
       <Route
         path="/login"
@@ -70,24 +78,33 @@ function App() {
       <Route
         path="/"
         element={
-          !role ? (
+          !user && !role ? (
             <Navigate to="/login" replace />
-          ) : (
+          ) : role === "kiosk" ? (
+            <Navigate to="/kiosk" replace />
+          ) : role === "admin" ||
+            role === "pic_grooming" ||
+            role === "pic_klinik" ? (
             <Layout>
-              {role === "admin" && <AdminDashboard />}
-              {(role === "pic_grooming" ||
-                role === "pic_klinik" ||
-                role === "kiosk") && <PicDashboard />}
-              {role === "kiosk" && (
-                <div className="p-4">
-                  Akun Kiosk dialihkan ke{" "}
-                  <a href="/kiosk" className="text-blue-500 underline">
-                    Halaman Publik
-                  </a>
-                  .
-                </div>
-              )}
+              {role === "admin" ? <AdminDashboard /> : <PicDashboard />}
             </Layout>
+          ) : (
+            <div className="min-h-screen flex items-center justify-center p-4">
+              <div className="glass-panel p-8 rounded-3xl max-w-md text-center space-y-4">
+                <h2 className="text-2xl font-bold">
+                  Akses Tidak Valid / Role Tidak Ditemukan
+                </h2>
+                <p className="opacity-70">
+                  Akun Anda tidak memiliki role yang valid. Hubungi admin.
+                </p>
+                <button
+                  onClick={() => logout()}
+                  className="px-6 py-2 rounded-xl bg-primary text-white font-semibold"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
           )
         }
       />

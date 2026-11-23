@@ -72,7 +72,12 @@ Routes frontend: `/login`, `/` untuk dashboard, `/kiosk`, `/monitor/:id`, dan ha
 
 Role `kiosk` tidak tersedia dalam schema pembuatan user saat ini. Di route `/`, role ini juga dirender sebagai PIC sebelum pesan tautan kiosk muncul; karena pemilihan layanan PIC menggunakan fallback, perilakunya dapat mengarah ke Klinik. **Usulan:** kiosk publik tidak memerlukan akun staff; tentukan penanganan role legacy saat migrasi.
 
-**Penting:** pembatasan UI di atas bukan jaminan keamanan existing. Rules repository mengizinkan semua pengguna terautentikasi membaca/menulis semua dokumen, termasuk `users.role`. Tiket bisa dibaca/dibuat publik. Jika rules tersebut deployed, akses dapat melewati pembatasan UI.
+**Penting:** pembatasan UI bukan satu-satunya lapisan. `firestore.rules` lokal kini menegakkan role (`users` hanya admin/pemilik, `system-logs` dibaca admin), alokasi nomor atomik lewat `queue-counters`, kunci okupansi ruang lewat `room-states` (satu tiket `aktif` per ruang), pasangan dokter/groomer dengan ruang, serta pembatasan transisi status per layanan PIC. Pengecualian: **baca tiket tetap publik** (`allow read: if true`) agar `/monitor/:id` berfungsi, sehingga payload tiket termasuk `telepon`/`kontak` dan `catatan` dapat dibaca siapa pun yang mengetahui/menebak ID. Ini risiko privasi sampai ada proyeksi server (token publik dengan field terbatas). Guest juga dapat membuat tiket `PENDING` ber-`source` `kiosk` bila lolos validasi. Rules tersebut belum tentu sudah deployed; verifikasi sebelum mengandalkannya.
+
+### Route publik dan perilaku multi-ruang
+
+- `/kiosk`, `/monitor/:id`, dan `/display` (`RoomQueueDisplay`, layar antrean per ruang: Grooming 1/2, Dokter 1/2; menampilkan tiket `aktif`, jumlah `WAITING`, antrean berikutnya, dan hitungan tiket belum ber-ruang/nomor untuk hari ini) tidak memerlukan login. Backend perlu endpoint publik read-only untuk ketiganya.
+- PicDashboard bekerja per ruang: aksi mulai layanan mengunci ruang (`room-states`) dan selesai/batal melepasnya; PIC hanya untuk layanannya, admin untuk semua. Urutan antrean per ruang: `jam`, lalu `queueSequence`, lalu ID.
 
 ### Usulan: backend sebagai sumber otorisasi
 
