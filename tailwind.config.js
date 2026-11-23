@@ -8,14 +8,15 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Outfit"', 'sans-serif'],
+        sans: ['"Nunito Sans"', 'system-ui', 'sans-serif'],
+        heading: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
       },
       colors: {
         'bg-canvas': 'var(--color-bg-canvas)',
         'bg-surface': 'var(--color-bg-surface)',
         'bg-subtle': 'var(--color-bg-subtle)',
         'bg-muted': 'var(--color-bg-muted)',
-        
+
         'text-main': 'var(--color-text-main)',
         'text-secondary': 'var(--color-text-secondary)',
         'text-muted': 'var(--color-text-muted)',
@@ -27,8 +28,16 @@ export default {
         'primary': 'var(--color-primary)',
         'primary-soft': 'var(--color-primary-soft)',
         'primary-hover': 'var(--color-primary-hover)',
-        
+
+        'grooming': 'var(--color-grooming)',
+        'grooming-soft': 'var(--color-grooming-soft)',
+        'grooming-hover': 'var(--color-grooming-hover)',
+
         'secondary': 'var(--color-secondary)',
+
+        'danger': 'var(--color-danger)',
+        'danger-soft': 'var(--color-danger-soft)',
+        'danger-hover': 'var(--color-danger-hover)',
 
         'glass-bg': 'var(--glass-bg)',
         'glass-border': 'var(--glass-border)',
@@ -37,9 +46,9 @@ export default {
         'glass-shadow': 'var(--glass-shadow)',
         'glow-primary': '0 0 20px -5px var(--color-primary-hover)',
         'glow-secondary': '0 0 20px -5px var(--color-secondary)',
-        'elevation-1': '0 2px 5px -1px rgba(0, 0, 0, 0.1), 0 1px 3px -1px rgba(0, 0, 0, 0.06)',
-        'elevation-2': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        'elevation-3': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        'elevation-1': '0 2px 5px -1px rgba(0, 0, 0, 0.08), 0 1px 3px -1px rgba(0, 0, 0, 0.05)',
+        'elevation-2': '0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.05)',
+        'elevation-3': '0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04)',
       },
       keyframes: {
         fadeIn: {
@@ -60,8 +69,8 @@ export default {
         },
       },
       animation: {
-        'fade-in': 'fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'scale-in': 'scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'fade-in': 'fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'scale-in': 'scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'float': 'float 6s ease-in-out infinite',
         'pulse-soft': 'pulseSoft 3s ease-in-out infinite',
       },

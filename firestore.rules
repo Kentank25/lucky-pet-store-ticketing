@@ -2,9 +2,17 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
-    function role() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role; }
+    function userData() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function role() { return userData().role; }
+    function userRoom() { return userData().get('roomId', null); }
     function admin() { return signedIn() && role() == 'admin'; }
     function staff(kind) { return admin() || (signedIn() && ((kind == 'Grooming' && role() == 'pic_grooming') || (kind == 'Klinik' && role() == 'pic_klinik'))); }
+    function staffForRoom(kind, room) { return admin() || (staff(kind) && (userRoom() == null || userRoom() == room)); }
+    function validUserRoom(d) {
+      return !d.keys().hasAny(['roomId']) || d.roomId == null ||
+        (d.role == 'pic_grooming' && d.roomId in ['grooming-1', 'grooming-2']) ||
+        (d.role == 'pic_klinik' && d.roomId in ['dokter-1', 'dokter-2']);
+    }
     function validRoom(d) { return d.roomId in (d.layanan == 'Grooming' ? ['grooming-1', 'grooming-2'] : ['dokter-1', 'dokter-2']); }
     function validDoctor(d) {
       return !d.keys().hasAny(['doctorId', 'doctorName']) ||
@@ -53,7 +61,7 @@ service cloud.firestore {
     match /users/{uid} {
       allow get: if signedIn() && (request.auth.uid == uid || admin());
       allow list: if admin();
-      allow create, update: if admin() && request.resource.data.role in ['admin','pic_grooming','pic_klinik'];
+      allow create, update: if admin() && request.resource.data.role in ['admin','pic_grooming','pic_klinik'] && validUserRoom(request.resource.data);
       allow delete: if admin() && uid != request.auth.uid;
     }
     match /petshop-app/v1/tickets/{id} {
@@ -74,7 +82,7 @@ service cloud.firestore {
           (request.resource.data.queueSequence == resource.data.queueSequence && request.resource.data.queueNumber == resource.data.queueNumber) : allocated(request.resource.data, id))
       ) || (
         // Status transitions cannot alter scheduling, room, or queue identity.
-        staff(resource.data.layanan) &&
+        staffForRoom(resource.data.layanan, resource.data.get('roomId', '')) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','log','startedAt','tanggalSelesai']) &&
         ((admin() && resource.data.status == 'PENDING' && request.resource.data.status == 'WAITING' && identity(resource.data)) ||
          (resource.data.status == 'WAITING' && request.resource.data.status == 'aktif' && identity(resource.data) && request.resource.data.startedAt == request.time && claimed(resource.data, id)) ||
@@ -108,14 +116,14 @@ service cloud.firestore {
       function claimTicket(id) {
         let path = /databases/$(database)/documents/petshop-app/v1/tickets/$(id);
         let ticket = getAfter(path).data;
-        return staff(ticket.layanan) && validRoom(ticket) && ticket.roomId == room && ticket.status == 'aktif' &&
+        return staffForRoom(ticket.layanan, room) && validRoom(ticket) && ticket.roomId == room && ticket.status == 'aktif' &&
           (!exists(path) || get(path).data.status == 'WAITING');
       }
       function releaseTicket(id) {
         let path = /databases/$(database)/documents/petshop-app/v1/tickets/$(id);
         let before = get(path).data;
         let after = getAfter(path).data;
-        return staff(before.layanan) && before.roomId == room && before.status == 'aktif' && after.status in ['PAYMENT','CANCELLED'];
+        return staffForRoom(before.layanan, room) && before.roomId == room && before.status == 'aktif' && after.status in ['PAYMENT','CANCELLED'];
       }
     }
     match /petshop-app/v1/system-logs/{id} {
@@ -126,7 +134,7 @@ service cloud.firestore {
       function logTicket(d) {
         let path = /databases/$(database)/documents/petshop-app/v1/tickets/$(d.ticketId);
         let ticket = getAfter(path).data;
-        return (staff(ticket.layanan) || (!exists(path) && ticket.status == 'PENDING' && ticket.createdAt == request.time)) &&
+        return (staffForRoom(ticket.layanan, ticket.get('roomId', '')) || (!exists(path) && ticket.status == 'PENDING' && ticket.createdAt == request.time)) &&
           d.toStatus == ticket.status && d.layanan == ticket.layanan && d.nama == ticket.nama;
       }
     }

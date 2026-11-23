@@ -14,7 +14,7 @@ const firebaseConfig = {
 };
 
 
-export const registerUser = async (email, password, name, role) => {
+export const registerUser = async (email, password, name, role, roomId = null) => {
   let secondaryApp = null;
   try {
 
@@ -29,6 +29,7 @@ export const registerUser = async (email, password, name, role) => {
       name,
       email,
       role,
+      roomId: role === "admin" ? null : (roomId || null),
       createdAt: new Date().toISOString(),
     });
 

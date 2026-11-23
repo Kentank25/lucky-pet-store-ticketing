@@ -1,5 +1,8 @@
 export default function Skeleton({ className = "" }) {
   return (
-    <div className={`animate-pulse bg-slate-200 rounded-xl ${className}`}></div>
+    <div
+      aria-hidden="true"
+      className={`animate-pulse rounded-xl bg-slate-200 dark:bg-slate-800 ${className}`}
+    />
   );
 }

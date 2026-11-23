@@ -29,6 +29,15 @@ export const userSchema = z.object({
   role: z.enum(["admin", "pic_grooming", "pic_klinik"], {
     errorMap: () => ({ message: "Role tidak valid" }),
   }),
+  roomId: z.string().nullable().optional(),
+}).refine(({ role, roomId }) => {
+  if (!roomId) return true;
+  if (role === "admin") return false;
+  const service = role === "pic_grooming" ? SERVICE_TYPE.GROOMING : SERVICE_TYPE.KLINIK;
+  return !!getRoom(roomId, service);
+}, {
+  path: ["roomId"],
+  message: "Pilih ruang yang sesuai role",
 });
 
 export const cancelSchema = z.object({
