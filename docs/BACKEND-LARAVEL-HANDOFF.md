@@ -87,6 +87,15 @@ Role `kiosk` tidak tersedia dalam schema pembuatan user saat ini. Di route `/`, 
 - Role, status awal, actor log, timestamp, dan source ditentukan server; jangan dipercaya dari request publik.
 - Tidak menyediakan registrasi staff publik atau endpoint pengubahan role oleh user sendiri.
 
+#### Isolasi Ruang/Petugas untuk Akun PIC (`users.room_id`)
+
+- **Existing:** Firebase frontend dan `firestore.rules` lokal kini mendukung kolom opsional `users.roomId` (`grooming-1`/`grooming-2` untuk `pic_grooming`, `dokter-1`/`dokter-2` untuk `pic_klinik`, atau `null` sebagai Koordinator Divisi yang mengakses semua ruang di layanannya). Jika `roomId` terisi, `PicDashboard` memfokuskan tampilan & metrik ke ruang tersebut dan `firestore.rules` menolak transisi status/lock ruang milik petugas lain. Daftar dokter/groomer tetap masih berupa mock di frontend.
+- **Usulan Laravel:**
+  - Ikat setiap akun PIC ke ruang/petugas tertentu menggunakan kolom opsional `users.room_id` (nullable FK ke `service_rooms.id`, misal `dokter-1`, `dokter-2`, `grooming-1`, `grooming-2`).
+  - Jika `users.room_id` terisi: akun PIC hanya melihat dan hanya boleh melakukan transisi status (`WAITING -> aktif -> PAYMENT / CANCELLED`) untuk tiket pada ruang tersebut (mencegah salah klik antar ruang, misal Dokter 1 memanggil/menyelesaikan antrean Dokter 2).
+  - Jika `users.room_id` bernilai `null`: akun berperan sebagai koordinator/resepsionis divisi yang berhak mengakses seluruh ruang sesuai `role` layanannya (`pic_klinik` atau `pic_grooming`).
+  - Policy/otorisasi Laravel wajib menegakkan isolasi ruang ini di sisi server: PIC yang terikat ke ruang A harus menerima `403 Forbidden` jika mencoba mengubah tiket di ruang B.
+
 ## 5. Alur bisnis dan status
 
 ### Existing
@@ -173,11 +182,11 @@ Rancangan awal berikut belum merupakan migration final.
 
 | Tabel | Kolom inti yang disarankan |
 | --- | --- |
-| `users` | `id`, `legacy_firebase_uid` nullable/unique, `name`, `email` unique, password hash jika auth lokal, `role`, `is_active`, timestamps |
+| `users` | `id`, `legacy_firebase_uid` nullable/unique, `name`, `email` unique, password hash jika auth lokal, `role`, `room_id` nullable (FK ke `service_rooms.id`; `null` = koordinator divisi), `practitioner_id` nullable (relasi ke `doctors`/`groomers`), `is_active`, timestamps |
 | `doctors` / `doctor_schedules` | ID stabil, nama, status aktif, ruang tetap, hari/tanggal serta jam praktik | Menggantikan katalog dan jadwal mock di frontend |
 | `groomers` / `groomer_schedules` | ID stabil, nama, status aktif, ruang tetap, hari/tanggal serta jam kerja | Menggantikan daftar dan jadwal groomer mock di frontend |
 | `service_rooms` / `queue_counters` | Ruang per layanan dan counter unik per layanan/tanggal | Penempatan dan alokasi nomor dalam transaksi |
-| `tickets` | `id`, `legacy_firestore_id` nullable/unique, `customer_name`, `phone`, `service`, `scheduled_date`, `scheduled_time`, `notes`, `status`, `source`, `room_id`, `doctor_id` nullable, `doctor_name` nullable, `queue_sequence`, `queue_number`, `created_by` nullable, `assigned_to` nullable, `started_at`, `service_completed_at`, `completed_at`, `cancelled_at`, `cancellation_reason`, `version`, timestamps |
+| `tickets` | `id`, `legacy_firestore_id` nullable/unique, `customer_name`, `phone`, `service`, `scheduled_date`, `scheduled_time`, `notes`, `status`, `source`, `room_id`, `doctor_id` nullable, `doctor_name` nullable, `groomer_id` nullable, `groomer_name` nullable, `queue_sequence`, `queue_number`, `created_by` nullable, `assigned_to` nullable, `started_at`, `service_completed_at`, `completed_at`, `cancelled_at`, `cancellation_reason`, `version`, timestamps |
 | `ticket_events` | `id`, `ticket_id`, `actor_id` nullable, `event_type`, `from_status`, `to_status`, `message`, metadata terbatas, `occurred_at` |
 | `ticket_tracking_tokens` | `id`, `ticket_id`, `token_hash` unique, `expires_at` nullable, `revoked_at` nullable |
 

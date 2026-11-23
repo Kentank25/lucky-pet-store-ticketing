@@ -4,7 +4,7 @@ import { QRCode } from "react-qr-code";
 import toast from "react-hot-toast";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase";
-import { COLLECTION_NAME } from "../services/ticketService";
+import { COLLECTION_NAME, subscribeToTickets } from "../services/ticketService";
 import { TICKET_STATUS, SERVICE_TYPE } from "../constants";
 import {
   ClockIcon,
@@ -20,9 +20,30 @@ import {
   ClipboardDocumentCheckIcon,
   ChatBubbleLeftRightIcon,
   ArrowDownTrayIcon,
+  MapPinIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
 import { compareQueueTickets } from "../utils/roomQueue";
-import { subscribeToTickets } from "../services/ticketService";
+import Card from "../components/ui/Card";
+import Badge from "../components/ui/Badge";
+import Button from "../components/ui/Button";
+
+const STATUS_BADGE_MAP = {
+  [TICKET_STATUS.PENDING]: { variant: "pending", label: "Pending" },
+  [TICKET_STATUS.WAITING]: { variant: "waiting", label: "Antrian" },
+  [TICKET_STATUS.ACTIVE]: { variant: "active", label: "Sedang Dilayani" },
+  [TICKET_STATUS.PAYMENT]: { variant: "payment", label: "Pembayaran" },
+  [TICKET_STATUS.COMPLETED]: { variant: "completed", label: "Selesai" },
+  [TICKET_STATUS.CANCELLED]: { variant: "cancelled", label: "Dibatalkan" },
+};
+
+const formatRoomLabel = (roomId) => {
+  if (!roomId) return "";
+  return roomId
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+};
 
 export default function QueueMonitor() {
   const { id } = useParams();
@@ -39,10 +60,10 @@ export default function QueueMonitor() {
   useEffect(() => {
     if (!id) return;
 
-    const unsub = onSnapshot(doc(db, COLLECTION_NAME, id), (doc) => {
+    const unsub = onSnapshot(doc(db, COLLECTION_NAME, id), (snapshot) => {
       setLoading(false);
-      if (doc.exists()) {
-        setTicket({ id: doc.id, ...doc.data() });
+      if (snapshot.exists()) {
+        setTicket({ id: snapshot.id, ...snapshot.data() });
       } else {
         setTicket(null);
       }
@@ -59,24 +80,33 @@ export default function QueueMonitor() {
   useEffect(() => {
     if (!ticketId || !ticketLayanan) return;
 
-    // Subscribe to all tickets to calculate queue position
     const unsubQueue = subscribeToTickets((allTickets) => {
-      // 1. Filter tickets for the same service and valid dates (optional, assuming subscribeToTickets handles order)
-      // We only care about tickets that are NOT Completed or Cancelled for "Ahead" calculation
-      // Or maybe we do care about Completed if we want to show "Today's Queue"?
-      // Let's focus on "Waiting" and "Active".
+      const activeAndWaiting = allTickets
+        .filter(
+          (item) =>
+            item.layanan === ticketLayanan &&
+            item.tanggalRilis === ticketTanggal &&
+            (!ticketRoomId || item.roomId === ticketRoomId) &&
+            [TICKET_STATUS.WAITING, TICKET_STATUS.ACTIVE].includes(item.status)
+        )
+        .sort(compareQueueTickets);
 
-      const activeAndWaiting = allTickets.filter((item) =>
-        item.layanan === ticketLayanan &&
-        item.tanggalRilis === ticketTanggal &&
-        (!ticketRoomId || item.roomId === ticketRoomId) &&
-        [TICKET_STATUS.WAITING, TICKET_STATUS.ACTIVE].includes(item.status)
-      ).sort(compareQueueTickets);
-      const currentActive = activeAndWaiting.find((item) => item.status === TICKET_STATUS.ACTIVE);
-      const myIndex = activeAndWaiting.findIndex((item) => item.id === ticketId);
-      const aheadCount = myIndex < 0 ? 0 : activeAndWaiting.slice(0, myIndex)
-        .filter((item) => item.status === TICKET_STATUS.WAITING).length +
-        activeAndWaiting.filter((item) => item.status === TICKET_STATUS.ACTIVE && item.id !== ticketId).length;
+      const currentActive = activeAndWaiting.find(
+        (item) => item.status === TICKET_STATUS.ACTIVE
+      );
+      const myIndex = activeAndWaiting.findIndex(
+        (item) => item.id === ticketId
+      );
+      const aheadCount =
+        myIndex < 0
+          ? 0
+          : activeAndWaiting
+              .slice(0, myIndex)
+              .filter((item) => item.status === TICKET_STATUS.WAITING).length +
+            activeAndWaiting.filter(
+              (item) =>
+                item.status === TICKET_STATUS.ACTIVE && item.id !== ticketId
+            ).length;
 
       setQueueStat({
         activeTicket: currentActive || null,
@@ -91,49 +121,59 @@ export default function QueueMonitor() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50 dark:bg-[#020617] transition-colors duration-500">
-        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-400/30 dark:bg-indigo-600/30 rounded-full blur-[120px] animate-pulse-soft"></div>
-        </div>
-        <div className="bg-white/60 dark:bg-white/5 backdrop-blur-3xl p-8 rounded-3xl flex flex-col items-center gap-4 animate-pulse-soft border border-white/20 shadow-xl relative z-10">
-          <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="font-bold text-slate-600 dark:text-slate-300">
+      <div className="min-h-dvh flex items-center justify-center bg-[#F8FAF9] px-4">
+        <Card
+          padding="lg"
+          elevated
+          className="bg-white border-[#E2E8F0] flex flex-col items-center gap-3 text-center max-w-xs w-full"
+        >
+          <div
+            aria-hidden="true"
+            className="w-10 h-10 border-4 border-[#0D9488] border-t-transparent rounded-full animate-spin"
+          />
+          <p className="text-sm font-semibold text-[#475569]">
             Memuat Data Tiket...
           </p>
-        </div>
+        </Card>
       </div>
     );
   }
 
   if (!ticket) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-slate-50 dark:bg-[#020617] relative overflow-hidden transition-colors duration-500">
-        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-          <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-red-400/20 dark:bg-red-900/20 rounded-full blur-[120px] animate-float"></div>
-        </div>
-        <div className="bg-white/60 dark:bg-white/5 backdrop-blur-3xl p-10 rounded-[2.5rem] w-full max-w-md border border-white/20 shadow-2xl relative z-10 animate-scale-in">
-          <div className="text-red-500 mb-6 bg-red-100 dark:bg-red-900/20 w-24 h-24 rounded-full flex items-center justify-center mx-auto shadow-inner">
-            <QuestionMarkCircleIcon className="w-12 h-12" />
+      <div className="min-h-dvh flex items-center justify-center p-4 bg-[#F8FAF9] text-center">
+        <Card
+          padding="lg"
+          elevated
+          className="w-full max-w-md bg-white border-[#E2E8F0]"
+        >
+          <div className="w-16 h-16 rounded-2xl bg-[#FEF2F2] text-[#DC2626] mx-auto mb-5 flex items-center justify-center">
+            <QuestionMarkCircleIcon aria-hidden="true" className="w-9 h-9" />
           </div>
-          <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-3">
+          <h1 className="font-heading text-2xl font-extrabold text-[#0F172A] mb-2">
             Tiket Tidak Ditemukan
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium leading-relaxed">
+          <p className="text-sm text-[#475569] mb-6 leading-relaxed">
             Mohon periksa kembali link atau scan ulang QR code Anda. Pastikan
             tiket belum kadaluarsa.
           </p>
           <Link
-            to="/"
-            className="w-full py-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg flex justify-center"
+            to="/kiosk"
+            className="inline-flex w-full min-h-11 items-center justify-center rounded-xl bg-[#0D9488] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0F766E] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0D9488]"
           >
-            Kembali ke Beranda
+            Kembali ke Kiosk
           </Link>
-        </div>
+        </Card>
       </div>
     );
   }
 
   const isGrooming = ticket.layanan === SERVICE_TYPE.GROOMING;
+  const staffName = ticket.doctorName || ticket.groomerName || "";
+  const statusMeta = STATUS_BADGE_MAP[ticket.status] || {
+    variant: "neutral",
+    label: ticket.status,
+  };
 
   const steps = [
     { status: TICKET_STATUS.PENDING, label: "Pending" },
@@ -163,13 +203,19 @@ export default function QueueMonitor() {
     const digits = ticket.telepon.replace(/\D/g, "");
     const phone = digits.startsWith("0") ? `62${digits.slice(1)}` : digits;
     const message = `Halo ${ticket.nama}, berikut link untuk memantau antrean Anda di Lucky Pet Store: ${monitorUrl}`;
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    window.open(
+      `https://wa.me/${phone}?text=${encodeURIComponent(message)}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
   };
 
   const downloadQR = () => {
     const svg = document.getElementById("monitor-qr-code");
     if (!svg) return;
-    const blob = new Blob([new XMLSerializer().serializeToString(svg)], { type: "image/svg+xml;charset=utf-8" });
+    const blob = new Blob([new XMLSerializer().serializeToString(svg)], {
+      type: "image/svg+xml;charset=utf-8",
+    });
     const url = URL.createObjectURL(blob);
     const image = new Image();
     image.onload = () => {
@@ -191,251 +237,376 @@ export default function QueueMonitor() {
   };
 
   return (
-    <div className="monitor-screen h-dvh overflow-hidden px-3 py-2 sm:p-5 flex items-center justify-center bg-slate-50 dark:bg-[#020617] relative transition-colors duration-500">
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-400/30 dark:bg-indigo-600/30 rounded-full blur-[120px] animate-pulse-soft transition-colors duration-700"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-400/30 dark:bg-rose-600/20 rounded-full blur-[120px] animate-float transition-colors duration-700"></div>
-        <div className="absolute top-[20%] right-[20%] w-[300px] h-[300px] bg-pink-400/30 dark:bg-violet-600/20 rounded-full blur-[100px] animate-pulse-soft delay-1000 transition-colors duration-700"></div>
-        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] dark:opacity-[0.03]"></div>
-      </div>
+    <div className="monitor-screen min-h-dvh px-3 py-3 sm:p-5 flex items-center justify-center bg-[#F8FAF9] text-[#0F172A]">
+      <div className="monitor-layout w-full max-w-md min-w-0 flex flex-col gap-2.5">
+        <div className="flex items-center justify-between">
+          <Link
+            to="/kiosk"
+            className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-[#475569] hover:text-[#0D9488] rounded-lg pr-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
+          >
+            <span className="w-8 h-8 rounded-full bg-white border border-[#E2E8F0] flex items-center justify-center shadow-xs">
+              <ArrowLeftIcon aria-hidden="true" className="w-4 h-4" />
+            </span>
+            <span>Kembali</span>
+          </Link>
 
-      <div className="monitor-layout max-w-md w-full h-full min-h-0 min-w-0 animate-scale-in relative z-10 flex flex-col">
-        <Link
-          to="/kiosk"
-          className="inline-flex shrink-0 items-center text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold mb-2 transition-all hover:-translate-x-1"
+          <Badge variant={statusMeta.variant} dot>
+            {statusMeta.label}
+          </Badge>
+        </div>
+
+        <nav
+          aria-label="Tampilan tiket"
+          className="grid grid-cols-2 gap-2"
         >
-          <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
-            <ArrowLeftIcon className="w-4 h-4" />
-          </div>
-          Kembali
-        </Link>
-
-        <nav aria-label="Tampilan tiket" className="mb-2 grid shrink-0 grid-cols-2 gap-2">
-          <button type="button" onClick={() => setView("status")} className={view === "status" ? "btn-primary" : "btn-secondary"}>Status</button>
-          <button type="button" onClick={() => setView("share")} className={view === "share" ? "btn-primary" : "btn-secondary"}>Simpan & Bagikan</button>
+          <Button
+            type="button"
+            variant={view === "status" ? "primary" : "secondary"}
+            size="md"
+            onClick={() => setView("status")}
+            className="w-full"
+          >
+            Status Antrean
+          </Button>
+          <Button
+            type="button"
+            variant={view === "share" ? "primary" : "secondary"}
+            size="md"
+            onClick={() => setView("share")}
+            className="w-full"
+          >
+            Simpan &amp; Bagikan
+          </Button>
         </nav>
 
-        {view === "status" && <div className="monitor-status min-h-0 flex-1 bg-white/60 dark:bg-white/5 backdrop-blur-3xl rounded-3xl p-0 overflow-hidden shadow-2xl shadow-indigo-100/50 dark:shadow-black/50 border border-white/40 dark:border-white/10 transition-all duration-500">
-          <div className="relative p-5 sm:p-8 pb-8 text-center bg-linear-to-b from-white/50 to-transparent dark:from-white/5">
-            <div className="inline-flex mb-6 p-1 rounded-2xl bg-white/50 dark:bg-slate-950/30 backdrop-blur-md border border-white/20 shadow-inner">
-              <span
-                className={`px-4 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 ${
-                  isGrooming
-                    ? "bg-blue-100 text-blue-700 dark:bg-indigo-500/20 dark:text-indigo-300"
-                    : "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300"
-                }`}
-              >
-                {isGrooming ? (
-                  <ScissorsIcon className="w-3.5 h-3.5" />
-                ) : (
-                  <HeartIcon className="w-3.5 h-3.5" />
-                )}
-                {ticket.layanan}
-              </span>
-            </div>
-
-            <h2 className="line-clamp-2 break-words text-2xl sm:text-4xl font-black text-slate-900 dark:text-white mb-2 tracking-tight transition-colors" title={ticket.nama}>
-              {ticket.nama}
-            </h2>
-            <p className="truncate text-slate-500 dark:text-slate-400 font-medium font-mono text-sm tracking-widest opacity-80 transition-colors" title={ticket.id}>
-              ID: {ticket.id}
-            </p>
-          </div>
-
-          {!isCancelled && (
-            <div className="px-8 mb-8">
-              <div className="flex justify-between items-start relative">
-                <div className="absolute top-4 left-0 w-full h-1 bg-slate-200 dark:bg-white/10 rounded-full -z-10 -translate-y-1/2"></div>
-
-                <div
-                  className="absolute top-4 left-0 h-1 bg-indigo-500 dark:bg-indigo-400 rounded-full -z-10 transition-all duration-500 -translate-y-1/2"
-                  style={{
-                    width: `${(currentStepIndex / (steps.length - 1)) * 100}%`,
-                  }}
-                ></div>
-
-                {steps.map((step, index) => {
-                  const isCompleted = index <= currentStepIndex;
-                  const isCurrent = index === currentStepIndex;
-
-                  return (
-                    <div
-                      key={step.status}
-                      className="flex flex-col items-center gap-2"
-                    >
-                      <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300 z-10 ${
-                          isCompleted
-                            ? "bg-indigo-500 border-indigo-500 text-white shadow-lg shadow-indigo-500/30 scale-110"
-                            : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 text-slate-400 dark:text-slate-600"
-                        }`}
-                      >
-                        {isCompleted ? (
-                          <CheckCircleIcon className="w-5 h-5" />
-                        ) : (
-                          index + 1
-                        )}
-                      </div>
-                      <span
-                        className={`text-[10px] font-bold uppercase tracking-wider transition-colors duration-300 ${
-                          isCurrent
-                            ? "text-indigo-600 dark:text-indigo-300"
-                            : "text-slate-400 dark:text-slate-600"
-                        }`}
-                      >
-                        {step.label}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          <div className="px-4 sm:px-6 pb-6 space-y-4">
-            {/* Status Card */}
+        {view === "status" && (
+          <Card
+            padding="none"
+            elevated
+            className="monitor-status overflow-hidden bg-white border-[#E2E8F0]"
+          >
+            {/* Header & Queue Number */}
             <div
-              className={`rounded-3xl p-6 text-center border-2 transition-all duration-500 ${
-                isCancelled
-                  ? "bg-red-50 border-red-100 dark:bg-red-900/10 dark:border-red-900/30"
-                  : "bg-white/40 dark:bg-white/5 border-white/60 dark:border-white/5"
+              className={`px-4 py-4 sm:px-6 sm:py-5 text-center border-b border-[#E2E8F0] ${
+                isGrooming ? "bg-[#FFF7ED]" : "bg-[#F0FDFA]"
               }`}
             >
-              {isCancelled ? (
-                <>
-                  <XCircleIcon className="w-16 h-16 mx-auto text-red-500 mb-4 animate-bounce" />
-                  <h3 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-2">
-                    Tiket Dibatalkan
-                  </h3>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm">
-                    Tiket ini tidak lagi aktif.
+              <div className="flex items-center justify-center gap-2 mb-2.5">
+                <Badge variant={isGrooming ? "grooming" : "klinik"}>
+                  {isGrooming ? (
+                    <ScissorsIcon aria-hidden="true" className="w-3.5 h-3.5" />
+                  ) : (
+                    <HeartIcon aria-hidden="true" className="w-3.5 h-3.5" />
+                  )}
+                  <span>{ticket.layanan}</span>
+                </Badge>
+              </div>
+
+              {ticket.queueNumber ? (
+                <div className="mb-1.5">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-[#475569]">
+                    Nomor Antrean
                   </p>
-                </>
-              ) : (
-                <>
-                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 transition-colors">
-                    Status Tiket Anda
+                  <p className="font-heading text-4xl sm:text-5xl font-extrabold tracking-tight tabular-nums text-[#0F172A]">
+                    {ticket.queueNumber}
                   </p>
-                  <div className="text-3xl font-black text-indigo-600 dark:text-indigo-400 mb-2 animate-pulse-soft transition-colors">
-                    {steps.find((s) => s.status === ticket.status)?.label ||
-                      ticket.status}
-                  </div>
-                  <p className="text-slate-600 dark:text-slate-300 text-sm font-medium transition-colors">
-                    Mohon perhatikan panggilan petugas kami.
-                  </p>
-                </>
+                </div>
+              ) : null}
+
+              <h1
+                className="font-heading text-lg sm:text-xl font-bold text-[#0F172A] line-clamp-1 break-words"
+                title={ticket.nama}
+              >
+                {ticket.nama}
+              </h1>
+              <p
+                className="text-xs font-mono text-[#64748B] truncate mt-0.5 tabular-nums"
+                title={ticket.id}
+              >
+                ID: {ticket.id}
+              </p>
+
+              {(ticket.roomId || staffName) && (
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs font-semibold text-[#334155]">
+                  {ticket.roomId && (
+                    <span className="inline-flex items-center gap-1 rounded-lg bg-white/90 border border-[#E2E8F0] px-2.5 py-1">
+                      <MapPinIcon
+                        aria-hidden="true"
+                        className="w-3.5 h-3.5 text-[#0D9488]"
+                      />
+                      <span>Ruang {formatRoomLabel(ticket.roomId)}</span>
+                    </span>
+                  )}
+                  {staffName && (
+                    <span className="inline-flex items-center gap-1 rounded-lg bg-white/90 border border-[#E2E8F0] px-2.5 py-1">
+                      <UserIcon
+                        aria-hidden="true"
+                        className="w-3.5 h-3.5 text-[#0D9488]"
+                      />
+                      <span>{staffName}</span>
+                    </span>
+                  )}
+                </div>
               )}
             </div>
 
-            {ticket.doctorName && <p className="text-center text-sm font-bold text-slate-600 dark:text-slate-300">
-              {ticket.doctorName}
-            </p>}
-            {ticket.groomerName && <p className="text-center text-sm font-bold text-slate-600 dark:text-slate-300">
-              {ticket.groomerName}
-            </p>}
-            {ticket.roomId && <p className="text-center text-sm text-slate-500 dark:text-slate-400">
-              Ruang {ticket.roomId.replace("-", " ")}
-            </p>}
-            {/* Queue Info Cards - Only show if not cancelled and active */}
-            {!isCancelled && ticket.status !== TICKET_STATUS.COMPLETED && !!ticket.roomId && (
-              <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-3 sm:gap-4">
-                {/* Currently Serving */}
-                <div className="bg-indigo-50/50 dark:bg-indigo-900/10 p-4 rounded-3xl border border-indigo-100 dark:border-indigo-500/20 text-center">
-                  <div className="w-8 h-8 mx-auto bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center mb-2">
-                    <SparklesIcon className="w-5 h-5" />
-                  </div>
-                  <p className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
-                    Sedang Dilayani
-                  </p>
-                  <p className="font-bold text-slate-900 dark:text-white truncate">
-                    {queueStat.activeTicket
-                      ? queueStat.activeTicket.nama
-                      : "Menunggu..."}
-                  </p>
-                </div>
-
-                {/* People Ahead */}
-                <div
-                  className={`p-4 rounded-3xl border text-center ${
-                    ticket.status === TICKET_STATUS.PENDING
-                      ? "bg-slate-50 dark:bg-slate-900/10 border-slate-200 dark:border-slate-700"
-                      : queueStat.peopleAhead === 0
-                      ? "bg-green-50/50 dark:bg-green-900/10 border-green-100 dark:border-green-500/20"
-                      : "bg-orange-50/50 dark:bg-orange-900/10 border-orange-100 dark:border-orange-500/20"
-                  }`}
-                >
+            {/* Progress Stepper */}
+            {!isCancelled && (
+              <div className="px-4 sm:px-6 pt-4 pb-2">
+                <div className="flex justify-between items-start relative">
+                  <div className="absolute top-3.5 left-0 w-full h-1 bg-[#E2E8F0] rounded-full" />
                   <div
-                    className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center mb-2 ${
-                      ticket.status === TICKET_STATUS.PENDING
-                        ? "bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
-                        : queueStat.peopleAhead === 0
-                        ? "bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400"
-                        : "bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400"
+                    className={`absolute top-3.5 left-0 h-1 rounded-full transition-all duration-300 ${
+                      isGrooming ? "bg-[#EA580C]" : "bg-[#0D9488]"
                     }`}
-                  >
-                    {ticket.status === TICKET_STATUS.PENDING ? (
-                      <ClockIcon className="w-5 h-5" />
-                    ) : (
-                      <UserGroupIcon className="w-5 h-5" />
-                    )}
-                  </div>
-                  <p className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
-                    {ticket.status === TICKET_STATUS.PENDING
-                      ? "Status Antrian"
-                      : "Antrian Di Depan"}
-                  </p>
-                  <p className="font-bold text-slate-900 dark:text-white">
-                    {ticket.status === TICKET_STATUS.PENDING
-                      ? "Menunggu Validasi"
-                      : queueStat.peopleAhead === 0
-                      ? "Giliran Anda!"
-                      : `${queueStat.peopleAhead} Orang`}
-                  </p>
+                    style={{
+                      width: `${
+                        currentStepIndex >= 0
+                          ? (currentStepIndex / (steps.length - 1)) * 100
+                          : 0
+                      }%`,
+                    }}
+                  />
+
+                  {steps.map((step, index) => {
+                    const isCompleted = index <= currentStepIndex;
+                    const isCurrent = index === currentStepIndex;
+                    const accentBg = isGrooming
+                      ? "bg-[#EA580C] border-[#EA580C]"
+                      : "bg-[#0D9488] border-[#0D9488]";
+                    const accentText = isGrooming
+                      ? "text-[#C2410C]"
+                      : "text-[#0F766E]";
+
+                    return (
+                      <div
+                        key={step.status}
+                        className="flex flex-col items-center gap-1.5 relative z-10"
+                      >
+                        <div
+                          className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 tabular-nums ${
+                            isCompleted
+                              ? `${accentBg} text-white`
+                              : "bg-white border-[#CBD5E1] text-[#64748B]"
+                          }`}
+                        >
+                          {isCompleted ? (
+                            <CheckCircleIcon
+                              aria-hidden="true"
+                              className="w-4 h-4"
+                            />
+                          ) : (
+                            index + 1
+                          )}
+                        </div>
+                        <span
+                          className={`text-[10px] font-bold uppercase tracking-wide ${
+                            isCurrent ? accentText : "text-[#64748B]"
+                          }`}
+                        >
+                          {step.label}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
-          </div>
 
-          <div className="bg-slate-50/50 dark:bg-slate-900/20 px-4 sm:px-8 py-6 flex justify-between gap-3 items-center border-t border-white/20 dark:border-white/5 backdrop-blur-sm">
-            <div className="text-left">
-              <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-1">
-                Jam Booking
-              </p>
-              <p className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1 transition-colors">
-                <ClockIcon className="w-4 h-4 text-slate-400" />
-                {ticket.jam || "-"}
-              </p>
+            {/* Status & Queue Info */}
+            <div className="p-4 sm:p-5 space-y-3">
+              {isCancelled ? (
+                <div className="rounded-xl p-4 text-center bg-[#FEF2F2] border border-[#FECACA]">
+                  <XCircleIcon
+                    aria-hidden="true"
+                    className="w-10 h-10 mx-auto text-[#DC2626] mb-2"
+                  />
+                  <h2 className="font-heading text-lg font-bold text-[#991B1B]">
+                    Tiket Dibatalkan
+                  </h2>
+                  <p className="text-xs text-[#B91C1C] mt-0.5">
+                    Tiket ini tidak lagi aktif dalam antrean.
+                  </p>
+                </div>
+              ) : (
+                <div className="rounded-xl p-3.5 text-center bg-[#F8FAF9] border border-[#E2E8F0]">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B] mb-1">
+                    Status Saat Ini
+                  </p>
+                  <p
+                    className={`font-heading text-2xl font-extrabold ${
+                      isGrooming ? "text-[#EA580C]" : "text-[#0D9488]"
+                    }`}
+                  >
+                    {steps.find((s) => s.status === ticket.status)?.label ||
+                      ticket.status}
+                  </p>
+                  <p className="text-xs text-[#475569] mt-0.5">
+                    Mohon perhatikan panggilan petugas kami.
+                  </p>
+                </div>
+              )}
+
+              {!isCancelled &&
+                ticket.status !== TICKET_STATUS.COMPLETED &&
+                !!ticket.roomId && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-xl p-3 border border-[#E2E8F0] bg-[#F8FAF9] text-center">
+                      <div className="w-7 h-7 mx-auto rounded-full bg-[#F0FDFA] text-[#0D9488] flex items-center justify-center mb-1.5">
+                        <SparklesIcon aria-hidden="true" className="w-4 h-4" />
+                      </div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">
+                        Sedang Dilayani
+                      </p>
+                      <p className="mt-0.5 text-sm font-bold text-[#0F172A] truncate tabular-nums">
+                        {queueStat.activeTicket
+                          ? queueStat.activeTicket.queueNumber ||
+                            queueStat.activeTicket.nama
+                          : "Menunggu..."}
+                      </p>
+                    </div>
+
+                    <div
+                      className={`rounded-xl p-3 border text-center ${
+                        ticket.status === TICKET_STATUS.PENDING
+                          ? "bg-[#F8FAF9] border-[#E2E8F0]"
+                          : queueStat.peopleAhead === 0
+                          ? "bg-[#F0FDFA] border-[#99F6E4]"
+                          : "bg-[#FFF7ED] border-[#FED7AA]"
+                      }`}
+                    >
+                      <div
+                        className={`w-7 h-7 mx-auto rounded-full flex items-center justify-center mb-1.5 ${
+                          ticket.status === TICKET_STATUS.PENDING
+                            ? "bg-[#E2E8F0] text-[#475569]"
+                            : queueStat.peopleAhead === 0
+                            ? "bg-[#CCFBF1] text-[#0F766E]"
+                            : "bg-[#FFEDD5] text-[#C2410C]"
+                        }`}
+                      >
+                        {ticket.status === TICKET_STATUS.PENDING ? (
+                          <ClockIcon aria-hidden="true" className="w-4 h-4" />
+                        ) : (
+                          <UserGroupIcon
+                            aria-hidden="true"
+                            className="w-4 h-4"
+                          />
+                        )}
+                      </div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">
+                        {ticket.status === TICKET_STATUS.PENDING
+                          ? "Status Antrian"
+                          : "Antrian Di Depan"}
+                      </p>
+                      <p className="mt-0.5 text-sm font-bold text-[#0F172A] tabular-nums">
+                        {ticket.status === TICKET_STATUS.PENDING
+                          ? "Menunggu Validasi"
+                          : queueStat.peopleAhead === 0
+                          ? "Giliran Anda!"
+                          : `${queueStat.peopleAhead} Orang`}
+                      </p>
+                    </div>
+                  </div>
+                )}
             </div>
-            <div className="text-right">
-              <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-1">
-                Tanggal Booking
-              </p>
-              <p className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center justify-end gap-1 transition-colors">
-                <CalendarIcon className="w-4 h-4 text-slate-400" />
-                {ticket.tanggalRilis || "-"}
-              </p>
+
+            {/* Footer Schedule */}
+            <div className="bg-[#F8FAF9] px-4 sm:px-5 py-3 flex items-center justify-between gap-3 border-t border-[#E2E8F0]">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">
+                  Jam Booking
+                </p>
+                <p className="text-sm font-bold text-[#0F172A] flex items-center gap-1.5 tabular-nums">
+                  <ClockIcon
+                    aria-hidden="true"
+                    className="w-4 h-4 text-[#64748B]"
+                  />
+                  <span>{ticket.jam || "-"}</span>
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">
+                  Tanggal Booking
+                </p>
+                <p className="text-sm font-bold text-[#0F172A] flex items-center justify-end gap-1.5 tabular-nums">
+                  <CalendarIcon
+                    aria-hidden="true"
+                    className="w-4 h-4 text-[#64748B]"
+                  />
+                  <span>{ticket.tanggalRilis || "-"}</span>
+                </p>
+              </div>
             </div>
-          </div>
-        </div>}
+          </Card>
+        )}
 
-        {view === "share" && <section aria-label="Simpan dan bagikan tiket" className="monitor-share min-h-0 flex-1 rounded-3xl border border-white/60 bg-white/80 p-4 text-center shadow-xl shadow-indigo-100/40 backdrop-blur-xl sm:p-6">
-          <p className="mb-4 text-sm font-semibold text-slate-600">Simpan link ini untuk memantau antrean Anda.</p>
-          <div className="inline-block rounded-2xl bg-white p-3">
-            <QRCode id="monitor-qr-code" value={monitorUrl} size={160} />
-          </div>
-          <div className="mt-4 grid grid-cols-1 gap-2 min-[360px]:grid-cols-3">
-            <button type="button" onClick={copyLink} className="btn-secondary flex min-h-11 items-center justify-center gap-1 px-2 text-sm">
-              <ClipboardDocumentCheckIcon className="h-5 w-5" /> Salin Link
-            </button>
-            <button type="button" onClick={sendWhatsApp} className="btn-secondary flex min-h-11 items-center justify-center gap-1 px-2 text-sm">
-              <ChatBubbleLeftRightIcon className="h-5 w-5" /> Kirim WA
-            </button>
-            <button type="button" onClick={downloadQR} className="btn-secondary flex min-h-11 items-center justify-center gap-1 px-2 text-sm">
-              <ArrowDownTrayIcon className="h-5 w-5" /> Simpan QR
-            </button>
-          </div>
-        </section>}
+        {view === "share" && (
+          <Card
+            padding="md"
+            elevated
+            className="monitor-share bg-white border-[#E2E8F0] text-center"
+            aria-label="Simpan dan bagikan tiket"
+          >
+            <h2 className="font-heading text-base font-bold text-[#0F172A]">
+              Simpan &amp; Bagikan Tiket
+            </h2>
+            <p className="mt-1 mb-3 text-xs sm:text-sm text-[#475569]">
+              Scan QR atau simpan link untuk memantau antrean Anda.
+            </p>
 
+            {ticket.queueNumber && (
+              <p className="mb-3 text-lg font-extrabold text-[#0D9488] tabular-nums">
+                {ticket.queueNumber}
+              </p>
+            )}
+
+            <div className="inline-block rounded-2xl bg-white p-3 border border-[#E2E8F0] shadow-xs">
+              <QRCode id="monitor-qr-code" value={monitorUrl} size={148} />
+            </div>
+
+            <div className="mt-4 grid grid-cols-1 gap-2 min-[360px]:grid-cols-3">
+              <Button
+                type="button"
+                variant="secondary"
+                size="md"
+                onClick={copyLink}
+                className="w-full px-2"
+              >
+                <ClipboardDocumentCheckIcon
+                  aria-hidden="true"
+                  className="h-4 w-4 shrink-0"
+                />
+                <span>Salin Link</span>
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                size="md"
+                onClick={sendWhatsApp}
+                className="w-full px-2"
+              >
+                <ChatBubbleLeftRightIcon
+                  aria-hidden="true"
+                  className="h-4 w-4 shrink-0"
+                />
+                <span>Kirim WA</span>
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                size="md"
+                onClick={downloadQR}
+                className="w-full px-2"
+              >
+                <ArrowDownTrayIcon
+                  aria-hidden="true"
+                  className="h-4 w-4 shrink-0"
+                />
+                <span>Simpan QR</span>
+              </Button>
+            </div>
+          </Card>
+        )}
       </div>
     </div>
   );

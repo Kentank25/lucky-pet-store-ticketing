@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   ExclamationTriangleIcon,
   ChevronDownIcon,
 } from "@heroicons/react/24/outline";
+import Button from "../ui/Button";
 
 const CANCELLATION_REASONS = [
   "Pelanggan Tidak Hadir (No Show)",
@@ -24,41 +25,77 @@ export default function CancellationModal({
   const [customReason, setCustomReason] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const titleId = useId();
+  const descId = useId();
+  const selectId = useId();
+  const customReasonId = useId();
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && !isSubmitting) {
+        onClose?.();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, isSubmitting, onClose]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    const finalReason = reason === "Lainnya" ? customReason : reason;
-    await onConfirm(finalReason);
-    setIsSubmitting(false);
+    try {
+      const finalReason = reason === "Lainnya" ? customReason.trim() : reason;
+      await onConfirm(finalReason);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in p-4 text-left">
-      <div className="bg-bg-surface rounded-4xl w-full max-w-sm shadow-2xl dark:shadow-none border border-border-subtle overflow-hidden scale-100 animate-scale-in">
-        <div className="p-6 bg-rose-50 dark:bg-rose-900/20 border-b border-rose-100 dark:border-rose-900/30">
-          <h3 className="text-xl font-bold text-rose-800 dark:text-rose-200 flex items-center gap-2">
-            <ExclamationTriangleIcon className="w-6 h-6" /> Batalkan Tiket
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      aria-describedby={descId}
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 text-left backdrop-blur-xs animate-fade-in"
+    >
+      <div className="w-full max-w-sm scale-100 overflow-hidden rounded-2xl border border-border-subtle bg-bg-surface shadow-xl animate-scale-in dark:shadow-black/50">
+        <div className="border-b border-red-200 bg-red-50 p-6 dark:border-red-900/40 dark:bg-red-950/30">
+          <h3
+            id={titleId}
+            className="flex items-center gap-2 font-heading text-lg font-bold text-red-900 dark:text-red-200"
+          >
+            <ExclamationTriangleIcon className="h-6 w-6 shrink-0" aria-hidden="true" />
+            <span>Batalkan Tiket</span>
           </h3>
-          <p className="text-rose-600/80 dark:text-rose-300/80 text-sm mt-1">
+          <p
+            id={descId}
+            className="mt-1.5 text-sm text-red-800 dark:text-red-300"
+          >
             Anda akan membatalkan tiket untuk{" "}
-            <strong className="text-rose-900 dark:text-rose-100">
+            <strong className="font-semibold text-red-950 dark:text-red-100">
               {ticketName}
             </strong>
             .
           </p>
         </div>
 
-        <div className="p-6 space-y-4">
+        <div className="space-y-4 p-6">
           <div>
-            <label className="block text-sm font-bold text-text-muted mb-2 ">
+            <label
+              htmlFor={selectId}
+              className="mb-2 block text-sm font-semibold text-text-secondary"
+            >
               Alasan Pembatalan
             </label>
             <div className="relative">
               <select
+                id={selectId}
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="w-full px-4 py-3 pr-10 rounded-xl border border-border-main bg-bg-subtle focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none transition-all appearance-none text-text-main"
+                className="min-h-11 w-full appearance-none rounded-xl border border-border-main bg-bg-subtle px-4 py-2.5 pr-10 text-sm font-medium text-text-main transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
               >
                 {CANCELLATION_REASONS.map((r) => (
                   <option key={r} value={r}>
@@ -66,45 +103,53 @@ export default function CancellationModal({
                   </option>
                 ))}
               </select>
-              <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-text-muted">
-                <ChevronDownIcon className="w-5 h-5" />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-text-muted"
+              >
+                <ChevronDownIcon className="h-5 w-5" />
               </div>
             </div>
           </div>
 
           {reason === "Lainnya" && (
             <div className="animate-fade-in">
-              <label className="block text-sm font-bold text-text-muted mb-2">
+              <label
+                htmlFor={customReasonId}
+                className="mb-2 block text-sm font-semibold text-text-secondary"
+              >
                 Keterangan Tambahan
               </label>
               <textarea
+                id={customReasonId}
                 value={customReason}
                 onChange={(e) => setCustomReason(e.target.value)}
                 placeholder="Tulis alasan pembatalan..."
-                className="w-full px-4 py-3 rounded-xl border border-border-main bg-bg-subtle text-text-main focus:border-rose-500 focus:ring-2 focus:ring-rose-200 outline-none transition-all min-h-[80px]"
+                className="min-h-20 w-full rounded-xl border border-border-main bg-bg-subtle px-4 py-2.5 text-sm text-text-main transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
                 autoFocus
               />
             </div>
           )}
         </div>
 
-        <div className="p-6 pt-0 flex gap-3">
-          <button
+        <div className="flex gap-3 px-6 pb-6">
+          <Button
+            variant="secondary"
             onClick={onClose}
             disabled={isSubmitting}
-            className="flex-1 py-3 px-4 rounded-xl font-bold text-text-muted hover:bg-bg-subtle transition-colors disabled:opacity-50"
+            className="flex-1"
           >
             Batal
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="danger"
             onClick={handleSubmit}
-            disabled={
-              isSubmitting || (reason === "Lainnya" && !customReason.trim())
-            }
-            className="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-lg shadow-rose-200 dark:shadow-none transition-all disabled:opacity-50 disabled:shadow-none"
+            loading={isSubmitting}
+            disabled={reason === "Lainnya" && !customReason.trim()}
+            className="flex-1"
           >
             {isSubmitting ? "Memproses..." : "Konfirmasi"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>,

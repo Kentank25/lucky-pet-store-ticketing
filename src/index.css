@@ -1,67 +1,100 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap");
 @config "../tailwind.config.js";
 @import "tailwindcss";
 
 :root {
+  --color-bg-canvas: #f8faf9;
+  --color-bg-surface: #ffffff;
+  --color-bg-subtle: #f1f5f4;
+  --color-bg-muted: #e2e8f0;
 
-  --color-bg-canvas: #f8fafc; 
-  --color-bg-surface: #ffffff; 
-  --color-bg-subtle: #f1f5f9; 
-  --color-bg-muted: #e2e8f0; 
+  --color-text-main: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+  --color-text-inverted: #ffffff;
 
-  --color-text-main: #0f172a; 
-  --color-text-secondary: #475569; 
-  --color-text-muted: #94a3b8; 
-  --color-text-inverted: #ffffff; 
+  --color-border-subtle: #e2e8f0;
+  --color-border-main: #cbd5e1;
 
-  --color-border-subtle: #e2e8f0; 
-  --color-border-main: #cbd5e1; 
+  --color-primary: #0d9488;
+  --color-primary-soft: #f0fdfa;
+  --color-primary-hover: #0f766e;
 
-  --color-primary: #6366f1; 
-  --color-primary-soft: #e0e7ff; 
-  --color-primary-hover: #4338ca; 
+  --color-grooming: #ea580c;
+  --color-grooming-soft: #fff7ed;
+  --color-grooming-hover: #c2410c;
 
-  --color-secondary: #f43f5e; 
+  --color-secondary: #ea580c;
 
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glass-shadow: 0 8px 32px -4px rgba(99, 102, 241, 0.1),
-    0 4px 16px -2px rgba(99, 102, 241, 0.05);
+  --color-danger: #dc2626;
+  --color-danger-soft: #fef2f2;
+  --color-danger-hover: #b91c1c;
+
+  --glass-bg: rgba(255, 255, 255, 0.92);
+  --glass-border: #e2e8f0;
+  --glass-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06),
+    0 1px 2px -1px rgba(15, 23, 42, 0.04);
 }
 
 .dark {
+  --color-bg-canvas: #0b1120;
+  --color-bg-surface: #111827;
+  --color-bg-subtle: #1e293b;
+  --color-bg-muted: #334155;
 
-  --color-bg-canvas: #020617; 
-  --color-bg-surface: #0f172a; 
-  --color-bg-subtle: #1e293b; 
-  --color-bg-muted: #334155; 
+  --color-text-main: #f8fafc;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #94a3b8;
 
-  --color-text-main: #f8fafc; 
-  --color-text-secondary: #cbd5e1; 
-  --color-text-muted: #64748b; 
-
-  --color-border-subtle: #1e293b; 
+  --color-border-subtle: #1f2937;
   --color-border-main: #334155;
 
-  --glass-bg: rgba(15, 23, 42, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.5),
-    0 4px 16px -2px rgba(0, 0, 0, 0.3);
+  --color-primary: #14b8a6;
+  --color-primary-soft: rgba(20, 184, 166, 0.14);
+  --color-primary-hover: #0d9488;
+
+  --color-grooming: #fb923c;
+  --color-grooming-soft: rgba(251, 146, 60, 0.14);
+  --color-grooming-hover: #f97316;
+
+  --color-secondary: #fb923c;
+
+  --color-danger: #f87171;
+  --color-danger-soft: rgba(248, 113, 113, 0.14);
+  --color-danger-hover: #ef4444;
+
+  --glass-bg: rgba(17, 24, 39, 0.92);
+  --glass-border: #1f2937;
+  --glass-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.35),
+    0 1px 2px -1px rgba(0, 0, 0, 0.25);
 }
 
-body {
-  @apply font-sans;
-  background-color: var(--color-bg-canvas);
-  color: var(--color-text-main);
-  background-image: radial-gradient(
-      at 0% 0%,
-      rgba(99, 102, 241, 0.08) 0px,
-      transparent 50%
-    ),
-    radial-gradient(at 100% 0%, rgba(244, 63, 94, 0.08) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, rgba(244, 63, 94, 0.08) 0px, transparent 50%);
-  background-attachment: fixed;
+@layer base {
+  body {
+    @apply font-sans antialiased;
+    background-color: var(--color-bg-canvas);
+    color: var(--color-text-main);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @media (max-height: 740px) {
@@ -82,8 +115,8 @@ body {
 @layer utilities {
   .glass-panel {
     background: var(--glass-bg);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
   }
@@ -93,19 +126,19 @@ body {
   }
 
   .input-minimal {
-    @apply w-full px-4 py-3 bg-bg-surface/60 backdrop-blur-sm border border-border-subtle/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium text-text-main placeholder-text-muted shadow-sm hover:border-border-main/80;
+    @apply w-full px-4 py-2.5 min-h-11 bg-bg-surface border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-colors font-medium text-text-main placeholder-text-muted shadow-xs hover:border-border-main;
   }
 
   .btn-primary {
-    @apply bg-linear-to-br from-indigo-500 to-indigo-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-white/20;
+    @apply inline-flex items-center justify-center gap-2 min-h-11 bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold py-2.5 px-5 rounded-xl shadow-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply bg-bg-surface text-text-main font-bold py-3 px-6 rounded-xl shadow-sm border border-border-subtle hover:bg-bg-subtle hover:border-border-main transition-all active:scale-95;
+    @apply inline-flex items-center justify-center gap-2 min-h-11 bg-bg-surface text-text-main font-semibold py-2.5 px-5 rounded-xl shadow-xs border border-border-subtle hover:bg-bg-subtle hover:border-border-main transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .hover-lift {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-black/50;
+    @apply transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md dark:hover:shadow-black/40;
   }
 
   .active-press {

@@ -7,8 +7,9 @@ import {
   XCircleIcon,
   ScissorsIcon,
   HeartIcon,
-  CalendarDaysIcon,
   ChartBarIcon,
+  ChartPieIcon,
+  PresentationChartLineIcon,
 } from "@heroicons/react/24/outline";
 import {
   Chart as ChartJS,
@@ -23,6 +24,8 @@ import {
 } from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
 import { TICKET_STATUS, SERVICE_TYPE } from "../../constants";
+import Card from "../../components/ui/Card";
+import Badge from "../../components/ui/Badge";
 
 ChartJS.register(
   CategoryScale,
@@ -34,6 +37,13 @@ ChartJS.register(
   ArcElement,
   Filler
 );
+
+const PERIOD_OPTIONS = [
+  { value: "day", label: "Hari" },
+  { value: "week", label: "Minggu" },
+  { value: "month", label: "Bulan" },
+  { value: "year", label: "Tahun" },
+];
 
 const AdminAnalytics = ({ tickets = [] }) => {
   const { theme } = useTheme();
@@ -135,17 +145,15 @@ const AdminAnalytics = ({ tickets = [] }) => {
     const processData = () => {
       setLoading(true);
       try {
-        // Filter tickets based on selectedDate and filterType
         const filteredTickets = tickets.filter((ticket) => {
           if (!ticket.tanggalRilis) return false;
 
           if (filterType === "day") {
             return ticket.tanggalRilis === selectedDate;
           } else if (filterType === "week") {
-            // Basic week logic matching generateTimeSlots
             const d = new Date(selectedDate);
             const day = d.getDay();
-            const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
             const monday = new Date(d);
             monday.setDate(diff);
             monday.setHours(0, 0, 0, 0);
@@ -187,7 +195,7 @@ const AdminAnalytics = ({ tickets = [] }) => {
             }
           } else if (filterType === "year") {
             if (ticket.tanggalRilis) {
-              key = ticket.tanggalRilis.substring(0, 7); // YYYY-MM
+              key = ticket.tanggalRilis.substring(0, 7);
             }
           } else {
             key = ticket.tanggalRilis;
@@ -218,6 +226,7 @@ const AdminAnalytics = ({ tickets = [] }) => {
 
     processData();
   }, [filterType, selectedDate, tickets]);
+
   const createGradient = (ctx, area, colorStart, colorEnd) => {
     const gradient = ctx.createLinearGradient(0, area.bottom, 0, area.top);
     gradient.addColorStop(0, colorStart);
@@ -227,12 +236,12 @@ const AdminAnalytics = ({ tickets = [] }) => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 gap-4">
-        <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-        <p className="text-slate-500 dark:text-slate-400 font-bold animate-pulse">
+      <Card padding="lg" className="flex h-96 flex-col items-center justify-center gap-4">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-border-subtle border-t-primary" />
+        <p className="text-sm font-semibold text-text-secondary">
           Memuat Data Analitik...
         </p>
-      </div>
+      </Card>
     );
   }
 
@@ -252,12 +261,12 @@ const AdminAnalytics = ({ tickets = [] }) => {
         backgroundColor: function (context) {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
-          if (!chartArea) return "#22c55e";
+          if (!chartArea) return "#10B981";
           return createGradient(
             ctx,
             chartArea,
-            "rgba(34, 197, 94, 0.6)",
-            "rgba(34, 197, 94, 1)"
+            "rgba(16, 185, 129, 0.7)",
+            "rgba(16, 185, 129, 1)"
           );
         },
         borderRadius: 6,
@@ -269,29 +278,29 @@ const AdminAnalytics = ({ tickets = [] }) => {
         backgroundColor: function (context) {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
-          if (!chartArea) return "#f59e0b";
+          if (!chartArea) return "#0D9488";
           return createGradient(
             ctx,
             chartArea,
-            "rgba(245, 158, 11, 0.6)",
-            "rgba(245, 158, 11, 1)"
+            "rgba(13, 148, 136, 0.7)",
+            "rgba(13, 148, 136, 1)"
           );
         },
         borderRadius: 6,
         borderSkipped: false,
       },
       {
-        label: "Batal",
+        label: "Dibatalkan",
         data: dataCancelled,
         backgroundColor: function (context) {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
-          if (!chartArea) return "#f87171";
+          if (!chartArea) return "#E11D48";
           return createGradient(
             ctx,
             chartArea,
-            "rgba(248, 113, 113, 0.6)",
-            "rgba(248, 113, 113, 1)"
+            "rgba(225, 29, 72, 0.7)",
+            "rgba(225, 29, 72, 1)"
           );
         },
         borderRadius: 6,
@@ -301,14 +310,13 @@ const AdminAnalytics = ({ tickets = [] }) => {
   };
 
   const isDark = theme === "dark";
-  const textColor = isDark ? "#94a3b8" : "#64748b";
+  const textColor = isDark ? "#CBD5E1" : "#475569";
   const gridColor = isDark
-    ? "rgba(255, 255, 255, 0.05)"
-    : "rgba(0, 0, 0, 0.05)";
-  const tooltipBg = isDark
-    ? "rgba(15, 23, 42, 0.9)"
-    : "rgba(255, 255, 255, 0.9)";
-  const tooltipText = isDark ? "#fff" : "#1e293b";
+    ? "rgba(148, 163, 184, 0.14)"
+    : "rgba(15, 23, 42, 0.08)";
+  const tooltipBg = isDark ? "#111827" : "#FFFFFF";
+  const tooltipText = isDark ? "#F8FAFC" : "#0F172A";
+  const tooltipBorder = isDark ? "#334155" : "#E2E8F0";
 
   const barOptions = {
     responsive: true,
@@ -323,12 +331,12 @@ const AdminAnalytics = ({ tickets = [] }) => {
           useBorderRadius: true,
           borderRadius: 4,
           font: {
-            size: 11,
-            family: "'Inter', sans-serif",
+            size: 12,
+            family: "'Nunito Sans', sans-serif",
             weight: "600",
           },
           color: textColor,
-          padding: 20,
+          padding: 16,
         },
       },
       tooltip: {
@@ -336,10 +344,14 @@ const AdminAnalytics = ({ tickets = [] }) => {
         titleColor: tooltipText,
         bodyColor: tooltipText,
         cornerRadius: 12,
-        padding: 16,
-        titleFont: { size: 14, weight: "bold", family: "'Inter', sans-serif" },
-        bodyFont: { size: 13, family: "'Inter', sans-serif" },
-        borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+        padding: 14,
+        titleFont: {
+          size: 13,
+          weight: "bold",
+          family: "'Plus Jakarta Sans', sans-serif",
+        },
+        bodyFont: { size: 12, family: "'Nunito Sans', sans-serif" },
+        borderColor: tooltipBorder,
         borderWidth: 1,
         displayColors: true,
         usePointStyle: true,
@@ -362,7 +374,7 @@ const AdminAnalytics = ({ tickets = [] }) => {
         stacked: true,
         grid: { display: false },
         ticks: {
-          font: { size: 11, weight: "500", family: "'Inter', sans-serif" },
+          font: { size: 11, weight: "600", family: "'Nunito Sans', sans-serif" },
           color: textColor,
         },
       },
@@ -375,10 +387,10 @@ const AdminAnalytics = ({ tickets = [] }) => {
           drawBorder: false,
         },
         ticks: {
-          font: { size: 10, family: "'Inter', sans-serif" },
+          font: { size: 11, family: "'Nunito Sans', sans-serif" },
           color: textColor,
           stepSize: 1,
-          padding: 10,
+          padding: 8,
         },
         border: { display: false },
       },
@@ -388,7 +400,7 @@ const AdminAnalytics = ({ tickets = [] }) => {
       intersect: false,
     },
     animation: {
-      duration: 1000,
+      duration: 600,
       easing: "easeOutQuart",
     },
   };
@@ -398,10 +410,11 @@ const AdminAnalytics = ({ tickets = [] }) => {
     datasets: [
       {
         data: [stats.groomingCount, stats.klinikCount],
-        backgroundColor: ["#3b82f6", "#f59e0b"],
-        hoverBackgroundColor: ["#2563eb", "#d97706"],
-        borderWidth: 0,
-        hoverOffset: 10,
+        backgroundColor: ["#EA580C", "#0D9488"],
+        hoverBackgroundColor: ["#C2410C", "#0F766E"],
+        borderColor: isDark ? "#111827" : "#FFFFFF",
+        borderWidth: 2,
+        hoverOffset: 8,
       },
     ],
   };
@@ -409,12 +422,17 @@ const AdminAnalytics = ({ tickets = [] }) => {
   const doughnutOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    cutout: "80%",
+    cutout: "78%",
     plugins: {
       legend: { display: false },
       tooltip: {
         backgroundColor: tooltipBg,
+        titleColor: tooltipText,
         bodyColor: tooltipText,
+        borderColor: tooltipBorder,
+        borderWidth: 1,
+        cornerRadius: 10,
+        padding: 12,
         callbacks: {
           label: function (context) {
             return ` ${context.label}: ${context.raw} Tiket`;
@@ -437,260 +455,230 @@ const AdminAnalytics = ({ tickets = [] }) => {
       ? ((stats.klinikCount / stats.totalServices) * 100).toFixed(0)
       : 0;
 
+  const inProcessCount = stats.totalServices - (stats.completed + stats.cancelled);
+
   const summaryCards = [
     {
       title: "Total Tiket",
       value: stats.totalServices,
       icon: ClipboardDocumentListIcon,
-      color: "blue",
+      iconClass:
+        "bg-sky-50 text-sky-700 dark:bg-sky-950/50 dark:text-sky-300",
+      badgeVariant: "waiting",
       subtext: "Semua layanan tercatat",
     },
     {
       title: "Selesai",
       value: stats.completed,
       icon: CheckCircleIcon,
-      color: "green",
+      iconClass:
+        "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300",
+      badgeVariant: "completed",
       subtext: "Layanan rampung",
     },
     {
       title: "Dalam Proses",
-      value: stats.totalServices - (stats.completed + stats.cancelled),
+      value: inProcessCount,
       icon: ClockIcon,
-      color: "amber",
+      iconClass:
+        "bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300",
+      badgeVariant: "active",
       subtext: "Sedang berjalan",
     },
     {
       title: "Dibatalkan",
       value: stats.cancelled,
       icon: XCircleIcon,
-      color: "red",
+      iconClass:
+        "bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300",
+      badgeVariant: "cancelled",
       subtext: "Tidak dilanjutkan",
     },
   ];
 
   return (
-    <div className="min-w-0 space-y-5 sm:space-y-8">
-      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6">
+    <div className="min-w-0 space-y-6">
+      <div className="flex flex-col items-start justify-between gap-4 xl:flex-row xl:items-end">
         <div>
-          <h1 className="flex items-center gap-3 text-xl font-black tracking-tight text-text-main sm:text-3xl">
-            <span className="p-2 bg-indigo-500/10 rounded-xl text-indigo-600 dark:text-indigo-400">
-              <ChartChartIcon className="w-8 h-8" />
+          <h1 className="flex items-center gap-3 font-heading text-xl font-bold tracking-tight text-text-main sm:text-2xl">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
+              <PresentationChartLineIcon className="h-6 w-6" aria-hidden="true" />
             </span>
             Dashboard Analitik
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-medium mt-2 text-lg max-w-2xl">
+          <p className="mt-1.5 max-w-2xl text-sm text-text-secondary sm:text-base">
             Ringkasan performa & statistik operasional secara real-time.
           </p>
         </div>
 
-        <div className="grid w-full min-w-0 gap-2 rounded-2xl border border-border-subtle bg-bg-surface p-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center">
-          <div className="relative group min-w-0">
-            <select
-              value={filterType}
-              aria-label="Periode analitik"
-              onChange={(e) => setFilterType(e.target.value)}
-              className="min-h-11 w-full cursor-pointer appearance-none rounded-xl bg-bg-subtle py-2.5 pr-10 pl-4 text-sm font-bold text-text-secondary hover:bg-bg-muted focus-visible:outline-2 focus-visible:outline-primary"
-            >
-              <option value="day">Harian</option>
-              <option value="week">Mingguan</option>
-              <option value="month">Bulanan</option>
-              <option value="year">Tahunan</option>
-            </select>
-            <CalendarDaysIcon className="w-5 h-5 text-slate-500 dark:text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none group-hover:text-indigo-500 transition-colors" />
+        <div className="flex w-full min-w-0 flex-col gap-2 rounded-2xl border border-border-subtle bg-bg-surface p-2 shadow-xs sm:w-auto sm:flex-row sm:items-center">
+          <div
+            role="group"
+            aria-label="Periode analitik"
+            className="grid grid-cols-4 gap-1 rounded-xl bg-bg-subtle p-1"
+          >
+            {PERIOD_OPTIONS.map((opt) => {
+              const isSelected = filterType === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  aria-pressed={isSelected}
+                  onClick={() => setFilterType(opt.value)}
+                  className={`min-h-10 cursor-pointer rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:text-sm ${
+                    isSelected
+                      ? "bg-primary text-white shadow-xs"
+                      : "text-text-secondary hover:bg-bg-surface hover:text-text-main"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
           </div>
-
-          <div className="h-8 w-px bg-border-subtle mx-1 hidden sm:block"></div>
 
           <input
             type="date"
             aria-label="Tanggal analitik"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="min-h-11 w-full min-w-0 rounded-xl bg-bg-subtle px-4 py-2.5 text-sm font-bold text-text-secondary hover:bg-bg-muted focus-visible:outline-2 focus-visible:outline-primary sm:w-auto"
+            className="min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-border-subtle bg-bg-subtle px-3.5 py-2 text-sm font-semibold tabular-nums text-text-main hover:bg-bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:w-auto"
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {summaryCards.map((card, idx) => (
-          <div
-            key={idx}
-            className={`glass-panel p-6 rounded-4xl border border-white/40 dark:border-white/5 shadow-xl shadow-${card.color}-900/5 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group`}
-          >
-            <div
-              className={`absolute -right-6 -top-6 w-24 h-24 bg-${card.color}-500/10 rounded-full blur-2xl group-hover:bg-${card.color}-500/20 transition-all duration-500`}
-            ></div>
-
-            <div className="flex justify-between items-start relative z-10">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {summaryCards.map((card) => (
+          <Card key={card.title} padding="md" className="flex flex-col justify-between">
+            <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                <p className="text-xs font-bold uppercase tracking-wider text-text-secondary">
                   {card.title}
                 </p>
-                <h3 className="text-4xl font-black text-text-main tracking-tight">
+                <h3 className="mt-1 font-heading text-3xl font-bold tabular-nums tracking-tight text-text-main">
                   {card.value}
                 </h3>
               </div>
               <div
-                className={`p-3 rounded-2xl bg-${card.color}-100 dark:bg-${card.color}-500/20 text-${card.color}-600 dark:text-${card.color}-400 shadow-inner`}
+                aria-hidden="true"
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${card.iconClass}`}
               >
-                <card.icon className="w-6 h-6" />
+                <card.icon className="h-6 w-6" />
               </div>
             </div>
             <div className="mt-4 flex items-center gap-2">
-              <span
-                className={`text-xs font-bold px-2 py-1 rounded-lg bg-${card.color}-100 dark:bg-${card.color}-500/30 text-${card.color}-700 dark:text-${card.color}-400`}
-              >
-                +0%
-              </span>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                {card.subtext}
-              </p>
+              <Badge variant={card.badgeVariant}>{card.subtext}</Badge>
             </div>
-          </div>
+          </Card>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 glass-panel p-8 rounded-[2.5rem] border border-white/40 dark:border-white/5 relative overflow-hidden">
-          <div className="mb-8 flex justify-between items-end">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <Card padding="lg" className="lg:col-span-2">
+          <div className="mb-6 flex items-end justify-between">
             <div>
-              <h3 className="text-xl font-bold text-text-main flex items-center gap-2">
-                <ChartBarIcon className="w-5 h-5 text-indigo-500" />
+              <h3 className="flex items-center gap-2 font-heading text-lg font-bold text-text-main sm:text-xl">
+                <ChartBarIcon className="h-5 w-5 text-primary" aria-hidden="true" />
                 Timeline Trafik
               </h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
+              <p className="mt-1 text-sm text-text-secondary">
                 Volume tiket berdasarkan{" "}
                 {filterType === "day"
                   ? "jam"
                   : filterType === "week"
                   ? "hari"
+                  : filterType === "month"
+                  ? "tanggal"
                   : "bulan"}
               </p>
             </div>
           </div>
 
-          <div className="h-96 w-full">
+          <div className="h-80 w-full sm:h-96">
             {stats.chartData.length > 0 ? (
               <Bar ref={chartRef} data={barChartData} options={barOptions} />
             ) : (
-              <div className="flex h-full flex-col items-center justify-center text-slate-500 dark:text-slate-400 opacity-50">
-                <ClipboardDocumentListIcon className="w-16 h-16 mb-2" />
-                <p>Belum ada data visual</p>
+              <div className="flex h-full flex-col items-center justify-center text-text-muted">
+                <ClipboardDocumentListIcon className="mb-2 h-14 w-14 opacity-50" aria-hidden="true" />
+                <p className="text-sm font-medium">Belum ada data visual</p>
               </div>
             )}
           </div>
-        </div>
+        </Card>
 
-        <div className="glass-panel p-8 rounded-[2.5rem] border border-white/40 dark:border-white/5 flex flex-col items-center justify-between relative overflow-hidden">
-          <div className="w-full text-left relative z-10 mb-4">
-            <h3 className="text-xl font-bold text-text-main flex items-center gap-2">
-              <PieChartIcon className="w-5 h-5 text-indigo-500" />
+        <Card padding="lg" className="flex flex-col items-center justify-between">
+          <div className="mb-4 w-full text-left">
+            <h3 className="flex items-center gap-2 font-heading text-lg font-bold text-text-main sm:text-xl">
+              <ChartPieIcon className="h-5 w-5 text-primary" aria-hidden="true" />
               Sebaran Layanan
             </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
+            <p className="mt-1 text-sm text-text-secondary">
               Rasio Grooming vs Klinik
             </p>
           </div>
 
-          <div className="relative w-full aspect-square max-h-64 mx-auto z-10 my-4">
+          <div className="relative mx-auto my-4 aspect-square w-full max-h-60">
             <Doughnut data={doughnutData} options={doughnutOptions} />
 
-            <div className="absolute inset-0 m-auto w-fit h-fit flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-5xl font-black text-text-main tracking-tight drop-shadow-sm">
+            <div className="pointer-events-none absolute inset-0 m-auto flex h-fit w-fit flex-col items-center justify-center">
+              <span className="font-heading text-4xl font-bold tabular-nums tracking-tight text-text-main">
                 {stats.totalServices}
               </span>
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1 opacity-70">
+              <span className="mt-1 text-xs font-bold uppercase tracking-widest text-text-muted">
                 Total
               </span>
             </div>
           </div>
 
-          <div className="w-full space-y-3 z-10 mt-auto">
-            <div className="flex justify-between items-center p-4 bg-white/50 dark:bg-white/5 border border-white/10 rounded-2xl hover:bg-white/80 dark:hover:bg-white/10 transition-colors">
+          <div className="mt-auto w-full space-y-3">
+            <div className="flex items-center justify-between rounded-2xl border border-border-subtle bg-bg-subtle/60 p-3.5">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm">
-                  <ScissorsIcon className="w-5 h-5" />
+                <div
+                  aria-hidden="true"
+                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-orange-700 dark:bg-orange-950/50 dark:text-orange-300"
+                >
+                  <ScissorsIcon className="h-5 w-5" />
                 </div>
                 <div>
-                  <span className="text-sm font-bold text-text-main block">
+                  <span className="block text-sm font-bold text-text-main">
                     Grooming
                   </span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                  <span className="text-xs font-medium tabular-nums text-text-secondary">
                     {groomingPercent}% rasio
                   </span>
                 </div>
               </div>
-              <span className="font-black text-text-main text-lg">
+              <Badge variant="grooming" className="text-sm font-bold tabular-nums">
                 {stats.groomingCount}
-              </span>
+              </Badge>
             </div>
 
-            <div className="flex justify-between items-center p-4 bg-white/50 dark:bg-white/5 border border-white/10 rounded-2xl hover:bg-white/80 dark:hover:bg-white/10 transition-colors">
+            <div className="flex items-center justify-between rounded-2xl border border-border-subtle bg-bg-subtle/60 p-3.5">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400 shadow-sm">
-                  <HeartIcon className="w-5 h-5" />
+                <div
+                  aria-hidden="true"
+                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300"
+                >
+                  <HeartIcon className="h-5 w-5" />
                 </div>
                 <div>
-                  <span className="text-sm font-bold text-text-main block">
+                  <span className="block text-sm font-bold text-text-main">
                     Klinik
                   </span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                  <span className="text-xs font-medium tabular-nums text-text-secondary">
                     {klinikPercent}% rasio
                   </span>
                 </div>
               </div>
-              <span className="font-black text-text-main text-lg">
+              <Badge variant="klinik" className="text-sm font-bold tabular-nums">
                 {stats.klinikCount}
-              </span>
+              </Badge>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );
 };
-
-function ChartChartIcon(props) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
-      {...props}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605"
-      />
-    </svg>
-  );
-}
-
-function PieChartIcon(props) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
-      {...props}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z"
-      />
-    </svg>
-  );
-}
 
 export default AdminAnalytics;

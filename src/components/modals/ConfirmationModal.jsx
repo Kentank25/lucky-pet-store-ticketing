@@ -1,8 +1,10 @@
+import { useEffect, useId } from "react";
 import { createPortal } from "react-dom";
 import {
   ExclamationTriangleIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
+import Button from "../ui/Button";
 
 export default function ConfirmationModal({
   isOpen,
@@ -15,65 +17,82 @@ export default function ConfirmationModal({
   isDanger = false,
   isLoading = false,
 }) {
+  const titleId = useId();
+  const descId = useId();
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && !isLoading) {
+        onClose?.();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, isLoading, onClose]);
+
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in p-4 z-[9999]">
-      <div className="bg-bg-surface rounded-3xl w-full max-w-sm shadow-2xl dark:shadow-none border border-border-subtle overflow-hidden scale-100 animate-scale-in">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      aria-describedby={message ? descId : undefined}
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs animate-fade-in"
+    >
+      <div className="w-full max-w-sm scale-100 overflow-hidden rounded-2xl border border-border-subtle bg-bg-surface shadow-xl animate-scale-in dark:shadow-black/50">
         <div
-          className={`p-6 border-b ${
+          className={`border-b p-6 ${
             isDanger
-              ? "bg-rose-50 dark:bg-rose-900/20 border-rose-100 dark:border-rose-900/30"
-              : "bg-indigo-50 dark:bg-indigo-900/20 border-indigo-100 dark:border-indigo-900/30"
+              ? "border-red-200 bg-red-50 dark:border-red-900/40 dark:bg-red-950/30"
+              : "border-teal-200 bg-teal-50 dark:border-teal-900/40 dark:bg-teal-950/30"
           }`}
         >
           <h3
-            className={`text-xl font-bold flex items-center gap-2 ${
+            id={titleId}
+            className={`flex items-center gap-2 font-heading text-lg font-bold ${
               isDanger
-                ? "text-rose-800 dark:text-rose-200"
-                : "text-indigo-800 dark:text-indigo-200"
+                ? "text-red-900 dark:text-red-200"
+                : "text-teal-900 dark:text-teal-200"
             }`}
           >
             {isDanger ? (
-              <ExclamationTriangleIcon className="w-6 h-6" />
+              <ExclamationTriangleIcon className="h-6 w-6 shrink-0" aria-hidden="true" />
             ) : (
-              <InformationCircleIcon className="w-6 h-6" />
+              <InformationCircleIcon className="h-6 w-6 shrink-0" aria-hidden="true" />
             )}
-            {title}
+            <span>{title}</span>
           </h3>
-          <p
-            className={`text-sm mt-1 opacity-80 ${
-              isDanger
-                ? "text-rose-700 dark:text-rose-300"
-                : "text-indigo-700 dark:text-indigo-300"
-            }`}
-          >
-            {message}
-          </p>
+          {message && (
+            <p
+              id={descId}
+              className={`mt-1.5 text-sm ${
+                isDanger
+                  ? "text-red-800 dark:text-red-300"
+                  : "text-teal-800 dark:text-teal-300"
+              }`}
+            >
+              {message}
+            </p>
+          )}
         </div>
 
-        <div className="p-6 flex gap-3 justify-end bg-bg-surface">
-          <button
+        <div className="flex justify-end gap-3 bg-bg-surface p-5">
+          <Button
+            variant="secondary"
             onClick={onClose}
             disabled={isLoading}
-            className="px-4 py-2.5 rounded-xl font-bold text-text-secondary hover:bg-bg-subtle transition-colors disabled:opacity-50"
           >
             {cancelText}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={isDanger ? "danger" : "primary"}
             onClick={onConfirm}
-            disabled={isLoading}
-            className={`px-4 py-2.5 rounded-xl font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-50 disabled:shadow-none flex items-center gap-2 ${
-              isDanger
-                ? "bg-rose-600 hover:bg-rose-700 shadow-rose-200 dark:shadow-none"
-                : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200 dark:shadow-none"
-            }`}
+            loading={isLoading}
           >
-            {isLoading && (
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            )}
             {confirmText}
-          </button>
+          </Button>
         </div>
       </div>
     </div>,
